@@ -62090,7 +62090,7 @@ document.addEventListener('click',e=>{const t=e.target.closest('[data-v3]');if(!
  if(a==='saveTags'){const tags=[...new Set(document.getElementById('v3TagInput').value.split(/[,，、]/).map(x=>x.trim()).filter(Boolean))];if(tags.some(x=>['已提交','已确认','已绑定','编辑中','报价中','待报价'].includes(x))){document.getElementById('v3TagError').textContent='请填写描述方案特点的标签；流程状态由系统独立维护。';return;}if(tags.length>6||tags.some(x=>x.length>16)){document.getElementById('v3TagError').textContent='最多6个标签，每个标签不超过16个字。';return;}v3Meta(code).tags=tags;DRAFTS.find(r=>r[0]===code)[8]=tags.join('、');v3Save();v3CloseDialog();v3RefreshDraftList();}
  if(a==='draftDetail')v3DraftDetail(code);if(a==='draftToBoard'){v3CloseDialog();archiveProject=t.dataset.project;openPage('board');}if(a==='copyDraft')v3CopyDraft(code);if(a==='bindFromDraft')v3BindFromDraft(code,t.dataset.cat);
  if(a==='showPassword'){const p=document.getElementById('v3Password');p.type=p.type==='password'?'text':'password';t.textContent=p.type==='password'?'显示':'隐藏';t.setAttribute('aria-label',p.type==='password'?'显示密码':'隐藏密码');}
- if(a==='loginHelp')document.getElementById('v3LoginError').textContent='演示账号：demo，密码：George2026。也可点击「体验演示工作台」。';
+ if(a==='loginHelp')document.getElementById('v3LoginError').textContent='点击「登录演示账号」即可进入工作台，无需注册。';
  if(a==='demoLogin')v3Enter();if(a==='user')v3UserMenu();if(a==='logout'){v3CloseDialog();try{sessionStorage.removeItem('crm-session-v3');}catch(e){}v3Login();}
 });
 document.addEventListener('keydown',e=>{const d=document.getElementById('v3Dialog');if(!d)return;if(e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();v3CloseDialog();}if(e.key==='Tab'){const list=[...d.querySelectorAll('button:not(:disabled),input,select')].filter(x=>x.getClientRects().length);if(e.shiftKey&&document.activeElement===list[0]){e.preventDefault();list.at(-1)?.focus();}else if(!e.shiftKey&&document.activeElement===list.at(-1)){e.preventDefault();list[0]?.focus();}}},true);
@@ -62326,8 +62326,14 @@ v3Login=function(){
  el.querySelector('.v3-login-right h2').innerHTML='敬城 <span>CRM</span>';
  el.querySelector('.v3-login-right h2').insertAdjacentHTML('afterend','<div class="v6-login-purpose">客户经营<span></span>空间交付</div>');
  el.querySelector('.v3-login-right>p').textContent='欢迎回来，让每一份托付抵达理想空间。';
- el.querySelector('.v3-login-demo').textContent='使用演示账号体验';
- el.querySelector('.v3-login-hint').innerHTML='交互预览 · 暂未接入账号认证<br>演示账号 demo / 密码 George2026';
+ const demoButton=el.querySelector('.v3-login-submit');
+ demoButton.type='button';
+ demoButton.dataset.v3='demoLogin';
+ demoButton.textContent='登录演示账号　→';
+ el.querySelector('#v3Account').value='demo';
+ el.querySelector('#v3Password').value='George2026';
+ el.querySelector('.v3-login-demo').remove();
+ el.querySelector('.v3-login-hint').textContent='演示账号已填好，点击即可进入工作台。';
  el.querySelector('.v3-login-footer').textContent='敬城国际 · 让理想空间成为日常';
  document.title='登录 · 敬城 CRM';
 };
