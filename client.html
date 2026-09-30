@@ -1637,6 +1637,8 @@ html[data-entry=client] .app,html[data-entry=client] .cq-close{display:none!impo
 }
 @media(prefers-reduced-motion:reduce){.v28-client .v50-workspace{transition:none}}
 @media print{.q66-sidebar-tools{display:none!important}}
+
+.v68-source{display:flex;justify-content:space-between;padding:12px 16px;margin:0 0 18px;background:#edf6fc;border:1px solid #d6e7f3;border-radius:8px;color:#355d79;font-size:12px}.v68-source span{color:#7893a6}.v68-spaces .space-cat-block{background:#f8fbfd}.v68-spaces .space-cat-opts{gap:7px}.v68-allocation,.v68-review{padding:6px 8px}.v68-project-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px}.v68-project-head strong{font-size:17px;color:#25445a}.v68-project-head>span{padding:5px 10px;border-radius:6px;background:#eef6fc;color:#4385b2;font-size:12px}.v68-tabs{display:flex;gap:6px;padding:5px;border-radius:8px;background:#f2f6fa;margin-bottom:22px}.v68-tabs button{flex:1;border:0;padding:12px;background:transparent;color:#6f8599;border-radius:6px;cursor:pointer}.v68-tabs button.active{color:#247ab4;background:white;box-shadow:0 2px 5px #27455d0d;font-weight:600}.v68-fields{display:grid;grid-template-columns:1fr 1fr;gap:20px}.v68-fields .full{grid-column:1/-1}.v68-field{display:flex;flex-direction:column;gap:8px;min-width:0;font-size:12px;color:#5c748a}.v68-field>span b{color:#dd756d;margin-right:3px}.v68-field input,.v68-field select,.v68-field textarea{width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid #d6e3ee;border-radius:6px;background:white;color:#294a62;font:inherit}.v68-field input[readonly]{background:#f5f8fb;color:#8296a5}.v68-field textarea{min-height:80px;resize:vertical}.v68-field small{color:#7f93a4}.v68-evidence{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;background:#f6f9fc;padding:15px;border:1px solid #e3ebf1;border-radius:8px}.v68-evidence input{background:white;max-width:100%;padding:9px 5px}.v68-review dl{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}.v68-review dl>div{display:grid;grid-template-columns:115px 1fr;gap:12px;font-size:13px}.v68-review dt{color:#8296a6}.v68-review dd{margin:0;color:#294a62;overflow-wrap:anywhere;white-space:pre-wrap}.v68-proof-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px}.v68-proof-grid figure{margin:0}.v68-proof-grid img{width:100%;height:200px;object-fit:contain;border:1px solid #dbe7ef;border-radius:6px;background:#f6f9fc}.v68-proof-grid figcaption{font-size:12px;margin-top:8px;color:#647e91}.v68-flow-approvals{padding:20px;border:1px solid #dbe7ef;border-radius:10px;margin-top:18px}.v68-flow-approvals h3{margin:0 0 14px}.v68-flow-approvals article{display:grid;grid-template-columns:1fr auto;gap:8px;padding:14px;border-top:1px solid #e8eef3}.v68-flow-approvals span,.v68-flow-approvals small{font-size:12px;color:#7690a5}.v68-flow-approvals button{grid-column:2;grid-row:1/4;align-self:center}
 </style></head>
 <body><section id="crmBoot" aria-label="页面加载"><div class="crm-boot-content"><img src="./media-c0dfa53a5ef5434ada0a.png" alt="George 敬城国际"><h1>敬城 CRM</h1><p id="crmBootMessage" role="status" aria-live="polite">让理想空间成为日常</p><div class="crm-boot-progress" id="crmBootProgress" aria-hidden="true"></div><button id="crmBootRetry" type="button" hidden onclick="location.reload()">重新加载</button><noscript><style>#crmBootProgress{display:none!important}</style><p>请启用浏览器的 JavaScript 后刷新页面。</p></noscript></div></section>
 <div class="app">
@@ -62038,14 +62040,14 @@ pageTodos=function(){
  const all=visibleTodos(),scoped=searchedTodos(),byStatus=scoped.filter(t=>todoStatus==='全部'||t.status===todoStatus);
  const list=byStatus.filter(t=>todoFilter==='全部'||t.type===todoFilter).slice().sort((a,b)=>(WK.sort==='oldest'?1:-1)*(parseTodoTime(a.time)-parseTodoTime(b.time))||String(b.id).localeCompare(String(a.id)));
  const count=s=>all.filter(t=>t.status===s).length,today=all.filter(t=>t.status==='待处理'&&String(t.time||'').startsWith(todoDay())).length;
- const groups=[['业务流程',['客户待办','设计待办','创建项目待办','项目待办','确认商机','草稿报价待办','订单待办','收款待办','备货待办']],['专项事项',['设计单','邀请函审核','公海跟进']]];
+ const groups=[['业务流程',['客户待办','设计待办','创建项目待办','项目待办','确认商机','草稿报价待办','订单待办','收款待办','备货待办']],['商机审批',['跨区域商机审批待办','转介绍商机审批待办']],['专项事项',['设计单','邀请函审核','公海跟进']]];
  const nav=(tp,label)=>`<button class="${todoFilter===tp?'on':''}" data-act="todoFilter" data-filter="${tp}">${skyIcon(tp==='全部'?'grid':tp.includes('报价')?'file':tp.includes('设计')?'plan':tp.includes('客户')?'users':'brief')}<span>${label||tp.replace('待办','')}</span><span>${tp==='全部'?byStatus.length:byStatus.filter(t=>t.type===tp).length}</span></button>`;
  const btn=(a,primary)=>a.html||`<button class="wk-btn ${primary?'primary':'flat'}" data-act="${esc(a.act)}" ${a.extra||''}>${esc(a.t)}</button>`;
  return `<div class="wk wk-todo"><header class="wk-head"><div><div class="wk-eyebrow">MY WORKSPACE / 工作台</div><h1>待办中心</h1><p>跟进客户与项目事项，让协作有序向前。</p></div><div class="wk-date"><i></i>${esc(todoDay())} · 工作概览</div></header><div class="wk-kpis">${[
  ['pending','待处理事项',count('待处理'),'有序跟进每一个业务环节','brief',todoStatus==='待处理'&&!todoQuick],['today','今日到达',today,'今日新增的待处理事项','chart',todoQuick==='today'],['done','已处理',count('已处理'),'查看已完成的处理记录','check',todoStatus==='已处理'],['rejected','已驳回',count('已驳回'),'回看原因，及时重新跟进','rotate',todoStatus==='已驳回']
  ].map(([key,label,n,hint,icon,on])=>`<button class="wk-kpi ${on?'on':''}" data-act="todoKpi" data-kpi="${key}"><span class="label">${label}</span><span class="kico">${skyIcon(icon)}</span><strong>${n}</strong><small>${hint}</small></button>`).join('')}</div>
  <div class="wk-tasks"><aside class="wk-task-nav"><div class="wk-nav-cap">任务分类</div>${nav('全部','全部事项')}${groups.map(([cap,types])=>`<div class="wk-nav-cap">${cap}</div>${types.map(t=>nav(t)).join('')}`).join('')}</aside><div class="wk-task-main"><div class="wk-task-toolbar"><label class="wk-search">${skyIcon('search')}<input id="todoSearchInp" value="${esc(todoSearch)}" placeholder="搜索事项、客户或项目编号" aria-label="搜索待办"></label><button class="wk-btn" data-act="todoQuery">查询</button><select aria-label="待办状态" data-wk-change="status">${['全部','待处理','已处理','已驳回'].map(s=>`<option ${todoStatus===s?'selected':''}>${s}</option>`).join('')}</select><select aria-label="待办排序" data-wk-change="taskSort"><option value="recent" ${WK.sort==='recent'?'selected':''}>最新到达</option><option value="oldest" ${WK.sort==='oldest'?'selected':''}>停留最久</option></select><button class="wk-btn flat" data-wk="resetTodo">重置</button></div>
- <section class="wk-panel"><div class="wk-panel-title"><h2>${esc(todoFilter==='全部'?'全部事项':todoFilter)} <span> / ${esc(todoQuick==='today'?'今日到达':todoStatus)}</span></h2><span>${list.length} 项</span></div>${list.map(t=>{const m=todoMeta(t),tone=t.status==='已处理'?'done':t.status==='已驳回'?'rejected':'',acts=todoActs(t),mainIndex=acts.findIndex(a=>!/查看|总览|档案|轨迹|驳回|结束|详情/.test(a.t||'')),chosen=mainIndex>=0?mainIndex:0,main=acts[chosen],rest=acts.filter((a,i)=>i!==chosen);return `<article class="wk-task-row"><div class="wk-task-mark ${tone}">${skyIcon(tone==='done'?'check':t.type.includes('报价')?'file':t.type.includes('设计')?'plan':'brief')}</div><div><div class="wk-task-title"><b>${esc(todoSubject(t))}</b><span class="wk-status ${tone}">${esc(t.status)}</span></div><div class="wk-task-meta"><span>${esc(t.customer||'未关联客户')}</span><span>${esc(m.projCode&&m.projCode!=='-'?m.projCode:t.type)}</span><code>${esc(t.id)}</code></div><div class="wk-task-meta"><span>${esc(t.time||'')} 到达</span><span>${esc(t.type)}</span></div></div><div class="wk-task-owner">${esc(t.owner||'待分配')}<small title="发起人：${esc(m.initiator||'-')}">发起人 · ${esc(m.initiator||'-')}</small><div class="wk-age">${todoStayCell(t)}</div></div><div class="wk-task-acts">${main?btn(main,mainIndex>=0):''}${rest.length?`<details class="wk-more"><summary>更多操作 ···</summary><div>${rest.map(a=>btn(a,false)).join('')}</div></details>`:''}</div></article>`;}).join('')||wkEmpty('当前没有待办事项','换一个分类，或清除筛选条件。','<button class="wk-btn" data-wk="resetTodo">清除筛选</button>')}<div class="wk-task-foot">共 ${list.length} 项 · ${WK.sort==='oldest'?'按停留时间排序':'按到达时间排序'}</div></section></div></div></div>`;
+ <section class="wk-panel"><div class="wk-panel-title"><h2>${esc(todoFilter==='全部'?'全部事项':todoFilter)} <span> / ${esc(todoQuick==='today'?'今日到达':todoStatus)}</span></h2><span>${list.length} 项</span></div>${list.map(t=>{const m=todoMeta(t),tone=t.status==='已处理'?'done':t.status==='已驳回'?'rejected':'',acts=todoActs(t),mainIndex=acts.findIndex(a=>!/查看|总览|档案|轨迹|驳回|结束|详情/.test(a.t||'')),chosen=mainIndex>=0?mainIndex:0,main=acts[chosen],rest=acts.filter((a,i)=>i!==chosen);return `<article class="wk-task-row"><div class="wk-task-mark ${tone}">${skyIcon(tone==='done'?'check':t.type.includes('报价')?'file':t.type.includes('设计')?'plan':'brief')}</div><div><div class="wk-task-title"><b>${esc(todoSubject(t))}</b><span class="wk-status ${tone}">${esc(t.status)}</span></div><div class="wk-task-meta"><span>${esc(t.customer||'未关联客户')}</span>${t.type==='客户待办'?v68CustomerMeta(t):`<span>${esc(m.projCode&&m.projCode!=='-'?m.projCode:t.type)}</span>`}<code>${esc(t.id)}</code></div><div class="wk-task-meta"><span>${esc(t.time||'')} 到达</span><span>${esc(t.type)}</span></div></div><div class="wk-task-owner">${esc(t.owner||'待分配')}<small title="发起人：${esc(m.initiator||'-')}">发起人 · ${esc(m.initiator||'-')}</small><div class="wk-age">${todoStayCell(t)}</div></div><div class="wk-task-acts">${main?btn(main,mainIndex>=0):''}${rest.length?`<details class="wk-more"><summary>更多操作 ···</summary><div>${rest.map(a=>btn(a,false)).join('')}</div></details>`:''}</div></article>`;}).join('')||wkEmpty('当前没有待办事项','换一个分类，或清除筛选条件。','<button class="wk-btn" data-wk="resetTodo">清除筛选</button>')}<div class="wk-task-foot">共 ${list.length} 项 · ${WK.sort==='oldest'?'按停留时间排序':'按到达时间排序'}</div></section></div></div></div>`;
 };
 function wkCategoryList(){return ['全部产品',...new Set(WK_CATALOG.map(p=>p.cat)),...MALL_CATS].filter((v,i,a)=>v&&a.indexOf(v)===i);}
 function wkProducts(){let list=WK_CATALOG.filter(p=>(WK.cat==='全部产品'||WK.cat==='我的收藏'&&WK.favorites.has(p.sku)||p.cat===WK.cat)&&`${p.name} ${p.sku} ${p.cat}`.toLowerCase().includes(WK.query.toLowerCase()));if(WK.productSort==='low')list.sort((a,b)=>a.price-b.price);if(WK.productSort==='high')list.sort((a,b)=>b.price-a.price);return list;}
@@ -62097,7 +62099,7 @@ function v3Meta(code){return V3.meta[code]||(V3.meta[code]={project:DRAFT_DATA[c
 function v3Status(m){if(!m.submitted)return m.status||'';const cats=m.categories;return cats.length&&cats.every(c=>m.bindings[c]?.revision===m.revision)?'已绑定':cats.length&&cats.every(c=>m.confirmedCats.includes(c))?'已确认':'已提交';}
 function v3Save(){wkPersistDrafts();return wkWrite('crm-flow-v3',{version:3,meta:V3.meta,owners:V3.owners,drafts:DRAFTS,data:DRAFT_DATA,todos:TODOS,opps:OPPS,orders:ORDERS,quotes:PROJECT_QUOTES,draftCats:PROJECT_DRAFT_CATS});}
 function v3DraftLabel(code){const m=v3Meta(code);return m.tags.length?m.tags.join('、'):'';}
-function v3ApplyOwners(){for(const [cat,name] of Object.entries(V3.owners)){CAT_SM[cat]=name;SM_DEPT[name]=cat;}for(const t of TODOS){if(['确认商机','草稿报价待办','订单待办','备货待办'].includes(t.type)){const cat=String(t.cat||t.cats||t.smDept||'').split(/[、,，/]/)[0].trim();if(V3.owners[cat]){const old=t.owner;t.owner=V3.owners[cat];t.smDept=cat;if(t.approver===old)t.approver=t.owner;}}}for(const o of OPPS){if(V3.owners[o[3]])o[7]=V3.owners[o[3]];}for(const r of DRAFTS){const m=v3Meta(r[0]);const cats=m.categories.length?m.categories:[String(r[7]||'').replace(/模板$/,'')];r[3]=[...new Set(cats.map(quoteSmOf))].join(' / ');r[4]=cats.join(' / ');}Object.values(PROJECT_QUOTES).forEach(list=>list.forEach(q=>q.manager=quoteCatsOf([q]).map(c=>c+' · '+quoteSmOf(c)).join(' / ')));}
+function v3ApplyOwners(){for(const [cat,name] of Object.entries(V3.owners)){CAT_SM[cat]=name;SM_DEPT[name]=cat;}for(const t of TODOS){if(['确认商机','草稿报价待办','订单待办','备货待办'].includes(t.type)){const cat=String(t.cat||t.cats||t.smDept||'').split(/[、,，/]/)[0].trim();if(V3.owners[cat]&&!t.assignmentManaged){const old=t.owner;t.owner=V3.owners[cat];t.smDept=cat;if(t.approver===old)t.approver=t.owner;}}}for(const o of OPPS){if(V3.owners[o[3]]&&!o[20]?.assignmentManaged)o[7]=V3.owners[o[3]];}for(const r of DRAFTS){const m=v3Meta(r[0]);const cats=m.categories.length?m.categories:[String(r[7]||'').replace(/模板$/,'')];r[3]=[...new Set(cats.map(quoteSmOf))].join(' / ');r[4]=cats.join(' / ');}Object.values(PROJECT_QUOTES).forEach(list=>list.forEach(q=>q.manager=quoteCatsOf([q]).map(c=>c+' · '+quoteSmOf(c)).join(' / ')));}
 const v3Stored=wkRead('crm-flow-v3',null);
 if(v3Stored?.version===3){V3.meta=v3Stored.meta||{};V3.owners=v3Stored.owners||{};for(const [array,key] of [[DRAFTS,'drafts'],[TODOS,'todos'],[OPPS,'opps'],[ORDERS,'orders']]){if(Array.isArray(v3Stored[key]))array.splice(0,array.length,...v3Stored[key]);}for(const [obj,key] of [[DRAFT_DATA,'data'],[PROJECT_QUOTES,'quotes'],[PROJECT_DRAFT_CATS,'draftCats']])Object.assign(obj,v3Stored[key]||{});}
 const V4_DEMO_MANAGERS={'定制':'陈奕宁','家具':'林晓','门窗':'周景澄','地板':'许知远','陶瓷':'苏婉清','石材':'董文君','卫浴':'沈亦舟','墙板':'顾清禾','灯饰':'陆星遥','金玻':'程嘉树','电器':'江予安','酒店用品':'唐以宁','Sourcing':'叶承泽'};
@@ -62605,7 +62607,7 @@ if(V3.client&&clientQuoteOpen()){if(location.hash==='#plan')SKY.mode='plan';open
 const DF9_ROLES={biz:['业务','客户负责人'],design:['设计师','设计协作'],pm:['PM','项目经理'],sm:['SM','品类方案经理'],client:['客户','方案确认'],sys:['CRM','系统自动'],finance:['财务','FSC 外部系统']};
 const DF9_STAGES=[
  {id:'customer',num:'01',title:'客户与设计',sub:'确认客户需求，按是否需要设计分流',range:'01—07',handoff:'需要设计：设计师提交方案后交接 PM；无需设计：客户需求直接交接 PM',loop:'有设计需求：客户待办保持待处理，可重复发起设计需求，由业务手动结束。无需设计：提交即完成客户待办，同时交接 PM 创建项目。'},
- {id:'project',num:'02',title:'立项与商机',sub:'先确认项目，再按品类落实方案责任人',range:'08—14',handoff:'SM 接受商机 → 创建商机并发起该品类草稿报价待办',loop:'项目待办可多次发起不同品类商机；至少发起一条确认商机待办后，由 PM 手动结束。各品类独立推进。'},
+ {id:'project',num:'02',title:'立项与商机',sub:'先确认项目，再按品类落实方案责任人',range:'08—14',handoff:'SM 接受商机 → 创建商机并发起该品类草稿报价待办',loop:'区域内分配由 SM 确认；跨区域和转介绍由总经办审批。申请可多次发起，未完成审批时不可结束项目待办。'},
  {id:'quote',num:'03',title:'空间报价与确认',sub:'汇集各品类方案，通过项目群邀请客户确认',range:'15—22',handoff:'客户确认对应品类 → 完成草稿报价待办，生成该品类订单待办',loop:'保存 ≠ 提交 ≠ 确认。保存只保留编辑内容；提交同步报价总览；客户确认才完成草稿报价待办。'},
  {id:'order',num:'04',title:'订单、收款与备货',sub:'让确认后的方案进入订单与履约协作',range:'23—29',handoff:'SM 提交备货要求与计划日期 → 订单进入备货环节',loop:'收款待办支持定金、尾款、全款多次出单；至少生成一张收款单后，由 PM 手动结束。达到 20% 后仍可继续收款。'}
 ];
@@ -62618,9 +62620,9 @@ const DF9_NODES=[
  {id:'designHandoff',stage:0,role:'design',title:'提交设计资料',brief:'平面图、空间清单、空间品类与 PM',kind:'资料交接',trigger:'设计师确认承接。',actions:['整理平面图、设计说明与相关附件。','配置空间清单，并为每个空间选择涉及品类。','选择承接 PM，提交设计资料；至少一个空间，且每个空间须有品类。'],outcome:'设计待办完成，空间与品类信息传给创建项目待办。'},
  {id:'createProjectTodo',stage:0,role:'sys',title:'生成创建项目待办',brief:'两条路径汇合，交给指定 PM',kind:'自动待办',trigger:'设计师提交设计资料，或客户负责人选择无需设计并指定 PM。',actions:['需要设计：携带设计师提交的空间、品类与设计资料。','无需设计：携带客户需求及已有附件，由 PM 在立项时补齐空间与品类。','发起创建项目待办，待办人＝指定 PM。'],outcome:'PM 按每次需求分别收到立项确认任务，不按客户合并。'},
  {id:'projectReview',stage:1,role:'pm',title:'确认是否立项',brief:'查看客户需求与已有资料，确认或拒绝',kind:'确认 / 拒绝',reject:'拒绝 → 本条结束，不建项目',trigger:'PM 收到创建项目待办。',actions:['核对客户需求、设计方案、空间与涉及品类。','确认后补齐项目信息；拒绝时填写原因。'],outcome:'确认后进入项目创建；拒绝不生成项目和项目待办。'},
- {id:'createProject',stage:1,role:'pm',title:'补齐资料并创建项目',brief:'项目名称、国家、类型、规模与说明',kind:'业务操作',trigger:'PM 确认立项。',actions:['填写项目名称、国家、项目类型、规模及说明。','有设计方案时承接空间与品类；无需设计时由 PM 补齐空间与品类。','保存项目档案，完成创建项目待办。'],outcome:'每条客户需求独立建立项目，系统生成对应的项目待办。'},
- {id:'projectTodo',stage:1,role:'sys',title:'生成项目待办',brief:'挂到项目，由项目 PM 持续跟进',kind:'自动待办',trigger:'PM 创建项目成功。',actions:['待办关联新项目，待办人＝项目 PM。','用于后续分品类邀请 SM 承接商机。'],outcome:'PM 可以多次发起确认商机待办。',note:'项目待办为可重复环节。发起一次商机后仍保持待处理，PM 手动结束才关闭。'},
- {id:'assignSM',stage:1,role:'pm',title:'按品类选择 SM',brief:'每个品类安排对应方案经理',kind:'可重复发起',trigger:'项目待办处于待处理状态。',actions:['按项目涉及品类选择各自对应的 SM。','补充该品类的商机需求并发起确认。','可继续为其他品类发起商机；不能把邀请当成已经建好商机。'],outcome:'各品类分别生成确认商机待办。',note:'至少发起一条确认商机待办后，PM 可手动结束项目待办。'},
+ {id:'createProject',stage:1,role:'pm',title:'补齐资料并创建项目',brief:'项目名称、国家、类型、规模与说明',kind:'业务操作',trigger:'PM 确认立项。',actions:['使用统一创建项目表单，填写客户、国家、交付经理、商务经理、PM 助理、类型、规模、交期、设计图纸、物流、佣金与预算等信息。','仅由设计待办生成的立项任务带入设计空间与品类，PM 可增删或调整；其他入口从空白空间开始确认。','保存项目档案，完成创建项目待办。'],outcome:'每条客户需求独立建立项目，系统生成对应的项目待办。'},
+ {id:'projectTodo',stage:1,role:'sys',title:'生成项目待办',brief:'挂到项目，由项目 PM 持续跟进',kind:'自动待办',trigger:'PM 创建项目成功。',actions:['待办关联新项目，待办人＝项目 PM。','用于后续分品类邀请 SM 承接商机。'],outcome:'区域内分配发起确认商机待办；跨区域与转介绍发给总经办审批，审批通过直接生成商机。',note:'项目待办为可重复环节。发起一次商机后仍保持待处理，PM 手动结束才关闭。'},
+ {id:'assignSM',stage:1,role:'pm',title:'按品类选择 SM',brief:'每个品类安排对应方案经理',kind:'可重复发起',trigger:'项目待办处于待处理状态。',actions:['选择项目品类，仅匹配负责或兼管该区域且符合品类条件的 SM。','补充该品类的商机需求并发起确认。','可继续为其他品类发起商机；不能把邀请当成已经建好商机。'],outcome:'各品类分别生成确认商机待办。',note:'至少发起一条确认商机待办后，PM 可手动结束项目待办。'},
  {id:'opportunityTodo',stage:1,role:'sys',title:'生成确认商机待办',brief:'按项目＋品类分发给对应 SM',kind:'自动待办',trigger:'PM 提交品类与 SM 分配。',actions:['待办携带项目、客户、品类及空间需求。','交给该品类 SM，由 SM 决定是否承接。'],outcome:'等待 SM 确认，此时尚未创建正式商机。'},
  {id:'opportunityReview',stage:1,role:'sm',title:'确认承接商机',brief:'核对品类需求，确认或拒绝',kind:'确认 / 拒绝',reject:'拒绝 → 本条结束，不建商机',trigger:'SM 收到对应品类的确认商机待办。',actions:['查看项目档案及负责品类的需求。','确认后创建商机；拒绝须记录原因。'],outcome:'确认后创建该品类商机；拒绝不产生商机及草稿报价待办。',note:'其他品类继续正常推进。项目待办未结束时，PM 可调整分配并重新发起。'},
  {id:'opportunityCreated',stage:1,role:'sys',title:'创建品类商机',brief:'绑定项目、品类与已承接的 SM',kind:'自动建档',trigger:'对应 SM 确认承接商机。',actions:['建立项目下该品类的正式商机记录。','完成确认商机待办，关联负责 SM。'],outcome:'系统立即为该品类发起草稿报价待办。'},
@@ -62655,7 +62657,8 @@ function df9Loop(stage,index){
 
 function df36CustomerBranch(nodes){const node=id=>df9Node(nodes.find(n=>n.id===id),0);return '<div class="df36-customer-flow"><div class="df36-entry">'+['createCustomer','customerTodo','needs'].map(node).join('')+'</div><div class="df36-paths"><section class="df36-path"><h3><span>是</span> 需要设计</h3><div class="df36-design-nodes">'+['designTodo','designReview','designHandoff'].map(node).join('')+'</div></section><section class="df36-path df36-direct"><h3><span>否</span> 无需设计</h3><div class="df36-direct-copy">'+df9Role('biz',true)+'<b>选择负责项目的 PM</b><p>提交即完成客户待办<br>客户需求与附件交接 PM，立项时补齐空间与品类</p><span class="df36-down">↓ 直接进入创建项目待办</span></div></section></div><div class="df36-merge"><span>两条路径汇合 ↓</span>'+node('createProjectTodo')+'</div></div>';}
 
-function df9StageHtml(stage,index){const nodes=DF9_NODES.filter(n=>n.stage===index);return `<section class="df9-stage" aria-labelledby="df9Stage${index}"><header class="df9-stage-head"><span class="df9-stage-number">${stage.num}</span><div><h2 id="df9Stage${index}">${stage.title}</h2><p>${stage.sub}</p></div><span class="df9-stage-range">节点 ${stage.range}</span></header>${index===0?df36CustomerBranch(nodes):`<div class="df9-grid">${nodes.map(df9Node).join('')}</div>`}${df9Loop(stage,index)}${index===2?df9Revision():''}${index===3?`<div class="df9-finance"><span class="df9-finance-branch" aria-hidden="true">25 ↳</span><div><b>逐笔财务协作</b><p>每张收款单 → 财务在 FSC 绑定对应收款流水。与 CRM 的累计收款判断分开展示。</p></div><button data-df9="detail" data-node="finance">${df9Role('finance')}<span>查看 FSC 环节 ↗</span></button></div><div class="df9-threshold-note"><b>备货触发规则</b><span>累计收款达到 20% 即生成备货待办；不必等收款待办手动结束。未达到阈值时结束收款，也不会生成备货待办。</span></div>`:''}<footer class="df9-handoff"><span>${index===3?'✓':'↓'}</span>${stage.handoff}</footer></section>`;}
+function df68AllocationBranches(){return '<div class="df9-finance"><div><b>跨区域商机审批</b><p>PM 选择项目品类与跨区域 SM，填写原因 → 总经办审批 → 通过后直接生成商机与草稿报价待办。驳回保留原因，不生成商机。</p></div></div><div class="df9-finance"><div><b>转介绍商机审批</b><p>填写转介绍人、被转介绍人及其组长，上传三方同意截图 → 总经办审批 → 通过后生成对应商机与草稿报价待办。关联原商机时，保留原商机并标记转介绍关系。</p></div></div>';}
+function df9StageHtml(stage,index){const nodes=DF9_NODES.filter(n=>n.stage===index);return `<section class="df9-stage" aria-labelledby="df9Stage${index}"><header class="df9-stage-head"><span class="df9-stage-number">${stage.num}</span><div><h2 id="df9Stage${index}">${stage.title}</h2><p>${stage.sub}</p></div><span class="df9-stage-range">节点 ${stage.range}</span></header>${index===0?df36CustomerBranch(nodes):`<div class="df9-grid">${nodes.map(df9Node).join('')}</div>`}${index===1?df68AllocationBranches():''}${df9Loop(stage,index)}${index===2?df9Revision():''}${index===3?`<div class="df9-finance"><span class="df9-finance-branch" aria-hidden="true">25 ↳</span><div><b>逐笔财务协作</b><p>每张收款单 → 财务在 FSC 绑定对应收款流水。与 CRM 的累计收款判断分开展示。</p></div><button data-df9="detail" data-node="finance">${df9Role('finance')}<span>查看 FSC 环节 ↗</span></button></div><div class="df9-threshold-note"><b>备货触发规则</b><span>累计收款达到 20% 即生成备货待办；不必等收款待办手动结束。未达到阈值时结束收款，也不会生成备货待办。</span></div>`:''}<footer class="df9-handoff"><span>${index===3?'✓':'↓'}</span>${stage.handoff}</footer></section>`;}
 function df9Content(){const selected=DF9.stage==='all'?DF9_STAGES.map((s,i)=>[s,i]):[[DF9_STAGES[Number(DF9.stage)],Number(DF9.stage)]];return selected.map(([s,i])=>df9StageHtml(s,i)).join('');}
 function df9Page(){DF9.detail=null;return `<div class="df9-page${DF9.presenting?' df9-presenting':''}" data-flow-stage="${DF9.stage}"><header class="df9-heading"><div><div class="df9-eyebrow">敬城 CRM <span>/</span> 流程宣讲</div><h1>待办驱动成单全流程</h1><p>从创建客户到订单备货，按阶段查看处理人、操作和交接结果。</p></div><div class="df9-tools"><button class="df9-button" data-df9="print">打印流程</button><button class="df9-button df9-button-primary" data-df9="present" aria-pressed="${DF9.presenting}">${DF9.presenting?'退出演示':'演示模式'}</button></div></header><nav class="df9-tabs" aria-label="选择宣讲阶段"><div class="df9-tab-list"><button data-df9="stage" data-stage="all" class="${DF9.stage==='all'?'active':''}" aria-pressed="${DF9.stage==='all'}">全流程</button>${DF9_STAGES.map((s,i)=>`<button data-df9="stage" data-stage="${i}" class="${DF9.stage===String(i)?'active':''}" aria-pressed="${DF9.stage===String(i)}"><small>${s.num}</small>${s.title}</button>`).join('')}</div><span>实线主流程 · 红色拒绝分支 · ↶ 可重复环节</span></nav><div class="df9-content">${df9Content()}</div><footer class="df9-page-foot"><b>敬城 CRM · 业务流程说明</b><span>FSC、SCRM 为外部协作环节；当前页面用于流程宣讲。备货阈值沿用现有原型的累计收款 20% 规则。</span></footer></div>`;}
 function df9SetStage(value,root){DF9.stage=value;root.dataset.flowStage=value;root.querySelectorAll('[data-df9="stage"]').forEach(b=>{const active=b.dataset.stage===value;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});root.querySelector('.df9-content').innerHTML=df9Content();}
@@ -63285,11 +63288,13 @@ const V21_REPORTS={
 };
 const V21={auth:'',view:'team',stay:'all'};
 function v21Reports(owner){const seen=new Set([owner]),out=[];function visit(name){for(const report of V21_REPORTS[name]||[]){if(seen.has(report))continue;seen.add(report);out.push(report);visit(report);}}visit(owner);return out;}
-function v21Manager(){return v21Reports(v17Owner()).length>0;}
-function v21AllowedOwners(){const owner=v17Owner();return [owner,...v21Reports(owner)];}
+function v21SuperAdmin(){return V3.user==='Andy Ye'&&V3.demoSuperAdmin!==false;}
+function v21CanOperate(t){return !!t&&(v21SuperAdmin()||t.owner===v17Owner());}
+function v21Manager(){return v21SuperAdmin()||v21Reports(v17Owner()).length>0;}
+function v21AllowedOwners(){const owner=v17Owner();return v21SuperAdmin()?[...new Set([owner,...TODOS.map(t=>t.owner),...CUSTOMERS.map(c=>c[4]),...PROJECTS.map(p=>p[9]),...Object.keys(SM_DEPT),'总经办审批岗'].filter(Boolean))]:[owner,...v21Reports(owner)];}
 function v21View(){const owner=v17Owner(),allowed=v21AllowedOwners();if(V21.auth!==owner){V21.auth=owner;V21.view=allowed.length>1?'team':owner;V21.stay='all';V18.context=null;}if(V21.view==='team'&&allowed.length===1||V21.view!=='team'&&!allowed.includes(V21.view))V21.view=owner;return V21.view;}
 function v21Owners(){return v21View()==='team'?v21AllowedOwners():[V21.view];}
-function v21ScopeName(){return v21View()==='team'?'我和下属':V21.view===v17Owner()?'我的工作':v16Name(V21.view)+'的工作';}
+function v21ScopeName(){return v21View()==='team'?(v21SuperAdmin()?'全部人员':'我和下属'):V21.view===v17Owner()?'我的工作':v16Name(V21.view)+'的工作';}
 function v21Rows(){const owners=new Set(v21Owners());return visibleTodos().filter(t=>owners.has(t.owner));}
 function v21Arrival(t){return t.v21ArrivedAt||t.time;}
 todoStayHours=function(t){const start=parseTodoTime(v21Arrival(t));if(!start)return null;const end=t.status==='待处理'?Date.now():parseTodoTime(t.approveTime);return end?Math.max(0,Math.floor((end-start)/3600000)):null;};
@@ -63317,17 +63322,17 @@ function v21Data(){
 }
 v19Data=v21Data;v17Scope=v21Data;v17ScopeName=v21ScopeName;
 v18PendingDrafts=function(d){return d?.drafts||v21Data().drafts;};
-function v21Selector(){const owner=v17Owner(),reports=v21Reports(owner),view=v21View();return reports.length?`<label class="v21-view-label">查看范围<select data-v21-view aria-label="查看本人或下属的工作"><option value="team" ${view==='team'?'selected':''}>我和下属</option><option value="${esc(owner)}" ${view===owner?'selected':''}>我的工作台</option><optgroup label="下属工作台">${reports.map(n=>`<option value="${esc(n)}" ${view===n?'selected':''}>${esc(v16Name(n))}${(V21_REPORTS[owner]||[]).includes(n)?'':' · 间接下属'}</option>`).join('')}</optgroup></select></label>`:`<span class="v21-personal-scope">本人待办与相关业务</span>`;}
+function v21Selector(){const owner=v17Owner(),reports=v21SuperAdmin()?v21AllowedOwners().filter(n=>n!==owner):v21Reports(owner),view=v21View();return reports.length?`<label class="v21-view-label">查看范围<select data-v21-view aria-label="查看本人或下属的工作"><option value="team" ${view==='team'?'selected':''}>${v21SuperAdmin()?'全部人员':'我和下属'}</option><option value="${esc(owner)}" ${view===owner?'selected':''}>我的工作台</option><optgroup label="${v21SuperAdmin()?'全部人员':'下属工作台'}">${reports.map(n=>`<option value="${esc(n)}" ${view===n?'selected':''}>${esc(v16Name(n))}${v21SuperAdmin()||(V21_REPORTS[owner]||[]).includes(n)?'':' · 间接下属'}</option>`).join('')}</optgroup></select></label>`:`<span class="v21-personal-scope">本人待办与相关业务</span>`;}
 function v21Switch(value){if(value!=='team'&&!v21AllowedOwners().includes(value)||value==='team'&&!v21Manager())return;V21.view=value;V21.stay='all';V18.context=null;todoStatus='待处理';todoFilter='全部';todoQuick='';todoSearch='';WK.sort='oldest';v3CloseDialog();document.getElementById('mask')?.classList.remove('on');markPagesDirty();openPage(pageKind(page)==='todos'?'todos':'home');}
 searchedTodos=function(){return v21Rows().filter(t=>!V18.context||V18.context.ids.includes(t.id)).filter(t=>todoMatchesSearch(t,(todoSearch||'').trim())).filter(t=>todoQuick!=='today'||String(v21Arrival(t)||'').startsWith(todoDay())).filter(t=>V21.stay==='all'||t.status==='待处理'&&(todoStayHours(t)??-1)>=Number(V21.stay)*24);};
 const v21BaseCanProcess=todoCanProcess;
-todoCanProcess=function(t){return t.owner===v17Owner()&&v21BaseCanProcess(t);};
+todoCanProcess=function(t){return v21CanOperate(t)&&v21BaseCanProcess(t);};
 const v21BaseActs=todoActs;
-todoActs=function(t){const acts=v21BaseActs(t).map(a=>a.act==='viewDealFlow'?{...a,t:'查看流程图'}:a);return t.owner===v17Owner()?acts:acts.filter(a=>/^(查看|详情|报价总览|项目报价总览|流程轨迹)/.test(a.t)||a.act==='viewDealFlow');};
+todoActs=function(t){const acts=v21BaseActs(t).map(a=>a.act==='viewDealFlow'?{...a,t:'查看流程图'}:a);return v21CanOperate(t)?acts:acts.filter(a=>/^(查看|详情|报价总览|项目报价总览|流程轨迹)/.test(a.t)||a.act==='viewDealFlow');};
 const v21BaseHandle=handleAct;
-handleAct=function(button){const a=button?.dataset?.act,id=button?.dataset?.id||(a==='todoConfirm'?todoPending?.id:a==='saveFollow'?followTodoId:''),t=id&&TODOS.find(t=>t.id===id);if(t&&/^(todoAccept|todoReject|todoEnd|todoPass|todoDeny|todoFollow|todoCreateFee|todoSubmit|todoConfirm|saveFollow|plannedTodoDo|plannedTodoSubmit|createDraftQuote|v3EditTodo)$/.test(a)&&t.owner!==v17Owner())return toast('该待办由 '+t.owner+' 办理，你可以查看流程进度。');return v21BaseHandle(button);};
+handleAct=function(button){const a=button?.dataset?.act,id=button?.dataset?.id||(a==='todoConfirm'?todoPending?.id:a==='saveFollow'?followTodoId:''),t=id&&TODOS.find(t=>t.id===id);if(t&&/^(todoAccept|todoReject|todoEnd|todoPass|todoDeny|todoFollow|todoCreateFee|todoSubmit|todoConfirm|saveFollow|plannedTodoDo|plannedTodoSubmit|createDraftQuote|v3EditTodo)$/.test(a)&&!v21CanOperate(t))return toast('该待办由 '+t.owner+' 办理，你可以查看流程进度。');return v21BaseHandle(button);};
 const v21BaseDrawer=openDrawer;
-openDrawer=function(type){const result=v21BaseDrawer(type);if(type==='archive'){const t=TODOS.find(t=>t.id===archiveTodoId);if(t&&t.owner!==v17Owner())document.querySelectorAll('#drawer [data-act="todoAccept"],#drawer [data-act="todoReject"]').forEach(b=>b.remove());}return result;};
+openDrawer=function(type){const result=v21BaseDrawer(type);if(type==='archive'){const t=TODOS.find(t=>t.id===archiveTodoId);if(t&&!v21CanOperate(t))document.querySelectorAll('#drawer [data-act="todoAccept"],#drawer [data-act="todoReject"]').forEach(b=>b.remove());}return result;};
 function v21FlowAllowed(t){const allowed=new Set(v21AllowedOwners());return !!t&&(allowed.has(t.owner)||allowed.has(t.initiator)||chainTodosOf(t).some(x=>allowed.has(x.owner)||allowed.has(x.initiator)));}
 const v21BaseFlow=openDealFlow;
 openDealFlow=function(t,key){if(!v21FlowAllowed(t))return toast('当前账号没有该流程的查看范围');v3CloseDialog();const result=v21BaseFlow(t,key);const body=document.getElementById('mBody');body.insertAdjacentHTML('afterbegin','<div class="v21-flow-note">流程进度 · 查看各环节处理人、状态与停留时间；待办由对应人员办理。</div>');return result;};
@@ -63349,7 +63354,7 @@ pageTodos=function(){const box=document.createElement('div');box.innerHTML=v21Ba
  box.querySelector('.wk-head')?.insertAdjacentHTML('afterend',`<div class="v21-center-scope">${v21Selector()}<span>${v21View()==='team'?'本人及下属的待办':v21View()===v17Owner()?'仅本人待办':'正在查看 '+esc(v16Name(V21.view))+' · 仅查看'} · 办理由实际待办人完成</span><button class="v21-link" data-v21="flows">流转进度 →</button></div>`);
  box.querySelector('.wk-task-toolbar')?.insertAdjacentHTML('beforeend',`<select aria-label="按停留时间筛选" data-v21-stay>${[['all','全部停留时间'],['3','停留 ≥ 3 天'],['7','停留 ≥ 7 天'],['14','停留 ≥ 14 天']].map(([v,l])=>`<option value="${v}" ${V21.stay===v?'selected':''}>${l}</option>`).join('')}</select>`);
  const panel=box.querySelector('.wk-panel'),taskRows=[...box.querySelectorAll('.wk-task-row')];
- for(const row of taskRows){const t=TODOS.find(t=>t.id===row.querySelector('code')?.textContent);if(!t)continue;row.dataset.v21Owner=t.owner;const meta=row.querySelectorAll('.wk-task-meta')[1]?.querySelector('span');if(meta)meta.textContent=(v21Arrival(t)||'时间未记录')+' 到达';if(t.owner!==v17Owner())row.querySelector('.wk-task-owner')?.insertAdjacentHTML('beforeend','<small class="v21-readonly">下属待办 · 仅查看</small>');const acts=row.querySelector('.wk-task-acts'),flow=acts?.querySelector('[data-act="viewDealFlow"]');if(flow){flow.className='wk-btn flat';acts.appendChild(flow);const more=acts.querySelector('.wk-more');if(more&&!more.querySelector('[data-act]'))more.remove();}}
+ for(const row of taskRows){const t=TODOS.find(t=>t.id===row.querySelector('code')?.textContent);if(!t)continue;row.dataset.v21Owner=t.owner;const meta=row.querySelectorAll('.wk-task-meta')[1]?.querySelector('span');if(meta)meta.textContent=(v21Arrival(t)||'时间未记录')+' 到达';if(!v21CanOperate(t))row.querySelector('.wk-task-owner')?.insertAdjacentHTML('beforeend','<small class="v21-readonly">下属待办 · 仅查看</small>');const acts=row.querySelector('.wk-task-acts'),flow=acts?.querySelector('[data-act="viewDealFlow"]');if(flow){flow.className='wk-btn flat';acts.appendChild(flow);const more=acts.querySelector('.wk-more');if(more&&!more.querySelector('[data-act]'))more.remove();}}
  if(WK.sort==='oldest'&&panel){const foot=panel.querySelector('.wk-task-foot');taskRows.sort((a,b)=>{const ta=TODOS.find(t=>t.id===a.querySelector('code')?.textContent),tb=TODOS.find(t=>t.id===b.querySelector('code')?.textContent);return (todoStayHours(tb)??-1)-(todoStayHours(ta)??-1);}).forEach(row=>panel.insertBefore(row,foot));}
  const context=box.querySelector('.v18-center-context span');if(context)context.textContent=v21ScopeName()+' · 已定位 '+rows.length+' 项待办';
  return box.innerHTML;
@@ -63365,9 +63370,9 @@ v20Attention=function(d=v21Data()){return v21BaseAttention(d).map(x=>{if(x.key==
 v20AttentionRows=function(rows,limit=3){return rows.slice(0,limit).map(x=>`<article class="v20-attention-row" data-attention-key="${x.key}"><span class="v20-dot ${x.key==='risk'?'amber':''}"></span><div><b>${esc(x.title)}</b><p>${esc(x.next)}</p>${x.longest?`<small class="v21-stay-note">最长停留 ${esc(v21Stay(x.longest))} · ${esc(v16Name(x.longest.owner))}</small>`:''}</div>${v20Button('attention',x.kind==='customers'?'看客户':'查看待办',`data-key="${x.key}"`)}</article>`).join('')||'<div class="v20-empty"><b>暂无其他协作提醒</b><p>已流转的业务可在流程图查看后续进度。</p></div>';};
 v20Mine=function(d){const longest=v21Longest(d.pending),long=d.pending.filter(t=>(todoStayHours(t)??-1)>=168),self=v21View()===v17Owner(),title=v21View()==='team'?'团队待办':self?'我的待办':v16Name(V21.view)+'的待办';return `<section class="v20-mine"><div class="v20-mine-title"><h2>${esc(title)}</h2><span>${self?'本人办理':'管理视角'}</span></div><div class="v20-mine-count"><strong>${d.pending.length}</strong><span>项待处理</span></div><div class="v21-stay-stats"><div><small>最长停留</small><b>${longest?esc(v21Stay(longest)):'—'}</b></div><button data-v21="long"><small>停留 ≥ 7 天</small><b>${long.length}<em>项 →</em></b></button></div><div class="v21-mine-actions"><button class="v16-btn primary" data-v21="tasks">${self?'进入待办中心':'查看待办'} →</button><button class="v21-link" data-v21="flows">流转进度 →</button></div><small>按本次到达时间计时；停留时长不代表逾期。</small></section>`;};
 const v21BaseHome=pageHome;
-pageHome=function(){const box=document.createElement('div');box.innerHTML=v21BaseHome();box.querySelector('.v20-home')?.classList.add('v21-home');const end=box.querySelector('.v20-heading-end');if(end)end.innerHTML=`<span class="v21-role">${v21Manager()?'主管':'员工'}</span>${v21Selector()}`;const p=box.querySelector('.v20-heading p');if(p)p.textContent=v21View()==='team'?'查看本人及下属的业务进展。':v21View()===v17Owner()?V3.user+'，查看你的业务进展。':'正在查看 '+v16Name(V21.view)+' 的工作台 · 登录身份仍为 '+V3.user;const footer=box.querySelector('.v20-footer>div');if(footer&&v21View()!==v17Owner())footer.innerHTML='<button data-v21="self">返回我的工作台 →</button>';return box.innerHTML;};RENDER.home=pageHome;
-function v21AccountLabel(){const el=document.querySelector('.v5-user-name');if(el)el.innerHTML=esc(V3.user)+`<small>${v21Manager()?'主管':'员工'}</small>`;}
-v3UserMenu=function(){v3Dialog('工作账号',`<div class="v3-rule-note"><strong>${esc(V3.user)}</strong> · ${v21Manager()?'主管':'员工'}<br>${v21Manager()?'可查看本人及 '+v21Reports(v17Owner()).length+' 位下属的待办；切换下属视角不会切换登录身份。':'待办中心仅显示待办人为本人的记录。'}<br>流转给他人的处理情况，在流程图中查看。</div>`,`<button class="wk-btn" data-v3="closeDialog">关闭</button><button class="wk-btn primary" data-v3="logout">退出登录</button>`);};
+pageHome=function(){const box=document.createElement('div');box.innerHTML=v21BaseHome();box.querySelector('.v20-home')?.classList.add('v21-home');const end=box.querySelector('.v20-heading-end');if(end)end.innerHTML=`<span class="v21-role">${v21SuperAdmin()?'演示超管':v21Manager()?'主管':'员工'}</span>${v21Selector()}`;const p=box.querySelector('.v20-heading p');if(p)p.textContent=v21View()==='team'?'查看本人及下属的业务进展。':v21View()===v17Owner()?V3.user+'，查看你的业务进展。':'正在查看 '+v16Name(V21.view)+' 的工作台 · 登录身份仍为 '+V3.user;const footer=box.querySelector('.v20-footer>div');if(footer&&v21View()!==v17Owner())footer.innerHTML='<button data-v21="self">返回我的工作台 →</button>';return box.innerHTML;};RENDER.home=pageHome;
+function v21AccountLabel(){const el=document.querySelector('.v5-user-name');if(el)el.innerHTML=esc(V3.user)+`<small>${v21SuperAdmin()?'演示超管':v21Manager()?'主管':'员工'}</small>`;}
+v3UserMenu=function(){v3Dialog('工作账号',`<div class="v3-rule-note"><strong>${esc(V3.user)}</strong> · ${v21SuperAdmin()?'演示超管':v21Manager()?'主管':'员工'}<br>${v21SuperAdmin()?'可查看并办理所有人员的待办。切换人员仅改变查看范围。':v21Manager()?'可查看本人及 '+v21Reports(v17Owner()).length+' 位下属的待办；切换下属视角不会切换登录身份。':'待办中心仅显示待办人为本人的记录。'}<br>流转给他人的处理情况，在流程图中查看。</div>`,`<button class="wk-btn" data-v3="closeDialog">关闭</button><button class="wk-btn primary" data-v3="logout">退出登录</button>`);};
 const v21BaseOpen=openPage;openPage=function(id,opt){const result=v21BaseOpen(id,opt);v21AccountLabel();return result;};
 document.addEventListener('change',e=>{if(e.target.matches('[data-v21-view]'))v21Switch(e.target.value);if(e.target.matches('[data-v21-stay]')){V21.stay=e.target.value;if(V21.stay!=='all'){todoStatus='待处理';todoQuick='';WK.sort='oldest';}openPage('todos');}});
 document.addEventListener('click',e=>{if(e.target.closest('[data-wk="resetTodo"],[data-act="todoSearchReset"],[data-v18="clear"]'))V21.stay='all';},true);
@@ -63405,7 +63410,7 @@ const V24={unit:'all',anchor:todoDay(),peopleExpanded:false,peopleSort:'stay'};
 const V24_UNITS={all:'全部',month:'月',quarter:'季度',year:'年'};
 const V24_STAGES=[
  {name:'客户与设计',types:['客户待办','设计待办','公海跟进','邀请函审核','设计单'],icon:'users'},
- {name:'立项与商机',types:['创建项目待办','项目待办','确认商机'],icon:'brief'},
+ {name:'立项与商机',types:['创建项目待办','项目待办','确认商机','跨区域商机审批待办','转介绍商机审批待办'],icon:'brief'},
  {name:'空间报价与确认',types:['草稿报价待办'],icon:'file'},
  {name:'订单、收款与备货',types:['订单待办','收款待办','备货待办'],icon:'grid'}
 ];
@@ -63527,7 +63532,7 @@ pageHome=function(){
 const v24BaseTodos=pageTodos;
 pageTodos=function(){
  const box=document.createElement('div');box.innerHTML=v24BaseTodos();const head=box.querySelector('.wk-head');box.querySelector('.wk-todo')?.classList.add('v24-todos','v27-todos');box.querySelector('.v21-center-scope')?.remove();
- if(head){head.classList.add('v27-heading');head.innerHTML=v27Heading('待办中心','让每一次交接，都有清晰的下一步。','tasks')+`<div class="v24-center-actions">${v24Scope()}${v21View()!=='team'&&v21View()!==v17Owner()?'<span class="v27-readonly">仅查看</span>':''}</div>`;}
+ if(head){head.classList.add('v27-heading');head.innerHTML=v27Heading('待办中心','让每一次交接，都有清晰的下一步。','tasks')+`<div class="v24-center-actions">${v24Scope()}${!v21SuperAdmin()&&v21View()!=='team'&&v21View()!==v17Owner()?'<span class="v27-readonly">仅查看</span>':''}</div>`;}
  box.querySelectorAll('.wk-kpi').forEach(k=>{const icon=k.querySelector('.kico');if(icon)icon.innerHTML=v27Icon(k.dataset.kpi);});
  box.querySelectorAll('.wk-task-nav [data-filter]').forEach(b=>{const icon=b.querySelector('svg');if(icon)icon.outerHTML=v27Icon(v27TaskIcon(b.dataset.filter));});
  box.querySelectorAll('.wk-task-row').forEach(row=>{const t=TODOS.find(t=>t.id===row.querySelector('code')?.textContent),mark=row.querySelector('.wk-task-mark');if(t&&mark)mark.innerHTML=v27Icon(v27TaskIcon(t.type));});
@@ -63730,7 +63735,7 @@ openPlannedTodoForm=function(item){const result=v36PlannedForm(item);if(item.typ
 document.addEventListener('change',e=>{if(e.target.name==='ptNeedsDesign')v36ToggleDesign();});
 const v36Handle=handleAct;
 handleAct=function(button){const a=button?.dataset?.act,id=button?.dataset?.id||(a==='todoConfirm'?todoPending?.id:''),item=TODOS.find(x=>x.id===id);
- if(item&&['plannedTodoSubmit','todoConfirm'].includes(a)&&item.owner!==v17Owner())return toast('该待办由 '+item.owner+' 办理，你可以查看流程进度。');
+ if(item&&['plannedTodoSubmit','todoConfirm'].includes(a)&&!v21CanOperate(item))return toast('该待办由 '+item.owner+' 办理，你可以查看流程进度。');
  if(a==='plannedTodoSubmit'&&item?.type==='客户待办'){
   if(todoGuard(item)||item.status!=='待处理'||!document.querySelector('#mask.on #ptNeed'))return;const choice=document.querySelector('[name="ptNeedsDesign"]:checked')?.value;if(!choice)return toast('请选择是否需要设计');
   const needsDesign=choice==='yes',owner=document.getElementById(needsDesign?'ptDesigner':'ptPm')?.value;if(!owner)return toast(needsDesign?'请选择设计师':'请选择项目经理');
@@ -63914,7 +63919,7 @@ handleAct=function(button){
  const a=button?.dataset?.act,item=TODOS.find(t=>t.id===button?.dataset?.id);
  if(a==='v45FlowRequest'&&item){V45_FLOW.customerTodoId=item.id;V45_FLOW.requestId=button.dataset.request;return openDealFlow(item);}
  if(a==='plannedTodoSubmit'&&item?.type==='设计待办'){
-  if(item.owner!==v17Owner())return toast('该待办由 '+item.owner+' 办理，你可以查看流程进度。');
+  if(!v21CanOperate(item))return toast('该待办由 '+item.owner+' 办理，你可以查看流程进度。');
   if(item.status!=='待处理'||todoGuard(item)||!document.querySelector('#mask.on #ptSpaceCatList'))return;
   const spaces=collectSpaceCats(),pm=document.getElementById('ptPm')?.value;if(!spaces.length||spaces.some(s=>!s.cats.length))return toast('请填写空间，并为每个空间选择品类');if(!pm)return toast('请选择项目经理');
   item.requestId=item.requestId||item.id;item.customerTodoId=item.customerTodoId||item.sourceTodoId;item.needInfo=v3Copy(customerNeedOf(item));
@@ -64817,6 +64822,181 @@ function q66SyncSidebar(){const root=document.getElementById('clientQuoteView'),
 const q66Sync=v29Sync;v29Sync=function(){q66Sync();q66SyncSidebar();};
 document.addEventListener('click',event=>{const button=event.target.closest?.('[data-q66-sidebar]');if(!button)return;q66SidebarCollapsed=!q66SidebarCollapsed;try{sessionStorage.setItem('george-client-sidebar-collapsed',String(q66SidebarCollapsed));}catch{}q66SyncSidebar();v54SyncStageReturn();});
 document.addEventListener('transitionend',event=>{if(event.target.matches?.('.v50-workspace')&&event.propertyName==='grid-template-columns')v54SyncStageReturn();});
+
+/* Shared project intake and explicit opportunity allocation approvals. */
+function v68CustomerMeta(t){
+ const c=CUSTOMERS.find(c=>c[1]===t.customer),d=c?customerRecordToWizard(c):{},country=d.country||c?.[9]||'国家未填写',contact=d.phone||d.wechat||d.email||c?.[10]||'联系方式未填写';
+ return `<span>${esc(country)}</span><span>${esc(contact)}</span>`;
+}
+const V68={projectTodo:'',allocation:null,busy:false};
+const V68_APPROVALS=['跨区域商机审批待办','转介绍商机审批待办'];
+const V68_OFFICE='总经办审批岗';
+// The prototype organisation has primary and concurrent regions per SM.
+const V68_REGIONS=['北美','中东','非洲','欧洲/俄罗斯/中亚','东南亚','大洋洲','美洲'];
+const V68_SMS=Object.entries(V4_DEMO_MANAGERS).flatMap(([cat,name])=>[
+ {name,cat,regions:['北美','美洲'],leader:cat+'组长'},
+ ...V68_REGIONS.filter(r=>!['北美','美洲'].includes(r)).map(region=>({name:region+' · '+cat+'SM',cat,regions:[region],leader:region+' · '+cat+'组长'}))
+]);
+for(const sm of V68_SMS)SM_DEPT[sm.name]=sm.cat;
+for(const type of V68_APPROVALS){if(!TODO_TYPES.includes(type))TODO_TYPES.push(type);V18_TODO_NAMES[type]=type;}
+V18_STAGE_TYPES[1].push(...V68_APPROVALS);
+function v68Region(p){const country=String(p?.[5]||'');if(/美国|加拿大|United States|Canada/.test(country))return '北美';if(/澳大利亚|新西兰|Australia|New Zealand/.test(country))return '大洋洲';return p?.[6]||regionOf(country);}
+function v68Candidates(project,cat,mode){const p=findProject(project),region=v68Region(p);return V68_SMS.filter(sm=>sm.cat===cat&&(mode==='normal'?sm.regions.includes(region):mode==='cross'?!sm.regions.includes(region):true));}
+function v68SourceDesign(item){const source=TODOS.find(t=>t.id===item?.sourceTodoId);return source?.type==='设计待办'&&source.status==='已处理'&&source.customer===item.customer?source:null;}
+function v68ProjectSeed(item){const source=v68SourceDesign(item);return source?v3Copy(source.handoff?.spaceCats||DESIGN_HANDOFF[source.id]?.spaceCats||[]):[];}
+function v68SpaceError(spaces){if(!spaces?.length||spaces.some(s=>!s.name?.trim()))return '请填写每个空间的名称';if(new Set(spaces.map(s=>s.name.trim().toLowerCase())).size!==spaces.length)return '空间名称不能重复';if(spaces.some(s=>!s.cats?.length))return '请为每个空间选择品类';return '';}
+function v68ReadSpaces(){return [...document.querySelectorAll('#ptSpaceCatList .space-cat-block')].map(b=>({name:b.querySelector('.pt-space-name')?.value.trim()||'',cats:[...b.querySelectorAll('input[type="checkbox"]:checked')].map(x=>x.value)}));}
+designerCatsForWizard=function(){return [];};
+syncDesignerCats=function(){};
+projectCatFieldHtml=function(){const spaces=wizardState.project.spaceCats;return `<div class="v68-spaces">${spaceCatPickerHtml(spaces?.length?spaces:[{name:'',cats:[]}])}</div>`;};
+const v68BaseProjectForm=projectFormHtml;
+projectFormHtml=function(standalone){const box=document.createElement('div');box.innerHTML=v68BaseProjectForm(standalone);const cat=box.querySelector('#projCatBox');if(cat?.previousElementSibling)cat.previousElementSibling.innerHTML='<b>*</b>空间与采购品类';const customer=box.querySelector('[name="customerPick"]');if(customer)customer.innerHTML=selectOpts([...new Set(CUSTOMERS.map(c=>c[1]))],wizardState.project.customerPick);return box.innerHTML;};
+const v68BaseSaveWizard=saveWizardStep;
+saveWizardStep=function(){v68BaseSaveWizard();if((wizardFlow==='project'||step==='project')&&document.querySelector('#wizForm #ptSpaceCatList')){wizardState.project.spaceCats=v68ReadSpaces();wizardState.project.purchaseCategory=flattenCats(wizardState.project.spaceCats);}};
+const v68BaseMissing=projectMissingList;
+projectMissingList=function(){const miss=v68BaseMissing();const error=v68SpaceError(wizardState.project.spaceCats);if(error)miss.push(error);const commission=Number(wizardState.project.commissionRate);if(!Number.isFinite(commission)||commission<0||commission>100)miss.push('佣金比例需为 0–100');return miss;};
+const v68BaseProjectRecord=projectRecordToWizard;
+projectRecordToWizard=function(p){const extra=PROJECT_EXTRA[p[0]]||{};return {...v68BaseProjectRecord(p),...v3Copy(extra.formData||{}),spaceCats:v3Copy(extra.handoff?.spaceCats||extra.formData?.spaceCats||[])};};
+const v68BaseOpenCreate=openCreateProject;
+openCreateProject=function(){V68.projectTodo='';return v68BaseOpenCreate();};
+const v68BasePlannedForm=openPlannedTodoForm;
+openPlannedTodoForm=function(item){
+ if(item.type!=='创建项目待办')return v68BasePlannedForm(item);
+ if(!v21CanOperate(item)||item.status!=='待处理'||todoGuard(item))return;
+ resetWizard();V68.projectTodo=item.id;wizardFlow='project';step='project';wizardState.nameManual=true;
+ const customer=CUSTOMERS.find(c=>c[1]===item.customer),source=v68SourceDesign(item),h=source?.handoff||{},saved=item.projectForm||{};
+ wizardState.customer=customer?customerRecordToWizard(customer):{customerName:item.customer};
+ wizardState.project={customerPick:item.customer,projectName:item.customer+'项目',projectLocation:customer?matchCountry(customer[9]):'',deliveryManager:item.owner,commissionRate:'0',spaceCats:v68ProjectSeed(item),...v3Copy(saved)};
+ wizardState.files=v3Copy(item.projectFiles||{});
+ $('#modalBox').classList.remove('sm','confirm');$('#modalBox').classList.add('wide');$('#mTitle').textContent='创建项目';
+ setWizBody(`${scoreBarHtml()}<div class="m-scroll">${source?`<div class="v68-source">来自设计待办 · ${esc(source.owner)}<span>空间与品类可调整</span></div>`:''}${projectFormHtml(true)}</div>`);
+ $('#mFoot').innerHTML=`<span class="m-hint" id="wizHint"></span><button class="btn default" data-act="closeModal">取消</button><button class="btn" data-act="confirmCreate" data-id="${esc(item.id)}">确认并保存</button>`;
+ ensureNamedOptions($('#wizForm'),wizardState.project);applyNamed($('#wizForm'),wizardState.project);const select=$('#wizForm [name="customerPick"]');select.disabled=true;
+ bindWizard();$('#mask').classList.add('on');
+};
+const v68BaseWriteProject=writeProjectExtra;
+writeProjectExtra=function(code,d,score){v68BaseWriteProject(code,d,score);const extra=PROJECT_EXTRA[code]||(PROJECT_EXTRA[code]={});extra.formData=v3Copy(d);if(d.spaceCats){extra.handoff={...(extra.handoff||{}),spaceCats:v3Copy(d.spaceCats),spaces:d.spaceCats.map(s=>s.name).join('、'),cats:flattenCats(d.spaceCats).join('、')};}extra.v68Managed=true;};
+const v68BaseProjectCats=projectSelectedCats;
+projectSelectedCats=function(code){const extra=PROJECT_EXTRA[code];return extra?.handoff?.spaceCats?.length?flattenCats(extra.handoff.spaceCats):v68BaseProjectCats(code);};
+function v68StoreProject(item,d,score){
+ const requestId=item?.requestId||item?.id||'',prior=item&&PROJECTS.find(p=>PROJECT_EXTRA[p[0]]?.sourceTodoId===item.id||requestId&&PROJECT_EXTRA[p[0]]?.requestId===requestId);if(prior)return prior[0];
+ let n=18012+PROJECTS.length,code;do{code='PJ'+String(n++).padStart(7,'0');}while(PROJECTS.some(p=>p[0]===code));
+ const customer=item?.customer||d.customerPick||wizardState.customer.customerName,c=CUSTOMERS.find(c=>c[1]===customer),pm=d.deliveryManager,country=d.projectLocation;
+ const row=[code,d.projectName,c?.[2]||'-','未签约','进行中',country,regionOf(country),customer,c?.[3]||'-',pm,pm,d.projectBiz||'-',d.budgetRange||'¥0','¥0','¥0','¥0',todoStamp()];row[6]=v68Region(row);PROJECTS.unshift(row);writeProjectExtra(code,d,score);
+ const h={...v3Copy(v68SourceDesign(item)?.handoff||{}),needsDesign:!!v68SourceDesign(item),spaceCats:v3Copy(d.spaceCats),spaces:d.spaceCats.map(s=>s.name).join('、'),cats:d.purchaseCategory.join('、'),pm};
+ Object.assign(PROJECT_EXTRA[code],{requestId,sourceTodoId:item?.id||'',customerTodoId:item?.customerTodoId||'',handoff:h,pm,level:score.level,score:score.total});
+ if(item){item.project=code;item.region=row[6];item.handoff=v3Copy(h);item.projectForm=v3Copy(d);item.projectFiles=v3Copy(wizardState.files||{});item.status='已处理';item.approver=v17Owner();item.approveTime=todoStamp();item.createdProject=row.slice();item.createdProjectExtra=v3Copy(PROJECT_EXTRA[code]);for(const t of TODOS)if(requestId&&t.requestId===requestId&&t.type!=='客户待办'){t.project=code;t.region=row[6];}}
+ ensureChainTodo('项目待办',t=>t.project===code,{title:'按区域与品类分配商机',customer,project:code,region:row[6],level:score.level,owner:pm,initiator:v17Owner(),requestId,sourceTodoId:item?.id||'',handoff:v3Copy(h)});
+ PROJECT_QUOTES[code]=d.spaceCats.map(s=>({space:s.name,floor:'1F',dept:s.cats.join(' / '),products:[],amount:0,status:'未报价',confirmed:false,confirmedCats:[],coverage:0,missing:s.cats.slice(),updatedAt:'',updatedBy:'',desc:'',diag:''}));
+ archiveProject=code;return code;
+}
+function v68SubmitProject(){
+ const item=V68.projectTodo?TODOS.find(t=>t.id===V68.projectTodo):null;
+ if(item&&(!v21CanOperate(item)||item.status!=='待处理'||todoGuard(item)))return;
+ if(!validateProject())return;const d=v3Copy(wizardState.project),score=calculateProjectScore();v68StoreProject(item,d,score);V68.projectTodo='';v3Save();clearWizBody();$('#mask').classList.remove('on');markPagesDirty();toast('项目已创建，已生成项目待办');openPage(item?'todos':detailTab(archiveProject));
+}
+const v68BaseSave=v3Save;
+v3Save=function(){const projects=PROJECTS.filter(p=>PROJECT_EXTRA[p[0]]?.v68Managed).map(p=>({row:p,extra:PROJECT_EXTRA[p[0]],files:PROJECT_FILES[p[0]],edits:archiveEdits[p[0]]}));const saved=wkWrite('crm-projects-v68',projects);return v68BaseSave()&&saved;};
+for(const saved of wkRead('crm-projects-v68',[])){if(!saved?.row?.[0])continue;const code=saved.row[0],index=PROJECTS.findIndex(p=>p[0]===code);if(index<0)PROJECTS.unshift(saved.row);else PROJECTS[index]=saved.row;PROJECT_EXTRA[code]=saved.extra||{};PROJECT_FILES[code]=saved.files||{};archiveEdits[code]=saved.edits||{};}
+const v68BaseBlocked=todoBlockedReason;
+todoBlockedReason=function(t){if(V68_APPROVALS.includes(t?.type))return findProject(t.project)?'':'关联项目不存在';if(t?.assignmentManaged&&t.type==='草稿报价待办')return OPPS.some(o=>o[0]===t.opp)?'':'商机尚未生成';if(t?.type==='项目待办'&&PROJECT_EXTRA[t.project]?.v68Managed&&!PROJECT_EXTRA[t.project].sourceTodoId)return '';return v68BaseBlocked(t);};
+function v68Modal(title,body,footer){clearWizBody();$('#mBody').oninput=null;$('#mBody').onchange=null;$('#modalBox').classList.remove('sm','confirm');$('#modalBox').classList.add('wide');$('#mTitle').textContent=title;$('#mBody').innerHTML=body;$('#mFoot').innerHTML=footer||'<button class="btn default" data-act="closeModal">关闭</button>';$('#mask').classList.add('on');}
+function v68Select(id,label,options,value='',required=true){return `<label class="v68-field"><span>${required?'<b>*</b>':''}${label}</span><select id="${id}" aria-label="${label}">${selectOpts(options,value)}</select></label>`;}
+function v68Allocation(project,mode='normal',cat=''){
+ const p=findProject(project);if(!p)return toast('未找到项目');const t=TODOS.find(t=>t.project===project&&t.type==='项目待办');if(t&&!v21CanOperate(t))return toast('请由项目待办人发起');if(t&&t.status!=='待处理')return toast('项目待办已结束');if(t&&todoGuard(t))return;
+ archiveProject=project;const cats=projectSelectedCats(project);V68.allocation={project,mode,cat:cats.includes(cat)?cat:cats[0]||'',sourceTodoId:t?.id||''};const state=V68.allocation;
+ const tabs=[['normal','区域内分配'],['cross','跨区域申请'],['referral','转介绍申请']];
+ const smOpts=v68Candidates(project,state.cat,mode).map(sm=>`<option value="${esc(sm.name)}">${esc(sm.name)} · ${esc(sm.regions.join(' / '))}</option>`).join('');
+ const sourceOpps=OPPS.filter(o=>o[4]===project&&o[3]===state.cat&&o[2]!=='已转介绍');
+ v68Modal('分配品类商机',`<div class="v68-allocation"><div class="v68-project-head"><strong>${esc(p[1])}</strong><span>${esc(v68Region(p))}</span></div><div class="v68-tabs" role="tablist">${tabs.map(([key,label])=>`<button role="tab" aria-selected="${mode===key}" class="${mode===key?'active':''}" data-act="v68AllocationMode" data-mode="${key}">${label}</button>`).join('')}</div><div class="v68-fields">
+ ${v68Select('v68Category','商机品类',cats,state.cat)}
+ <label class="v68-field"><span><b>*</b>${mode==='referral'?'被转介绍人（SM）':'方案经理（SM）'}</span><select id="v68SM" aria-label="${mode==='referral'?'被转介绍人（SM）':'方案经理（SM）'}"><option value="">请选择</option>${smOpts}</select>${!smOpts?'<small>暂无匹配的 SM，可通过跨区域申请选择其他区域人员。</small>':''}</label>
+ ${v68Select('v68Biz','商机商务经理',['王商务','李商务'],'',false)}
+ ${mode!=='normal'?`<label class="v68-field"><span>审批人</span><input value="总经办 · 审批岗" readonly></label><label class="v68-field full"><span><b>*</b>申请原因</span><textarea id="v68Reason" aria-label="申请原因" placeholder="说明本次${mode==='cross'?'跨区域分配':'转介绍'}原因"></textarea></label>`:''}
+ ${mode==='referral'?`<label class="v68-field full"><span>关联原商机</span><select id="v68SourceOpp" aria-label="关联原商机"><option value="">新增转介绍商机</option>${sourceOpps.map(o=>`<option value="${esc(o[0])}">${esc(o[1])} · ${esc(o[7])} · ${esc(o[0])}</option>`).join('')}</select></label>${v68Select('v68Referrer','转介绍人',[...new Set([...V68_SMS.filter(s=>s.cat===state.cat).map(s=>s.name),...sourceOpps.map(o=>o[7]),p[9]])])}<label class="v68-field"><span><b>*</b>被转介绍人组长</span><input id="v68Leader" aria-label="被转介绍人组长" placeholder="选择被转介绍人后带出，可调整"></label><div class="v68-evidence full">${[['referrer','转介绍人确认截图'],['recipient','被转介绍人确认截图'],['leader','被转介绍人组长同意截图']].map(([key,label])=>`<label class="v68-field"><span><b>*</b>${label}</span><input type="file" accept="image/*" data-v68-evidence="${key}" aria-label="${label}"></label>`).join('')}</div>`:''}
+ </div></div>`,`<button class="btn default" data-act="closeModal">取消</button><button class="btn" data-act="v68AllocationSubmit">${mode==='normal'?'发起确认商机待办':'提交总经办审批'}</button>`);
+}
+tryCreateOpp=function(project){return v68Allocation(project||archiveProject);};
+const v68BaseOpenModal=openModal;
+openModal=function(type){if(type==='createOpp')return v68Allocation(archiveProject);return v68BaseOpenModal(type);};
+function v68ValidateAllocation(data){
+ const p=findProject(data.project);if(!p)return '关联项目不存在';if(!['normal','cross','referral'].includes(data.mode))return '申请方式无效';
+ if(!projectSelectedCats(data.project).includes(data.cat))return '请选择项目已确认的品类';
+ if(!v68Candidates(data.project,data.cat,data.mode).some(s=>s.name===data.sm))return '请选择符合品类和区域条件的方案经理';
+ if(data.mode!=='normal'&&!data.reason?.trim())return '请填写申请原因';
+ if(data.mode==='referral'){
+  if(!data.referrer||!data.leader)return '请补齐转介绍人与被转介绍人组长';if(data.referrer===data.sm)return '转介绍人与被转介绍人不能相同';
+  if(['referrer','recipient','leader'].some(k=>!data.evidence?.[k]?.url?.startsWith('data:image/')))return '请上传双方及被转介绍人组长的同意截图';
+  if(data.sourceOpp){const source=OPPS.find(o=>o[0]===data.sourceOpp);if(!source||source[4]!==data.project||source[3]!==data.cat||source[7]!==data.referrer||source[2]==='已转介绍')return '原商机已变更，请重新选择';}
+ }
+ return '';
+}
+function v68SubmitAllocationData(data){
+ const error=v68ValidateAllocation(data);if(error)throw new Error(error);
+ if(OPPS.some(o=>o[4]===data.project&&o[3]===data.cat&&o[7]===data.sm&&o[2]!=='已转介绍'))throw new Error('该 SM 已有本项目本品类商机');
+ if(TODOS.some(t=>t.project===data.project&&t.status==='待处理'&&(t.type==='确认商机'&&t.owner===data.sm&&(t.cat||t.smDept)===data.cat||V68_APPROVALS.includes(t.type)&&t.allocation?.cat===data.cat&&(t.allocation.sm===data.sm||data.sourceOpp&&t.allocation.sourceOpp===data.sourceOpp))))throw new Error('该商机已有待处理申请，请先处理原待办');
+ const p=findProject(data.project),type=data.mode==='normal'?'确认商机':data.mode==='cross'?V68_APPROVALS[0]:V68_APPROVALS[1];
+ const todo=addChainTodo({type,title:data.mode==='normal'?p[1]+' · '+data.cat:'申请'+(data.mode==='cross'?'跨区域分配':'转介绍')+' · '+data.cat+' → '+data.sm,customer:p[7],project:p[0],region:v68Region(p),owner:data.mode==='normal'?data.sm:V68_OFFICE,initiator:v17Owner(),cat:data.cat,cats:data.cat,smDept:data.cat,sourceTodoId:data.sourceTodoId,requestId:PROJECT_EXTRA[p[0]]?.requestId||'',allocation:v3Copy(data),assignmentManaged:true});
+ return todo;
+}
+function v68ReadImage(file){return new Promise((resolve,reject)=>{if(!file||!file.type.startsWith('image/'))return reject(new Error('请上传图片格式的确认截图'));if(file.size>2*1024*1024)return reject(new Error('单张截图请控制在 2 MB 以内'));const reader=new FileReader();reader.onload=()=>resolve({name:file.name,type:file.type,size:file.size,url:reader.result});reader.onerror=()=>reject(new Error('截图读取失败，请重新选择'));reader.readAsDataURL(file);});}
+async function v68SubmitAllocation(){
+ if(V68.busy||!V68.allocation)return;const state={...V68.allocation},button=document.querySelector('[data-act="v68AllocationSubmit"]');V68.busy=true;if(button)button.disabled=true;
+ try{const parent=TODOS.find(t=>t.id===state.sourceTodoId);if(parent&&(!v21CanOperate(parent)||parent.status!=='待处理'))throw new Error('当前项目待办不可办理');
+  const data={...state,sm:$('#v68SM')?.value||'',biz:$('#v68Biz')?.value||'',reason:$('#v68Reason')?.value.trim()||'',referrer:$('#v68Referrer')?.value||'',leader:$('#v68Leader')?.value.trim()||'',sourceOpp:$('#v68SourceOpp')?.value||'',evidence:{}};
+  if(state.mode==='referral')for(const input of document.querySelectorAll('[data-v68-evidence]'))data.evidence[input.dataset.v68Evidence]=await v68ReadImage(input.files[0]);
+  v68SubmitAllocationData(data);v3Save();$('#mask').classList.remove('on');markPagesDirty();openPage('todos');toast(state.mode==='normal'?'已生成确认商机待办':'已提交总经办审批，通过后生成商机');
+ }catch(error){toast(error.message);}finally{V68.busy=false;if(button)button.disabled=false;}
+}
+function v68CreateOpportunity(t){
+ if(t.createdOppId&&OPPS.some(o=>o[0]===t.createdOppId))return t.createdOppId;
+ const data=t.allocation||{sm:t.owner,cat:t.cat||t.smDept,project:t.project},p=findProject(t.project);if(!p)throw new Error('关联项目不存在');
+ const duplicate=OPPS.find(o=>o[4]===t.project&&o[3]===data.cat&&o[7]===data.sm&&o[2]!=='已转介绍');if(duplicate)throw new Error('该 SM 已有本项目本品类商机');
+ let n=30410+OPPS.length,code;do{code='BU'+String(n++).padStart(7,'0');}while(OPPS.some(o=>o[0]===code));
+ const source=data.sourceOpp&&OPPS.find(o=>o[0]===data.sourceOpp);
+ OPPS.unshift([code,p[1]+'-'+data.cat,'进行中',data.cat,t.project,v68Region(p),p[7],data.sm,'-','-',p[9],data.biz||p[11]||'-','未录单','¥0','¥0','¥0','¥0','-',todoStamp(),'',{assignmentManaged:true,approvalTodo:t.id,sourceOpp:source?.[0]||'',referrer:data.referrer||'',mode:data.mode||'normal'}]);
+ if(source){source[2]='已转介绍';source[20]={...(source[20]||{}),assignmentManaged:true,transferredTo:code,approvalTodo:t.id};for(const prior of TODOS)if(prior.type==='草稿报价待办'&&prior.status==='待处理'&&prior.project===t.project&&prior.owner===data.referrer&&(prior.opp===source[0]||!prior.opp&&(prior.cat||prior.smDept)===data.cat)){prior.status='已处理';prior.approver=v17Owner();prior.approveTime=todoStamp();prior.transferredToOpp=code;prior.title='商机已转介绍给 '+data.sm;}}
+ t.createdOppId=code;
+ addChainTodo({type:'草稿报价待办',title:'请完成'+data.cat+'品类报价',project:t.project,customer:p[7],owner:data.sm,initiator:v17Owner(),region:v68Region(p),cat:data.cat,smDept:data.cat,opp:code,sourceTodoId:t.id,requestId:t.requestId||'',assignmentManaged:true});
+ return code;
+}
+function v68DecideApproval(id,approve,note=''){
+ const t=TODOS.find(t=>t.id===id);if(!t||!V68_APPROVALS.includes(t.type))throw new Error('审批待办不存在');if(!v21CanOperate(t))throw new Error('请由总经办审批人办理');if(t.status!=='待处理')throw new Error('该审批已处理，请勿重复操作');
+ if(!approve&&!note.trim())throw new Error('请填写驳回原因');
+ if(approve){const error=v68ValidateAllocation(t.allocation);if(error)throw new Error(error);v68CreateOpportunity(t);t.status='已处理';}else{t.status='已驳回';t.rejectReason=note.trim();}
+ t.approver=v17Owner();t.approveTime=todoStamp();t.approvalNote=note.trim();return t;
+}
+function v68Review(id){
+ const t=TODOS.find(t=>t.id===id);if(!t)return;const a=t.allocation||{},pending=t.status==='待处理'&&v21CanOperate(t),p=findProject(t.project);
+ v68Modal(t.type,`<div class="v68-review"><div class="v68-project-head"><strong>${esc(p?.[1]||t.project)}</strong><span>${esc(t.status)}</span></div><dl>${[['申请人',t.initiator],['项目区域',t.region],['商机品类',a.cat],['接收 SM',a.sm],['SM 区域',V68_SMS.find(s=>s.name===a.sm)?.regions.join(' / ')],['商机商务经理',a.biz||'—'],['申请原因',a.reason],...(a.mode==='referral'?[['转介绍人',a.referrer],['被转介绍人',a.sm],['被转介绍人组长',a.leader],['原商机',a.sourceOpp||'新增转介绍']]:[]),...(!pending?[['审批人',t.approver],['审批时间',t.approveTime],['审批意见',t.rejectReason||t.approvalNote||'通过'],['生成商机',t.createdOppId||'未生成']]:[])].map(([label,value])=>`<div><dt>${label}</dt><dd>${esc(value||'—')}</dd></div>`).join('')}</dl><div class="v68-proof-grid">${Object.entries(a.evidence||{}).map(([key,f])=>`<figure><img src="${esc(f.url)}" alt="${esc(f.name)}"><figcaption>${({referrer:'转介绍人确认',recipient:'被转介绍人确认',leader:'被转介绍人组长同意'})[key]}</figcaption></figure>`).join('')}</div>${pending?'<label class="v68-field"><span>审批意见</span><textarea id="v68ApprovalNote" aria-label="审批意见" placeholder="驳回时必填"></textarea></label>':''}</div>`,pending?`<button class="btn default" data-act="closeModal">取消</button><button class="btn default" data-act="v68ApprovalReject" data-id="${esc(id)}">驳回</button><button class="btn" data-act="v68ApprovalAccept" data-id="${esc(id)}">通过并生成商机</button>`:undefined);
+}
+const v68BaseActs=todoActs;
+const v68BaseSubject=todoSubject;
+todoSubject=function(t){return V68_APPROVALS.includes(t.type)?t.title:v68BaseSubject(t);};
+todoActs=function(t){if(V68_APPROVALS.includes(t.type))return [{t:t.status==='待处理'&&v21CanOperate(t)?'审批':'查看审批',act:'v68Review',extra:`data-id="${esc(t.id)}"`},{t:'查看流程图',act:'viewDealFlow',extra:`data-id="${esc(t.id)}"`}];const acts=v68BaseActs(t);if(t.type==='项目待办')for(const a of acts)if(a.act==='createOpp')a.t='分配品类商机';return acts;};
+const v68BaseHandle=handleAct;
+handleAct=function(button){
+ const a=button?.dataset?.act,id=button?.dataset?.id;
+ if(a==='confirmCreate'&&document.querySelector('#wizForm'))return v68SubmitProject();
+ if(a==='plannedTodoDo'&&TODOS.find(t=>t.id===id)?.type==='创建项目待办')return openPlannedTodoForm(TODOS.find(t=>t.id===id));
+ if(a==='v68AllocationMode')return v68Allocation(V68.allocation.project,button.dataset.mode,V68.allocation.cat);
+ if(a==='v68AllocationSubmit')return v68SubmitAllocation();
+ if(a==='v68Review')return v68Review(id);
+ if(a==='v68ApprovalAccept'||a==='v68ApprovalReject'){try{const result=v68DecideApproval(id,a==='v68ApprovalAccept',$('#v68ApprovalNote')?.value||'');v3Save();$('#mask').classList.remove('on');markPagesDirty();openPage('todos');toast(result.createdOppId?'审批通过，已生成商机和草稿报价待办':'申请已驳回，未生成商机');}catch(error){toast(error.message);}return;}
+ if(a==='todoConfirm'&&todoPending?.action==='accept'){
+  const t=TODOS.find(t=>t.id===todoPending.id);if(t?.assignmentManaged&&t.type==='确认商机'){if(!v21CanOperate(t)||t.status!=='待处理'||todoGuard(t))return;try{v68CreateOpportunity(t);t.status='已处理';t.approver=v17Owner();t.approveTime=todoStamp();todoPending=null;v3Save();$('#mask').classList.remove('on');$('#drawer').classList.remove('on');markPagesDirty();openPage('todos');toast('商机已创建，已生成草稿报价待办');}catch(error){toast(error.message);}return;}
+ }
+ if(a==='todoConfirm'&&todoPending?.action==='end'){const t=TODOS.find(t=>t.id===todoPending.id);if(t?.type==='项目待办'&&TODOS.some(x=>x.project===t.project&&V68_APPROVALS.includes(x.type))){if(!v21CanOperate(t))return;if(TODOS.some(x=>x.project===t.project&&V68_APPROVALS.includes(x.type)&&x.status==='待处理'))return toast('还有商机申请待审批，请处理后再结束');if(OPPS.some(o=>o[4]===t.project)){t.status='已处理';t.approver=v17Owner();t.approveTime=todoStamp();todoPending=null;v3Save();$('#mask').classList.remove('on');return openPage('todos');}}}
+ const result=v68BaseHandle(button);if(['addDesignSpace','removeDesignSpace'].includes(a)&&document.querySelector('#wizForm #ptSpaceCatList')){saveWizardStep();updateWizardHint();}if(a==='saveProjectEdit')v3Save();return result;
+};
+document.addEventListener('change',event=>{
+ const el=event.target;if(el.id==='v68Category')return v68Allocation(V68.allocation.project,V68.allocation.mode,el.value);
+ if(el.id==='v68SM'&&$('#v68Leader'))$('#v68Leader').value=V68_SMS.find(s=>s.name===el.value)?.leader||'';
+ if(el.id==='v68SourceOpp'){const source=OPPS.find(o=>o[0]===el.value),ref=$('#v68Referrer');if(source){ref.value=source[7];ref.disabled=true;}else ref.disabled=false;}
+});
+const v68BaseFlow=openDealFlow;
+openDealFlow=function(item,key){const result=v68BaseFlow(item,key);const related=TODOS.filter(t=>t.project===item.project&&V68_APPROVALS.includes(t.type));if(related.length)document.querySelector('#mBody')?.insertAdjacentHTML('beforeend',`<section class="v68-flow-approvals"><h3>商机审批</h3>${related.map(t=>`<article><b>${esc(t.type)} · ${esc(t.cat)}</b><span>${esc(t.owner)} · ${esc(t.status)} · ${esc(todoStayLabel(t))}</span><small>${t.createdOppId?'商机 '+esc(t.createdOppId):esc(t.rejectReason||'等待总经办审批')}</small><button class="btn default" data-act="v68Review" data-id="${esc(t.id)}">查看审批</button></article>`).join('')}</section>`);return result;};
+markPagesDirty();v21AccountLabel();v5SyncNav();if(!V3.client&&['home','todos'].includes(pageKind(page)))openPage(pageKind(page));
 
 v58OpenSharedQuote();
 window.crmBootReady();
