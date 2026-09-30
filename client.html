@@ -63291,7 +63291,7 @@ function v21Reports(owner){const seen=new Set([owner]),out=[];function visit(nam
 function v21SuperAdmin(){return V3.user==='Andy Ye'&&V3.demoSuperAdmin!==false;}
 function v21CanOperate(t){return !!t&&(v21SuperAdmin()||t.owner===v17Owner());}
 function v21Manager(){return v21SuperAdmin()||v21Reports(v17Owner()).length>0;}
-function v21AllowedOwners(){const owner=v17Owner();return v21SuperAdmin()?[...new Set([owner,...TODOS.map(t=>t.owner),...CUSTOMERS.map(c=>c[4]),...PROJECTS.map(p=>p[9]),...Object.keys(SM_DEPT),'总经办审批岗'].filter(Boolean))]:[owner,...v21Reports(owner)];}
+function v21AllowedOwners(){const owner=v17Owner();return v21SuperAdmin()?[...new Set([owner,...TODOS.map(t=>t.owner),...CUSTOMERS.map(c=>c[4]),...PROJECTS.map(p=>p[9]),...OPPS.map(o=>o[7]),'总经办审批岗'].filter(Boolean))]:[owner,...v21Reports(owner)];}
 function v21View(){const owner=v17Owner(),allowed=v21AllowedOwners();if(V21.auth!==owner){V21.auth=owner;V21.view=allowed.length>1?'team':owner;V21.stay='all';V18.context=null;}if(V21.view==='team'&&allowed.length===1||V21.view!=='team'&&!allowed.includes(V21.view))V21.view=owner;return V21.view;}
 function v21Owners(){return v21View()==='team'?v21AllowedOwners():[V21.view];}
 function v21ScopeName(){return v21View()==='team'?(v21SuperAdmin()?'全部人员':'我和下属'):V21.view===v17Owner()?'我的工作':v16Name(V21.view)+'的工作';}
@@ -64829,6 +64829,8 @@ function v68CustomerMeta(t){
  return `<span>${esc(country)}</span><span>${esc(contact)}</span>`;
 }
 const V68={projectTodo:'',allocation:null,busy:false};
+const v68BaseResetWizard=resetWizard;
+resetWizard=function(){V68.projectTodo='';return v68BaseResetWizard();};
 const V68_APPROVALS=['跨区域商机审批待办','转介绍商机审批待办'];
 const V68_OFFICE='总经办审批岗';
 // The prototype organisation has primary and concurrent regions per SM.
@@ -64939,13 +64941,13 @@ function v68SubmitAllocationData(data){
  const todo=addChainTodo({type,title:data.mode==='normal'?p[1]+' · '+data.cat:'申请'+(data.mode==='cross'?'跨区域分配':'转介绍')+' · '+data.cat+' → '+data.sm,customer:p[7],project:p[0],region:v68Region(p),owner:data.mode==='normal'?data.sm:V68_OFFICE,initiator:v17Owner(),cat:data.cat,cats:data.cat,smDept:data.cat,sourceTodoId:data.sourceTodoId,requestId:PROJECT_EXTRA[p[0]]?.requestId||'',allocation:v3Copy(data),assignmentManaged:true});
  return todo;
 }
-function v68ReadImage(file){return new Promise((resolve,reject)=>{if(!file||!file.type.startsWith('image/'))return reject(new Error('请上传图片格式的确认截图'));if(file.size>2*1024*1024)return reject(new Error('单张截图请控制在 2 MB 以内'));const reader=new FileReader();reader.onload=()=>resolve({name:file.name,type:file.type,size:file.size,url:reader.result});reader.onerror=()=>reject(new Error('截图读取失败，请重新选择'));reader.readAsDataURL(file);});}
+function v68ReadImage(file){return new Promise((resolve,reject)=>{if(!file||!file.type.startsWith('image/'))return reject(new Error('请上传图片格式的确认截图'));if(file.size>10*1024*1024)return reject(new Error('单张截图请控制在 10 MB 以内'));const reader=new FileReader();reader.onload=()=>{const picture=new Image();picture.onload=()=>{const scale=Math.min(1,1400/picture.naturalWidth,1800/picture.naturalHeight),canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(picture.naturalWidth*scale));canvas.height=Math.max(1,Math.round(picture.naturalHeight*scale));const painter=canvas.getContext('2d');painter.fillStyle='#fff';painter.fillRect(0,0,canvas.width,canvas.height);painter.drawImage(picture,0,0,canvas.width,canvas.height);let quality=.84,url=canvas.toDataURL('image/jpeg',quality);while(url.length>450000&&quality>.4){quality-=.1;url=canvas.toDataURL('image/jpeg',quality);}if(url.length>750000)return reject(new Error('截图过大，请裁剪到同意信息后上传'));resolve({name:file.name,type:'image/jpeg',size:file.size,url});};picture.onerror=()=>reject(new Error('无法识别这张图片，请选择 PNG 或 JPG 截图'));picture.src=reader.result;};reader.onerror=()=>reject(new Error('截图读取失败，请重新选择'));reader.readAsDataURL(file);});}
 async function v68SubmitAllocation(){
  if(V68.busy||!V68.allocation)return;const state={...V68.allocation},button=document.querySelector('[data-act="v68AllocationSubmit"]');V68.busy=true;if(button)button.disabled=true;
  try{const parent=TODOS.find(t=>t.id===state.sourceTodoId);if(parent&&(!v21CanOperate(parent)||parent.status!=='待处理'))throw new Error('当前项目待办不可办理');
   const data={...state,sm:$('#v68SM')?.value||'',biz:$('#v68Biz')?.value||'',reason:$('#v68Reason')?.value.trim()||'',referrer:$('#v68Referrer')?.value||'',leader:$('#v68Leader')?.value.trim()||'',sourceOpp:$('#v68SourceOpp')?.value||'',evidence:{}};
   if(state.mode==='referral')for(const input of document.querySelectorAll('[data-v68-evidence]'))data.evidence[input.dataset.v68Evidence]=await v68ReadImage(input.files[0]);
-  v68SubmitAllocationData(data);v3Save();$('#mask').classList.remove('on');markPagesDirty();openPage('todos');toast(state.mode==='normal'?'已生成确认商机待办':'已提交总经办审批，通过后生成商机');
+  const created=v68SubmitAllocationData(data);if(!v3Save()){TODOS.splice(TODOS.indexOf(created),1);throw new Error('浏览器存储空间不足，申请未保存，请缩小截图后重试');}$('#mask').classList.remove('on');markPagesDirty();openPage('todos');toast(state.mode==='normal'?'已生成确认商机待办':'已提交总经办审批，通过后生成商机');
  }catch(error){toast(error.message);}finally{V68.busy=false;if(button)button.disabled=false;}
 }
 function v68CreateOpportunity(t){
