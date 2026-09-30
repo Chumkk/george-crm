@@ -787,7 +787,13 @@ html[data-theme="blue"] .score-bar{background:#f4f7fa;border-color:#dce5ee}
 .client-product{display:grid!important;grid-template-columns:44px minmax(0,1fr) auto auto;align-items:center;gap:10px}
 .client-product img{width:44px;height:44px;object-fit:cover;border-radius:8px;background:#eef2f5}
 </style>
-<style id="sky-design-system">/* CRM 3.0 · Sky / 2026.09 · visual presentation layer */
+<script id="crm-todo-policy">/* Temporarily disabled workflow steps. Records stay in TODOS and persisted storage. */
+const CRM_PAUSED_TODO_TYPES = new Set(['收款待办', '备货待办']);
+function crmTodoEnabled(value) {
+  return !CRM_PAUSED_TODO_TYPES.has(typeof value === 'string' ? value : value?.type);
+}
+const CRM_ORDER_ONLY_FLOW = !crmTodoEnabled('收款待办') && !crmTodoEnabled('备货待办');
+</script><style id="sky-design-system">/* CRM 3.0 · Sky / 2026.09 · visual presentation layer */
 :root,html[data-theme="blue"]{--primary:#2797f5;--primary-2:#0877dc;--primary-ink:#116bbb;--primary-soft:#e9f5ff;--accent-bg:#f0f8ff;--accent-head:#f4faff;--accent-line:#cde6fb;--thead:#f5f9fe;--line:#e1eaf3;--ink:#172d45;--muted:#718398;--canvas:#f3f7fc;--top:68px;--rail:86px;--side:166px;--shadow:0 14px 44px #2346650d;--shadow-sm:0 4px 20px #23466506}
 html,body{font-family:Inter,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
 button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}
@@ -2991,7 +2997,7 @@ function autoCreateOpp(todo, extra){
   ]);
   return name;
 }
-const TODO_TYPES=['全部','客户待办','设计待办','创建项目待办','项目待办','确认商机','草稿报价待办','订单待办','收款待办','备货待办','设计单','邀请函审核','公海跟进'];
+const TODO_TYPES=['全部','客户待办','设计待办','创建项目待办','项目待办','确认商机','草稿报价待办','订单待办','收款待办','备货待办','设计单','邀请函审核','公海跟进'].filter(crmTodoEnabled);
 const DESIGN_HANDOFF={
   TD103:{
     spaces:'客厅、主卧、儿童房、主卫',
@@ -3135,10 +3141,10 @@ function todoStayOf(t){return formatStay(todoStayHours(t))}
 function todoStayCell(t){
   return `<span class="todo-stay${t.status==='待处理'?'':' done'}">${todoStayOf(t)}</span>`;
 }
-const CHAIN_STEPS=['客户待办','设计待办','创建项目待办','项目待办','确认商机','草稿报价待办','订单待办','收款待办','备货待办'];
+const CHAIN_STEPS=['客户待办','设计待办','创建项目待办','项目待办','确认商机','草稿报价待办','订单待办','收款待办','备货待办'].filter(crmTodoEnabled);
 const CHAIN_PREFIX=['客户待办','设计待办','创建项目待办','项目待办'];
-const CHAIN_BRANCH=['确认商机','草稿报价待办','订单待办','收款待办','备货待办'];
-const HOLD_STEPS=['客户待办','项目待办','收款待办'];
+const CHAIN_BRANCH=['确认商机','草稿报价待办','订单待办','收款待办','备货待办'].filter(crmTodoEnabled);
+const HOLD_STEPS=['客户待办','项目待办','收款待办'].filter(crmTodoEnabled);
 function todoIsHold(type){return HOLD_STEPS.includes(type)}
 function todoReceiptsOf(item){return (item&&item.receipts)||[]}
 function addTodoReceipt(item, rec){
@@ -3164,6 +3170,7 @@ function stockTodoOfPay(item){
   return TODOS.find(x=>x.type==='备货待办'&&x.project===item.project&&(x.order||salesOrderNo(x))===order);
 }
 function ensureStockTodoFromPay(item){
+  if(!crmTodoEnabled('备货待办')) return null;
   if(!item||!payReachedStock(item)) return null;
   const exist=stockTodoOfPay(item);
   if(exist) return exist;
@@ -3293,6 +3300,7 @@ function todoBlockedReason(item){
   return '';
 }
 function todoGuard(item){
+  if(!crmTodoEnabled(item)){toast('该待办类型暂未开放');return true;}
   const reason=todoBlockedReason(item);
   if(reason){ toast(reason); return true; }
   return false;
@@ -3409,7 +3417,7 @@ function openDealFlow(item, branchKey){
     return CHAIN_BRANCH.map(type=>flowStepHtml(type, (items||[]).find(t=>t.type===type)||null, currentIds, ++bn)).join('');
   };
   const branchHtml=shown.length
-    ? (canSwitch?`<div class="deal-flow-note">前缀流程相同。切换商机，查看该 SM 的确认 / 草稿 / 订单 / 收款 / 备货。</div>`:`<div class="deal-flow-note">仅显示与当前待办相关的商机流程。</div>`)+
+    ? (canSwitch?`<div class="deal-flow-note">前缀流程相同。切换商机，查看该 SM 的确认 / 草稿 / 订单。</div>`:`<div class="deal-flow-note">仅显示与当前待办相关的商机流程。</div>`)+
       shown.map(g=>`<div class="deal-branch"><div class="deal-branch-title">${esc(g.cat||'未分品类')} · ${esc(g.sm||'未指定SM')}</div><div class="deal-flow">${renderBranchSteps(g.items)}</div></div>`).join('')
     : `<div class="deal-flow-note">尚未创建商机。确认商机及之后仍按标准流程展示，未到达前没有处理人。</div><div class="deal-flow">${renderBranchSteps([])}</div>`;
   $('#modalBox').classList.remove('sm','confirm'); $('#modalBox').classList.add('wide');
@@ -3496,7 +3504,7 @@ function todoSubject(t){
   return t.customer||'-';
 }
 function visibleTodos(){
-  return TODOS.filter(t=>t.type!=='公海跟进'||isSeaRiskCustomer(t.customer));
+  return TODOS.filter(t=>crmTodoEnabled(t)&&(t.type!=='公海跟进'||isSeaRiskCustomer(t.customer)));
 }
 function todoMatchesSearch(t, q){
   if(!q) return true;
@@ -3508,6 +3516,7 @@ function searchedTodos(){
   return visibleTodos().filter(t=>todoMatchesSearch(t,(todoSearch||'').trim())).filter(t=>todoQuick!=='today'||String(t.time||'').startsWith(todoDay()));
 }
 function todoActs(t){
+  if(!crmTodoEnabled(t)) return [];
   const acts=[];
   if(CHAIN_STEPS.includes(t.type)) acts.push({t:'查看流程',act:'viewDealFlow',extra:`data-id="${t.id}"`});
   if(t.type===OPP_TODO){
@@ -3598,6 +3607,7 @@ function pageTodos(){
 }
 
 function openPlannedTodoForm(item){
+  if(!crmTodoEnabled(item)) return;
   const common=`<div class="planned-head"><span>${tag(item.type)}</span><b>${item.title}</b><small>${item.customer||'-'}${item.project&&item.project!=='-'?' · '+item.project:''}</small></div>`;
   let body='', foot='';
   if(item.type==='客户待办'){
@@ -3985,6 +3995,7 @@ function findPendingChain(type, pred){
   return TODOS.find(t=>t.type===type&&t.status==='待处理'&&(!pred||pred(t)));
 }
 function addChainTodo(row){
+  if(!crmTodoEnabled(row)) return null;
   const item=Object.assign({
     id:nextTodoId(),
     status:'待处理',
@@ -4000,6 +4011,7 @@ function addChainTodo(row){
   return item;
 }
 function ensureChainTodo(type, pred, row){
+  if(!crmTodoEnabled(type)||!crmTodoEnabled(row)) return null;
   const hit=findPendingChain(type, pred);
   if(hit){
     ['owner','initiator','title','cat','smDept','order','region','level'].forEach(k=>{ if(row[k]) hit[k]=row[k]; });
@@ -6745,7 +6757,7 @@ function handleAct(t){
     }
     item.status='已处理'; item.approver=item.owner; item.approveTime=todoStamp();
     $('#mask').classList.remove('on');
-    const msg={ '设计待办':'设计待办已确认，已生成创建项目待办','创建项目待办':'项目已确认立项，已生成项目待办','草稿报价待办':'当前品类报价已提交到项目报价总览','订单待办':'已绑定商机，已生成收款待办','备货待办':'备货信息已提交，订单进入备货环节'}[item.type]||'待办已处理';
+    const msg={ '设计待办':'设计待办已确认，已生成创建项目待办','创建项目待办':'项目已确认立项，已生成项目待办','草稿报价待办':'当前品类报价已提交到项目报价总览','订单待办':'已绑定商机，已生成销售订单','备货待办':'备货信息已提交，订单进入备货环节'}[item.type]||'待办已处理';
     toast(msg); return openPage('todos');
   }
   if(a==='plannedTodoReject'){
@@ -62078,6 +62090,7 @@ function wkPersistDrafts(){return wkWrite('crm-sky-drafts-v2',Object.entries(DRA
 function wkArt(p){return p.artIndex>=0?quoteImgSvg(p.sku):`<span class="wk-no-image">${skyIcon('image')}<span>图片待补充</span></span>`;}
 function wkEmpty(title,copy,reset){return `<div class="wk-empty">${skyIcon('grid')}<b>${esc(title)}</b><p>${esc(copy)}</p>${reset||''}</div>`;}
 pageTodos=function(){
+ if(!crmTodoEnabled(todoFilter))todoFilter='全部';
  const all=visibleTodos(),scoped=searchedTodos(),byStatus=scoped.filter(t=>todoStatus==='全部'||t.status===todoStatus);
  const list=byStatus.filter(t=>todoFilter==='全部'||t.type===todoFilter).slice().sort((a,b)=>(WK.sort==='oldest'?1:-1)*(parseTodoTime(a.time)-parseTodoTime(b.time))||String(b.id).localeCompare(String(a.id)));
  const count=s=>all.filter(t=>t.status===s).length,today=all.filter(t=>t.status==='待处理'&&String(t.time||'').startsWith(todoDay())).length;
@@ -62087,7 +62100,7 @@ pageTodos=function(){
  return `<div class="wk wk-todo"><header class="wk-head"><div><div class="wk-eyebrow">MY WORKSPACE / 工作台</div><h1>待办中心</h1><p>跟进客户与项目事项，让协作有序向前。</p></div><div class="wk-date"><i></i>${esc(todoDay())} · 工作概览</div></header><div class="wk-kpis">${[
  ['pending','待处理事项',count('待处理'),'有序跟进每一个业务环节','brief',todoStatus==='待处理'&&!todoQuick],['today','今日到达',today,'今日新增的待处理事项','chart',todoQuick==='today'],['done','已处理',count('已处理'),'查看已完成的处理记录','check',todoStatus==='已处理'],['rejected','已驳回',count('已驳回'),'回看原因，及时重新跟进','rotate',todoStatus==='已驳回']
  ].map(([key,label,n,hint,icon,on])=>`<button class="wk-kpi ${on?'on':''}" data-act="todoKpi" data-kpi="${key}"><span class="label">${label}</span><span class="kico">${skyIcon(icon)}</span><strong>${n}</strong><small>${hint}</small></button>`).join('')}</div>
- <div class="wk-tasks"><aside class="wk-task-nav"><div class="wk-nav-cap">任务分类</div>${nav('全部','全部事项')}${groups.map(([cap,types])=>`<div class="wk-nav-cap">${cap}</div>${types.map(t=>nav(t)).join('')}`).join('')}</aside><div class="wk-task-main"><div class="wk-task-toolbar"><label class="wk-search">${skyIcon('search')}<input id="todoSearchInp" value="${esc(todoSearch)}" placeholder="搜索事项、客户或项目编号" aria-label="搜索待办"></label><button class="wk-btn" data-act="todoQuery">查询</button><select aria-label="待办状态" data-wk-change="status">${['全部','待处理','已处理','已驳回'].map(s=>`<option ${todoStatus===s?'selected':''}>${s}</option>`).join('')}</select><select aria-label="待办排序" data-wk-change="taskSort"><option value="recent" ${WK.sort==='recent'?'selected':''}>最新到达</option><option value="oldest" ${WK.sort==='oldest'?'selected':''}>停留最久</option></select><button class="wk-btn flat" data-wk="resetTodo">重置</button></div>
+ <div class="wk-tasks"><aside class="wk-task-nav"><div class="wk-nav-cap">任务分类</div>${nav('全部','全部事项')}${groups.map(([cap,types])=>`<div class="wk-nav-cap">${cap}</div>${types.filter(crmTodoEnabled).map(t=>nav(t)).join('')}`).join('')}</aside><div class="wk-task-main"><div class="wk-task-toolbar"><label class="wk-search">${skyIcon('search')}<input id="todoSearchInp" value="${esc(todoSearch)}" placeholder="搜索事项、客户或项目编号" aria-label="搜索待办"></label><button class="wk-btn" data-act="todoQuery">查询</button><select aria-label="待办状态" data-wk-change="status">${['全部','待处理','已处理','已驳回'].map(s=>`<option ${todoStatus===s?'selected':''}>${s}</option>`).join('')}</select><select aria-label="待办排序" data-wk-change="taskSort"><option value="recent" ${WK.sort==='recent'?'selected':''}>最新到达</option><option value="oldest" ${WK.sort==='oldest'?'selected':''}>停留最久</option></select><button class="wk-btn flat" data-wk="resetTodo">重置</button></div>
  <section class="wk-panel"><div class="wk-panel-title"><h2>${esc(todoFilter==='全部'?'全部事项':todoFilter)} <span> / ${esc(todoQuick==='today'?'今日到达':todoStatus)}</span></h2><span>${list.length} 项</span></div>${list.map(t=>{const m=todoMeta(t),tone=t.status==='已处理'?'done':t.status==='已驳回'?'rejected':'',acts=todoActs(t),mainIndex=acts.findIndex(a=>!/查看|总览|档案|轨迹|驳回|结束|详情/.test(a.t||'')),chosen=mainIndex>=0?mainIndex:0,main=acts[chosen],rest=acts.filter((a,i)=>i!==chosen);return `<article class="wk-task-row" data-todo-id="${esc(t.id)}"><div class="wk-task-mark ${tone}">${skyIcon(tone==='done'?'check':t.type.includes('报价')?'file':t.type.includes('设计')?'plan':'brief')}</div><div><div class="wk-task-title"><b>${esc(todoSubject(t))}</b><span class="wk-status ${tone}">${esc(t.status)}</span></div><div class="wk-task-meta"><span>${esc(t.customer||'未关联客户')}</span>${['客户待办','设计待办','创建项目待办'].includes(t.type)?v68CustomerMeta(t):`<span>${esc(m.projCode&&m.projCode!=='-'?m.projCode:t.type)}</span>`}</div><div class="wk-task-meta"><span>${esc(t.time||'')} 到达</span><span>${esc(t.type)}</span></div></div><div class="wk-task-owner">${esc(t.owner||'待分配')}<small title="发起人：${esc(m.initiator||'-')}">发起人 · ${esc(m.initiator||'-')}</small><div class="wk-age">${todoStayCell(t)}</div></div><div class="wk-task-acts">${main?btn(main,mainIndex>=0):''}${rest.length?`<details class="wk-more"><summary>更多操作 ···</summary><div>${rest.map(a=>btn(a,false)).join('')}</div></details>`:''}</div></article>`;}).join('')||wkEmpty('当前没有待办事项','换一个分类，或清除筛选条件。','<button class="wk-btn" data-wk="resetTodo">清除筛选</button>')}<div class="wk-task-foot">共 ${list.length} 项 · ${WK.sort==='oldest'?'按停留时间排序':'按到达时间排序'}</div></section></div></div></div>`;
 };
 function wkCategoryList(){return ['全部产品',...new Set(WK_CATALOG.map(p=>p.cat)),...MALL_CATS].filter((v,i,a)=>v&&a.indexOf(v)===i);}
@@ -62663,7 +62676,7 @@ const DF9_NODES=[
  {id:'projectReview',stage:1,role:'pm',title:'确认是否立项',brief:'查看客户需求与已有资料，确认或拒绝',kind:'确认 / 拒绝',reject:'拒绝 → 本条结束，不建项目',trigger:'PM 收到创建项目待办。',actions:['核对客户需求、设计方案、空间与涉及品类。','确认后补齐项目信息；拒绝时填写原因。'],outcome:'确认后进入项目创建；拒绝不生成项目和项目待办。'},
  {id:'createProject',stage:1,role:'pm',title:'补齐资料并创建项目',brief:'项目名称、国家、类型、规模与说明',kind:'业务操作',trigger:'PM 确认立项。',actions:['使用统一创建项目表单，填写客户、国家、交付经理、商务经理、PM 助理、类型、规模、交期、设计图纸、物流、佣金与预算等信息。','仅由设计待办生成的立项任务带入设计空间与品类，PM 可增删或调整；其他入口从空白空间开始确认。','保存项目档案，完成创建项目待办。'],outcome:'每条客户需求独立建立项目，系统生成对应的项目待办。'},
  {id:'projectTodo',stage:1,role:'sys',title:'生成项目待办',brief:'挂到项目，由项目 PM 持续跟进',kind:'自动待办',trigger:'PM 创建项目成功。',actions:['待办关联新项目，待办人＝项目 PM。','用于后续分品类邀请 SM 承接商机。'],outcome:'区域内分配发起确认商机待办；跨区域与转介绍发给总经办审批，审批通过直接生成商机。',note:'项目待办为可重复环节。发起一次商机后仍保持待处理，PM 手动结束才关闭。'},
- {id:'assignSM',stage:1,role:'pm',title:'按品类选择 SM',brief:'每个品类安排对应方案经理',kind:'可重复发起',trigger:'项目待办处于待处理状态。',actions:['选择项目品类，仅匹配负责或兼管该区域且符合品类条件的 SM。','补充该品类的商机需求并发起确认。','可继续为其他品类发起商机；不能把邀请当成已经建好商机。'],outcome:'各品类分别生成确认商机待办。',note:'至少发起一条确认商机待办后，PM 可手动结束项目待办。'},
+ {id:'assignSM',stage:1,role:'pm',title:'按品类选择 SM',brief:'每个品类安排对应方案经理',kind:'可重复发起',trigger:'项目待办处于待处理状态。',actions:['核对项目区域和品类，选择同时符合这两个条件的 SM。','补充该品类的商机需求并发起确认。','可继续为其他品类发起商机；不能把邀请当成已经建好商机。'],outcome:'各品类分别生成确认商机待办。',note:'至少发起一条确认商机待办后，PM 可手动结束项目待办。'},
  {id:'opportunityTodo',stage:1,role:'sys',title:'生成确认商机待办',brief:'按项目＋品类分发给对应 SM',kind:'自动待办',trigger:'PM 提交品类与 SM 分配。',actions:['待办携带项目、客户、品类及空间需求。','交给该品类 SM，由 SM 决定是否承接。'],outcome:'等待 SM 确认，此时尚未创建正式商机。'},
  {id:'opportunityReview',stage:1,role:'sm',title:'确认承接商机',brief:'核对品类需求，确认或拒绝',kind:'确认 / 拒绝',reject:'拒绝 → 本条结束，不建商机',trigger:'SM 收到对应品类的确认商机待办。',actions:['查看项目档案及负责品类的需求。','确认后创建商机；拒绝须记录原因。'],outcome:'确认后创建该品类商机；拒绝不产生商机及草稿报价待办。',note:'其他品类继续正常推进。项目待办未结束时，PM 可调整分配并重新发起。'},
  {id:'opportunityCreated',stage:1,role:'sys',title:'创建品类商机',brief:'绑定项目、品类与已承接的 SM',kind:'自动建档',trigger:'对应 SM 确认承接商机。',actions:['建立项目下该品类的正式商机记录。','完成确认商机待办，关联负责 SM。'],outcome:'系统立即为该品类发起草稿报价待办。'},
@@ -62683,6 +62696,12 @@ const DF9_NODES=[
  {id:'stockInfo',stage:3,role:'sm',title:'提交备货信息',brief:'备货范围、特殊要求、计划日期与备注',kind:'履约交接',trigger:'该品类 SM 收到备货待办。',actions:['核对销售订单及备货范围。','填写备货要求、特殊说明、计划备货日期与备注。','提交备货信息，完成本条备货待办。'],outcome:'订单进入备货环节，进入后续履约协作。'},
  {id:'stockStatus',stage:3,role:'sys',title:'订单进入备货环节',brief:'报价与成单链路完成，衔接后续履约',kind:'本图终点',trigger:'SM 提交备货信息。',actions:['记录备货要求与处理结果。','后续生产、采购、仓储及物流按实际履约流程继续推进。'],outcome:'本次宣讲范围到备货交接结束。',note:'此处表示成单后的备货交接，不代表实物已出库或完成空间交付。'}
 ];
+// Keep deferred nodes in source so fulfillment can be enabled again later.
+if(CRM_ORDER_ONLY_FLOW){
+ Object.assign(DF9_STAGES[3],{title:'订单生成',sub:'将客户确认的品类报价转为销售订单',range:'23',handoff:'销售订单建立，订单待办完成',loop:''});
+ const order=DF9_NODES.find(n=>n.id==='bindOrder');order.outcome='销售订单建立，订单待办完成。';
+ for(let i=DF9_NODES.length-1;i>=0;i--)if(DF9_NODES[i].stage===3&&DF9_NODES[i].id!=='bindOrder')DF9_NODES.splice(i,1);
+}
 const DF9_FINANCE={id:'finance',stage:3,role:'finance',title:'FSC 绑定收款流水',brief:'财务为每张收款单分别匹配流水',kind:'外部系统协作',trigger:'PM 生成收款单，并有可核对的收款流水。',actions:['财务进入 FSC，按收款单逐笔查找并绑定对应流水。','核对收款单号、金额、订单与付款信息。','定金、尾款或全款的多张收款单分别核对，异常交回 PM 跟进。'],outcome:'完成该张收款单与流水的财务匹配。',note:'FSC 为外部操作节点。本原型未接入 FSC，也未以流水匹配回执控制备货；图中的 20% 规则沿用现有 CRM 原型。'};
 const DF9={stage:'all',detail:null,presenting:false,returnFocus:null};
 function df9Escape(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
@@ -62691,6 +62710,7 @@ function df9Number(node){return node.id==='finance'?'25 · 支线':String(DF9_NO
 function df9Node(node,index){const n=df9Number(node);return `<div class="df9-cell" style="--c4:${index<4?index+1:8-index};--r4:${Math.floor(index/4)+1};--c2:${Math.floor(index/2)%2?2-index%2:index%2+1};--r2:${Math.floor(index/2)+1}"><button class="df9-node ${node.kind==='自动待办'||node.kind==='待办转换'?'df9-auto':''}" data-df9="detail" data-node="${node.id}" aria-haspopup="dialog"><span class="df9-node-top"><span class="df9-num">${n}</span>${df9Role(node.role,true)}</span><strong>${node.title}</strong><span class="df9-node-brief">${node.brief}</span><span class="df9-kind">${node.kind}<span aria-hidden="true">↗</span></span></button>${node.reject?`<div class="df9-reject"><span aria-hidden="true">↳</span>${node.reject}</div>`:''}${node.branch?`<button class="df9-return" data-df9="detail" data-node="receipt">↶ ${node.branch}</button>`:''}<span class="df9-arrow" aria-hidden="true">→</span>${node.reject||node.branch?`<span class="df9-edge-label">${node.reject?'确认':'达到'}</span>`:''}</div>`;}
 function df9Revision(){return `<div class="df9-revision"><div class="df9-rule-label">确认后需要调整</div><div class="df9-revision-path"><span>客户联系 PM</span><i>→</i><span>SM 编辑同一草稿并重新提交</span><i>→</i><span>原确认失效</span><i>→</i><span>PM 群内提醒</span><i>→</i><span>客户重新确认</span></div><p>仅保存不撤销原确认。重新提交后，草稿报价待办恢复待处理，旧的待处理订单待办撤回；再次确认后生成有效订单待办。已绑定报价需走订单变更。</p></div>`;}
 function df9Loop(stage,index){
+ if(index===3&&CRM_ORDER_ONLY_FLOW)return '';
  const tracks={0:['02 有设计需求','03 多次提交需求','分别生成设计待办'],1:['10 项目待办持续打开','11 按品类选 SM','12 发确认商机待办'],3:['24 收款待办持续打开','25 分次出收款单','财务逐笔匹配流水']};
  const track=tracks[index];
  return '<div class="df9-loop">'+(track?'<div class="df9-repeat-track"><b>↶ 可重复</b>'+track.map((t,i)=>'<span>'+t+'</span>'+(i<track.length-1?'<i>→</i>':'')).join('')+'<em>继续下一次 ↶</em></div>':'<b>保存 · 提交 · 确认</b>')+'<p>'+stage.loop+'</p></div>';
@@ -62699,12 +62719,12 @@ function df9Loop(stage,index){
 function df36CustomerBranch(nodes){const node=id=>df9Node(nodes.find(n=>n.id===id),0);return '<div class="df36-customer-flow"><div class="df36-entry">'+['createCustomer','customerTodo','needs'].map(node).join('')+'</div><div class="df36-paths"><section class="df36-path"><h3><span>是</span> 需要设计</h3><div class="df36-design-nodes">'+['designTodo','designReview','designHandoff'].map(node).join('')+'</div></section><section class="df36-path df36-direct"><h3><span>否</span> 无需设计</h3><div class="df36-direct-copy">'+df9Role('biz',true)+'<b>选择负责项目的 PM</b><p>提交即完成客户待办<br>客户需求与附件交接 PM，立项时补齐空间与品类</p><span class="df36-down">↓ 直接进入创建项目待办</span></div></section></div><div class="df36-merge"><span>两条路径汇合 ↓</span>'+node('createProjectTodo')+'</div></div>';}
 
 function df68AllocationBranches(){return '<div class="df9-finance"><div><b>跨区域商机审批</b><p>PM 选择符合项目品类的跨区域 SM，填写原因并补充附件 → 总经办审批 → 通过后直接生成商机与草稿报价待办。驳回保留原因，不生成商机。</p></div></div><div class="df9-finance"><div><b>转介绍商机审批</b><p>填写转介绍人、被转介绍人及其组长，上传被转介绍人组长同意截图 → 总经办审批 → 通过后生成对应商机与草稿报价待办。转介绍独立创建新商机，不关联或转移原商机。</p></div></div>';}
-function df9StageHtml(stage,index){const nodes=DF9_NODES.filter(n=>n.stage===index);return `<section class="df9-stage" aria-labelledby="df9Stage${index}"><header class="df9-stage-head"><span class="df9-stage-number">${stage.num}</span><div><h2 id="df9Stage${index}">${stage.title}</h2><p>${stage.sub}</p></div><span class="df9-stage-range">节点 ${stage.range}</span></header>${index===0?df36CustomerBranch(nodes):`<div class="df9-grid">${nodes.map(df9Node).join('')}</div>`}${index===1?df68AllocationBranches():''}${df9Loop(stage,index)}${index===2?df9Revision():''}${index===3?`<div class="df9-finance"><span class="df9-finance-branch" aria-hidden="true">25 ↳</span><div><b>逐笔财务协作</b><p>每张收款单 → 财务在 FSC 绑定对应收款流水。与 CRM 的累计收款判断分开展示。</p></div><button data-df9="detail" data-node="finance">${df9Role('finance')}<span>查看 FSC 环节 ↗</span></button></div><div class="df9-threshold-note"><b>备货触发规则</b><span>累计收款达到 20% 即生成备货待办；不必等收款待办手动结束。未达到阈值时结束收款，也不会生成备货待办。</span></div>`:''}<footer class="df9-handoff"><span>${index===3?'✓':'↓'}</span>${stage.handoff}</footer></section>`;}
+function df9StageHtml(stage,index){const nodes=DF9_NODES.filter(n=>n.stage===index);return `<section class="df9-stage" aria-labelledby="df9Stage${index}"><header class="df9-stage-head"><span class="df9-stage-number">${stage.num}</span><div><h2 id="df9Stage${index}">${stage.title}</h2><p>${stage.sub}</p></div><span class="df9-stage-range">节点 ${stage.range}</span></header>${index===0?df36CustomerBranch(nodes):`<div class="df9-grid">${nodes.map(df9Node).join('')}</div>`}${index===1?df68AllocationBranches():''}${df9Loop(stage,index)}${index===2?df9Revision():''}${index===3&&!CRM_ORDER_ONLY_FLOW?`<div class="df9-finance"><span class="df9-finance-branch" aria-hidden="true">25 ↳</span><div><b>逐笔财务协作</b><p>每张收款单 → 财务在 FSC 绑定对应收款流水。与 CRM 的累计收款判断分开展示。</p></div><button data-df9="detail" data-node="finance">${df9Role('finance')}<span>查看 FSC 环节 ↗</span></button></div><div class="df9-threshold-note"><b>备货触发规则</b><span>累计收款达到 20% 即生成备货待办；不必等收款待办手动结束。未达到阈值时结束收款，也不会生成备货待办。</span></div>`:''}<footer class="df9-handoff"><span>${index===3?'✓':'↓'}</span>${stage.handoff}</footer></section>`;}
 function df9Content(){const selected=DF9.stage==='all'?DF9_STAGES.map((s,i)=>[s,i]):[[DF9_STAGES[Number(DF9.stage)],Number(DF9.stage)]];return selected.map(([s,i])=>df9StageHtml(s,i)).join('');}
-function df9Page(){DF9.detail=null;return `<div class="df9-page${DF9.presenting?' df9-presenting':''}" data-flow-stage="${DF9.stage}"><header class="df9-heading"><div><div class="df9-eyebrow">敬城 CRM <span>/</span> 流程宣讲</div><h1>待办驱动成单全流程</h1><p>从创建客户到订单备货，按阶段查看处理人、操作和交接结果。</p></div><div class="df9-tools"><button class="df9-button" data-df9="print">打印流程</button><button class="df9-button df9-button-primary" data-df9="present" aria-pressed="${DF9.presenting}">${DF9.presenting?'退出演示':'演示模式'}</button></div></header><nav class="df9-tabs" aria-label="选择宣讲阶段"><div class="df9-tab-list"><button data-df9="stage" data-stage="all" class="${DF9.stage==='all'?'active':''}" aria-pressed="${DF9.stage==='all'}">全流程</button>${DF9_STAGES.map((s,i)=>`<button data-df9="stage" data-stage="${i}" class="${DF9.stage===String(i)?'active':''}" aria-pressed="${DF9.stage===String(i)}"><small>${s.num}</small>${s.title}</button>`).join('')}</div><span>实线主流程 · 红色拒绝分支 · ↶ 可重复环节</span></nav><div class="df9-content">${df9Content()}</div><footer class="df9-page-foot"><b>敬城 CRM · 业务流程说明</b><span>FSC、SCRM 为外部协作环节；当前页面用于流程宣讲。备货阈值沿用现有原型的累计收款 20% 规则。</span></footer></div>`;}
+function df9Page(){DF9.detail=null;return `<div class="df9-page${DF9.presenting?' df9-presenting':''}" data-flow-stage="${DF9.stage}"><header class="df9-heading"><div><div class="df9-eyebrow">敬城 CRM <span>/</span> 流程宣讲</div><h1>待办驱动成单全流程</h1><p>从创建客户到${CRM_ORDER_ONLY_FLOW?'生成订单':'订单备货'}，按阶段查看处理人、操作和交接结果。</p></div><div class="df9-tools"><button class="df9-button" data-df9="print">打印流程</button><button class="df9-button df9-button-primary" data-df9="present" aria-pressed="${DF9.presenting}">${DF9.presenting?'退出演示':'演示模式'}</button></div></header><nav class="df9-tabs" aria-label="选择宣讲阶段"><div class="df9-tab-list"><button data-df9="stage" data-stage="all" class="${DF9.stage==='all'?'active':''}" aria-pressed="${DF9.stage==='all'}">全流程</button>${DF9_STAGES.map((s,i)=>`<button data-df9="stage" data-stage="${i}" class="${DF9.stage===String(i)?'active':''}" aria-pressed="${DF9.stage===String(i)}"><small>${s.num}</small>${s.title}</button>`).join('')}</div><span>实线主流程 · 红色拒绝分支 · ↶ 可重复环节</span></nav><div class="df9-content">${df9Content()}</div><footer class="df9-page-foot"><b>敬城 CRM · 业务流程说明</b><span>${CRM_ORDER_ONLY_FLOW?'按当前已启用的业务环节展示；SCRM 为外部协作环节。':'FSC、SCRM 为外部协作环节；备货阈值沿用原型的累计收款 20% 规则。'}</span></footer></div>`;}
 function df9SetStage(value,root){DF9.stage=value;root.dataset.flowStage=value;root.querySelectorAll('[data-df9="stage"]').forEach(b=>{const active=b.dataset.stage===value;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});root.querySelector('.df9-content').innerHTML=df9Content();}
 function df9CloseDetail(){const mask=document.getElementById('df9DetailMask');if(!mask)return;mask.remove();DF9.detail=null;document.querySelectorAll('[data-df9-inert]').forEach(el=>{el.inert=false;el.removeAttribute('data-df9-inert');});const previous=DF9.returnFocus;if(previous?.isConnected)previous.focus({preventScroll:true});}
-function df9OpenDetail(id,opener){const node=id==='finance'?DF9_FINANCE:DF9_NODES.find(n=>n.id===id);if(!node)return;let mask=document.getElementById('df9DetailMask');if(!mask){DF9.returnFocus=opener||document.activeElement;mask=document.createElement('div');mask.id='df9DetailMask';mask.className='df9-detail-mask';document.body.append(mask);for(const el of document.body.children){if(el!==mask&&!el.inert&&!['SCRIPT','STYLE','LINK'].includes(el.tagName)){el.inert=true;el.setAttribute('data-df9-inert','');}}}DF9.detail=id;const index=DF9_NODES.indexOf(node),stage=DF9_STAGES[node.stage];mask.innerHTML=`<section class="df9-detail" role="dialog" aria-modal="true" aria-labelledby="df9DetailTitle" tabindex="-1"><header><div><small>${stage.num} / ${stage.title}</small><span>节点 ${df9Number(node)}</span></div><button class="df9-close" data-df9="close" aria-label="关闭节点说明">×</button></header><div class="df9-detail-body">${df9Role(node.role)}<h2 id="df9DetailTitle">${node.title}</h2><p class="df9-detail-sub">${node.brief}</p><dl><dt>何时进入</dt><dd>${node.trigger}</dd><dt>谁来处理</dt><dd>${DF9_ROLES[node.role][0]} · ${DF9_ROLES[node.role][1]}</dd></dl><h3>操作与交接</h3><ol>${node.actions.map(a=>`<li>${a}</li>`).join('')}</ol><div class="df9-result"><small>处理结果</small><p>${node.outcome}</p></div>${node.reject?`<div class="df9-detail-reject"><b>${node.reject}</b><p>记录拒绝原因，不创建该分支的下游事项。</p></div>`:''}${node.note?`<aside class="df9-detail-note"><b>宣讲提醒</b><p>${node.note}</p></aside>`:''}</div><footer><button class="df9-button" data-df9="previous" ${index<=0?'disabled':''}>← 上一节点</button><span>${index<0?'财务支线':`${index+1} / ${DF9_NODES.length}`}</span><button class="df9-button df9-button-primary" data-df9="next" ${index<0||index===DF9_NODES.length-1?'disabled':''}>下一节点 →</button></footer></section>`;mask.querySelector('.df9-close').focus();}
+function df9OpenDetail(id,opener){if(id==='finance'&&CRM_ORDER_ONLY_FLOW)return;const node=id==='finance'?DF9_FINANCE:DF9_NODES.find(n=>n.id===id);if(!node)return;let mask=document.getElementById('df9DetailMask');if(!mask){DF9.returnFocus=opener||document.activeElement;mask=document.createElement('div');mask.id='df9DetailMask';mask.className='df9-detail-mask';document.body.append(mask);for(const el of document.body.children){if(el!==mask&&!el.inert&&!['SCRIPT','STYLE','LINK'].includes(el.tagName)){el.inert=true;el.setAttribute('data-df9-inert','');}}}DF9.detail=id;const index=DF9_NODES.indexOf(node),stage=DF9_STAGES[node.stage];mask.innerHTML=`<section class="df9-detail" role="dialog" aria-modal="true" aria-labelledby="df9DetailTitle" tabindex="-1"><header><div><small>${stage.num} / ${stage.title}</small><span>节点 ${df9Number(node)}</span></div><button class="df9-close" data-df9="close" aria-label="关闭节点说明">×</button></header><div class="df9-detail-body">${df9Role(node.role)}<h2 id="df9DetailTitle">${node.title}</h2><p class="df9-detail-sub">${node.brief}</p><dl><dt>何时进入</dt><dd>${node.trigger}</dd><dt>谁来处理</dt><dd>${DF9_ROLES[node.role][0]} · ${DF9_ROLES[node.role][1]}</dd></dl><h3>操作与交接</h3><ol>${node.actions.map(a=>`<li>${a}</li>`).join('')}</ol><div class="df9-result"><small>处理结果</small><p>${node.outcome}</p></div>${node.reject?`<div class="df9-detail-reject"><b>${node.reject}</b><p>记录拒绝原因，不创建该分支的下游事项。</p></div>`:''}${node.note?`<aside class="df9-detail-note"><b>宣讲提醒</b><p>${node.note}</p></aside>`:''}</div><footer><button class="df9-button" data-df9="previous" ${index<=0?'disabled':''}>← 上一节点</button><span>${index<0?'财务支线':`${index+1} / ${DF9_NODES.length}`}</span><button class="df9-button df9-button-primary" data-df9="next" ${index<0||index===DF9_NODES.length-1?'disabled':''}>下一节点 →</button></footer></section>`;mask.querySelector('.df9-close').focus();}
 document.addEventListener('click',e=>{if(e.target.id==='df9DetailMask'){df9CloseDetail();return;}const b=e.target.closest('[data-df9]');if(!b)return;const action=b.dataset.df9,root=b.closest('.df9-page')||document.querySelector('.df9-page');if(action==='close'){df9CloseDetail();return;}if(action==='detail'){df9OpenDetail(b.dataset.node,b);return;}if(action==='next'||action==='previous'){const i=DF9_NODES.findIndex(n=>n.id===DF9.detail)+(action==='next'?1:-1);if(i>=0&&i<DF9_NODES.length)df9OpenDetail(DF9_NODES[i].id);return;}if(!root)return;if(action==='stage'){df9SetStage(b.dataset.stage,root);root.querySelector('.df9-tabs').scrollIntoView({block:'start',behavior:'auto'});return;}if(action==='jump'){const n=DF9_NODES.find(n=>n.id===b.dataset.node);df9SetStage(String(n.stage),root);const target=root.querySelector(`.df9-node[data-node="${n.id}"]`);target.scrollIntoView({block:'center',behavior:'smooth'});target.focus({preventScroll:true});return;}if(action==='present'){DF9.presenting=!DF9.presenting;root.classList.toggle('df9-presenting',DF9.presenting);b.textContent=DF9.presenting?'退出演示':'演示模式';b.setAttribute('aria-pressed',String(DF9.presenting));if(DF9.presenting)root.scrollTop=0;return;}if(action==='print'){const prior=DF9.stage;df9SetStage('all',root);document.body.classList.add('df9-printing');const restore=()=>{document.body.classList.remove('df9-printing');df9SetStage(prior,root);window.removeEventListener('afterprint',restore);};window.addEventListener('afterprint',restore);window.print();}});
 window.addEventListener('keydown',e=>{const dialog=document.querySelector('#df9DetailMask .df9-detail');if(dialog){if(e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();df9CloseDetail();}else if(e.key==='Tab'){const focusable=[...dialog.querySelectorAll('button:not(:disabled)')];if(e.shiftKey&&document.activeElement===focusable[0]){e.preventDefault();focusable.at(-1).focus();}else if(!e.shiftKey&&document.activeElement===focusable.at(-1)){e.preventDefault();focusable[0].focus();}}return;}if(e.key==='Escape'&&DF9.presenting){const root=document.querySelector('.df9-presenting');root?.querySelector('[data-df9="present"]').click();}},true);
 if(typeof RENDER!=='undefined'){RENDER.spaceFlow=df9Page;TAB_NAME.spaceFlow='空间报价流程';const group=V5_NAV.find(x=>x[0]==='方案与报价');if(group&&!group[1].some(x=>x[0]==='spaceFlow'))group[1].unshift(['spaceFlow','plan','空间报价流程']);v5SyncNav();}else{document.getElementById('dealFlowApp').innerHTML=df9Page();}
@@ -63117,8 +63137,8 @@ if(!V3.client&&pageKind(page)==='home')openPage('home');
 
 /* Workbench = overview and priorities. The task centre owns task processing. */
 const V18={context:null};
-const V18_TODO_NAMES=Object.fromEntries([...CHAIN_STEPS,'设计单','邀请函审核','公海跟进'].map(t=>[t,t==='确认商机'?'确认商机待办':t]));
-const V18_STAGE_TYPES=[['客户待办','设计待办','设计单','邀请函审核','公海跟进'],['创建项目待办','项目待办','确认商机'],['草稿报价待办'],['订单待办','收款待办','备货待办']];
+const V18_TODO_NAMES=Object.fromEntries([...CHAIN_STEPS,'设计单','邀请函审核','公海跟进'].map(t=>[t,t.endsWith('待办')?t:t+'待办']));
+const V18_STAGE_TYPES=[['客户待办','设计待办','设计单','邀请函审核','公海跟进'],['创建项目待办','项目待办','确认商机'],['草稿报价待办'],['订单待办','收款待办','备货待办']].map(types=>types.filter(crmTodoEnabled));
 function v18Name(t){const type=typeof t==='string'?t:t.type;return V18_TODO_NAMES[type]||type;}
 function v18Btn(action,label,attrs='',primary=false){return `<button class="v16-btn ${primary?'primary':''}" data-v18="${action}" ${attrs}>${label}</button>`;}
 function v18PendingDrafts(s=v17Scope()){
@@ -63153,7 +63173,7 @@ pageTodos=function(){const box=document.createElement('div');box.innerHTML=v18To
  for(const button of box.querySelectorAll('.wk-task-nav [data-filter]')){const label=button.querySelector('span');if(label)label.textContent=button.dataset.filter==='全部'?'全部待办':v18Name(button.dataset.filter);}
  const caps=box.querySelectorAll('.wk-task-nav .wk-nav-cap');for(const cap of caps)if(cap.textContent==='专项事项')cap.textContent='其他待办';
  const title=box.querySelector('.wk-panel-title h2');if(title){const span=title.querySelector('span');title.replaceChildren(document.createTextNode(todoFilter==='全部'?'全部待办':v18Name(todoFilter)),...(span?[span]:[]));}
- for(const row of box.querySelectorAll('.wk-task-row')){const id=row.querySelector('.wk-task-meta code')?.textContent,t=visibleTodos().find(t=>t.id===id);if(!t)continue;const name=row.querySelector('.wk-task-title b');if(name){const subject=name.textContent;name.textContent=v18Name(t);name.parentElement.insertAdjacentHTML('afterend',`<small class="v18-task-context">${esc(subject)}</small>`);}for(const span of row.querySelectorAll('.wk-task-meta span'))if(span.textContent===t.type)span.textContent=v18Name(t);row.dataset.todoName=v18Name(t);}
+ for(const row of box.querySelectorAll('.wk-task-row')){const id=row.dataset.todoId,t=visibleTodos().find(t=>t.id===id);if(!t)continue;const name=row.querySelector('.wk-task-title b');if(name){const subject=name.textContent;name.textContent=v18Name(t);if(subject!==v18Name(t)&&subject!==t.type)name.parentElement.insertAdjacentHTML('afterend',`<small class="v18-task-context">${esc(subject)}</small>`);}for(const span of row.querySelectorAll('.wk-task-meta span'))if(span.textContent===t.type)span.textContent=v18Name(t);row.dataset.todoName=v18Name(t);}
  const labels={pending:'待处理待办',done:'已处理待办',rejected:'已驳回待办'};for(const [key,label] of Object.entries(labels)){const el=box.querySelector(`[data-kpi="${key}"] .label`);if(el)el.textContent=label;}
  if(V18.context){const rows=visibleTodos().filter(t=>V18.context.ids.includes(t.id));box.querySelector('.wk-head')?.insertAdjacentHTML('afterend',`<div class="v18-center-context"><div><b>来自工作台 · ${esc(V18.context.label)}</b><span>${esc(V18.context.scope)} · 已定位 ${rows.length} 项待办，可继续筛选并处理</span></div>${v18Btn('clear','查看全部待办')}</div>`);for(const key of ['pending','today','done','rejected']){const value=key==='today'?rows.filter(t=>t.status==='待处理'&&String(t.time||'').startsWith(todoDay())).length:rows.filter(t=>t.status===({pending:'待处理',done:'已处理',rejected:'已驳回'})[key]).length;const n=box.querySelector(`[data-kpi="${key}"] strong`);if(n)n.textContent=value;}}
  return box.innerHTML;
@@ -63453,8 +63473,9 @@ const V24_STAGES=[
  {name:'客户与设计',types:['客户待办','设计待办','公海跟进','邀请函审核','设计单'],icon:'users'},
  {name:'立项与商机',types:['创建项目待办','项目待办','确认商机','跨区域商机审批待办','转介绍商机审批待办'],icon:'brief'},
  {name:'空间报价与确认',types:['草稿报价待办'],icon:'file'},
- {name:'订单、收款与备货',types:['订单待办','收款待办','备货待办'],icon:'grid'}
+ {name:CRM_ORDER_ONLY_FLOW?'订单生成':'订单、收款与备货',types:['订单待办','收款待办','备货待办'],icon:'grid'}
 ];
+for(const stage of V24_STAGES)stage.types=stage.types.filter(crmTodoEnabled);
 const V24_METRICS={
  customers:{title:'新增客户',all:'客户',unit:'位',icon:'users',date:r=>r[15]},
  projects:{title:'新建项目',all:'项目',unit:'个',icon:'brief',date:r=>r[16],amount:r=>qNum(r[12]),amountLabel:'项目金额'},
@@ -64952,7 +64973,7 @@ function v68Allocation(project,mode='normal'){
  const smOpts=candidates.map(sm=>`<option value="${esc(sm.name)}">${esc(sm.name)} · ${esc(sm.cat)} · ${esc(sm.regions.join(' / '))}</option>`).join('');
  v68Modal('分配品类商机',`<div class="v68-allocation"><div class="v68-project-head"><strong>${esc(p[1])}</strong></div><div class="v68-tabs" role="tablist">${tabs.map(([key,label])=>`<button role="tab" aria-selected="${mode===key}" class="${mode===key?'active':''}" data-act="v68AllocationMode" data-mode="${key}">${label}</button>`).join('')}</div><div class="v68-fields">
  <label class="v68-field full"><span><b>*</b>${mode==='referral'?'被转介绍人（SM）':'方案经理（SM）'}</span><select id="v68SM" aria-label="${mode==='referral'?'被转介绍人（SM）':'方案经理（SM）'}"><option value="">请选择</option>${smOpts}</select><div class="v69-project-scope"><span><b>项目区域</b>${esc(v68Region(p))}</span><span><b>项目品类</b>${esc(cats.join('、'))}</span></div><small>${mode==='normal'?'仅显示同时符合项目区域与品类的 SM':mode==='cross'?'选择项目品类对应的跨区域 SM，需总经办审批':'选择项目品类对应的被转介绍人，需总经办审批'}</small></label>
- ${v68Select('v68Biz','商机商务经理',['王商务','李商务'],'',false)}
+
  ${mode!=='normal'?`<label class="v68-field"><span>审批人</span><input value="总经办 · 审批岗" readonly></label>`:''}
  ${mode==='referral'?`${v68Select('v68Referrer','转介绍人',[...new Set([p[9],...CUSTOMERS.map(c=>c[4]),...V68_SMS.map(s=>s.name)].filter(Boolean))])}<label class="v68-field"><span><b>*</b>被转介绍人组长</span><input id="v68Leader" aria-label="被转介绍人组长" placeholder="选择被转介绍人后带出，可调整"></label>`:''}
  ${mode!=='normal'?`<label class="v68-field full"><span><b>*</b>申请原因</span><textarea id="v68Reason" aria-label="申请原因" placeholder="说明本次${mode==='cross'?'跨区域分配':'转介绍'}原因"></textarea></label><div class="v68-field full"><span>${mode==='referral'?'<b>*</b>被转介绍人组长同意截图':'申请附件'}</span>${v69UploadHtml('allocationFiles',[],{images:mode==='referral',max:mode==='referral'?1:10})}</div>`:''}
@@ -64985,7 +65006,7 @@ function v68ReadImage(file){return new Promise((resolve,reject)=>{if(!file||!fil
 async function v68SubmitAllocation(){
  if(V68.busy||!V68.allocation)return;if(v69UploadsBusy())return toast('附件正在上传，请稍候');const state={...V68.allocation},button=document.querySelector('[data-act="v68AllocationSubmit"]');V68.busy=true;if(button)button.disabled=true;
  try{const parent=TODOS.find(t=>t.id===state.sourceTodoId);if(parent&&(!v21CanOperate(parent)||parent.status!=='待处理'))throw new Error('当前项目待办不可办理');
-  const data={...state,sm:$('#v68SM')?.value||'',biz:$('#v68Biz')?.value||'',reason:$('#v68Reason')?.value.trim()||'',referrer:$('#v68Referrer')?.value||'',leader:$('#v68Leader')?.value.trim()||'',attachments:v69UploadValues('allocationFiles'),evidence:{}};
+  const data={...state,sm:$('#v68SM')?.value||'',reason:$('#v68Reason')?.value.trim()||'',referrer:$('#v68Referrer')?.value||'',leader:$('#v68Leader')?.value.trim()||'',attachments:v69UploadValues('allocationFiles'),evidence:{}};
   data.cat=V68_SMS.find(s=>s.name===data.sm)?.cat||'';if(state.mode==='referral')data.evidence.leader=data.attachments[0];
   const created=v68SubmitAllocationData(data);if(!v3Save()){TODOS.splice(TODOS.indexOf(created),1);throw new Error('浏览器存储空间不足，申请未保存，请缩小截图后重试');}$('#mask').classList.remove('on');markPagesDirty();openPage('todos');toast(state.mode==='normal'?'已生成确认商机待办':'已提交总经办审批，通过后生成商机');
  }catch(error){toast(error.message);}finally{V68.busy=false;if(button)button.disabled=false;}
@@ -65008,7 +65029,7 @@ function v68DecideApproval(id,approve,note=''){
 }
 function v68Review(id){
  const t=TODOS.find(t=>t.id===id);if(!t)return;const a=t.allocation||{},pending=t.status==='待处理'&&v21CanOperate(t),p=findProject(t.project);
- v68Modal(t.type,`<div class="v68-review"><div class="v68-project-head"><strong>${esc(p?.[1]||t.project)}</strong><span>${esc(t.status)}</span></div><dl>${[['申请人',t.initiator],['项目区域',t.region],['商机品类',a.cat],['接收 SM',a.sm],['SM 区域',V68_SMS.find(s=>s.name===a.sm)?.regions.join(' / ')],['商机商务经理',a.biz||'—'],['申请原因',a.reason],...(a.mode==='referral'?[['转介绍人',a.referrer],['被转介绍人',a.sm],['被转介绍人组长',a.leader]]:[]),...(!pending?[['审批人',t.approver],['审批时间',t.approveTime],['审批意见',t.rejectReason||t.approvalNote||'通过'],['生成商机',t.createdOppId||'未生成']]:[])].map(([label,value])=>`<div><dt>${label}</dt><dd>${esc(value||'—')}</dd></div>`).join('')}</dl>${v69AttachmentList(a.mode==='referral'?[a.evidence?.leader].filter(Boolean):(a.attachments||[]))}${pending?'<label class="v68-field"><span>审批意见</span><textarea id="v68ApprovalNote" aria-label="审批意见" placeholder="驳回时必填"></textarea></label>':''}</div>`,pending?`<button class="btn default" data-act="closeModal">取消</button><button class="btn default" data-act="v68ApprovalReject" data-id="${esc(id)}">驳回</button><button class="btn" data-act="v68ApprovalAccept" data-id="${esc(id)}">通过并生成商机</button>`:undefined);
+ v68Modal(t.type,`<div class="v68-review"><div class="v68-project-head"><strong>${esc(p?.[1]||t.project)}</strong><span>${esc(t.status)}</span></div><dl>${[['申请人',t.initiator],['项目区域',t.region],['商机品类',a.cat],['接收 SM',a.sm],['SM 区域',V68_SMS.find(s=>s.name===a.sm)?.regions.join(' / ')],['申请原因',a.reason],...(a.mode==='referral'?[['转介绍人',a.referrer],['被转介绍人',a.sm],['被转介绍人组长',a.leader]]:[]),...(!pending?[['审批人',t.approver],['审批时间',t.approveTime],['审批意见',t.rejectReason||t.approvalNote||'通过'],['生成商机',t.createdOppId||'未生成']]:[])].map(([label,value])=>`<div><dt>${label}</dt><dd>${esc(value||'—')}</dd></div>`).join('')}</dl>${v69AttachmentList(a.mode==='referral'?[a.evidence?.leader].filter(Boolean):(a.attachments||[]))}${pending?'<label class="v68-field"><span>审批意见</span><textarea id="v68ApprovalNote" aria-label="审批意见" placeholder="驳回时必填"></textarea></label>':''}</div>`,pending?`<button class="btn default" data-act="closeModal">取消</button><button class="btn default" data-act="v68ApprovalReject" data-id="${esc(id)}">驳回</button><button class="btn" data-act="v68ApprovalAccept" data-id="${esc(id)}">通过并生成商机</button>`:undefined);
 }
 const v68BaseActs=todoActs;
 const v68BaseSubject=todoSubject;
