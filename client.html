@@ -63237,7 +63237,7 @@ pageTodos=function(){const box=document.createElement('div');box.innerHTML=v18To
  const title=box.querySelector('.wk-panel-title h2');if(title){const span=title.querySelector('span');title.replaceChildren(document.createTextNode(todoFilter==='全部'?'全部待办':v18Name(todoFilter)),...(span?[span]:[]));}
  for(const row of box.querySelectorAll('.wk-task-row')){const id=row.dataset.todoId,t=visibleTodos().find(t=>t.id===id);if(!t)continue;const name=row.querySelector('.wk-task-title b');if(name){const subject=name.textContent;name.textContent=v18Name(t);if(subject!==v18Name(t)&&subject!==t.type)name.parentElement.insertAdjacentHTML('afterend',`<small class="v18-task-context">${esc(subject)}</small>`);}for(const span of row.querySelectorAll('.wk-task-meta span'))if(span.textContent===t.type)span.textContent=v18Name(t);row.dataset.todoName=v18Name(t);}
  const labels={pending:'待处理待办',done:'已处理待办',rejected:'已驳回待办'};for(const [key,label] of Object.entries(labels)){const el=box.querySelector(`[data-kpi="${key}"] .label`);if(el)el.textContent=label;}
- if(V18.context){const rows=visibleTodos().filter(t=>V18.context.ids.includes(t.id));box.querySelector('.wk-head')?.insertAdjacentHTML('afterend',`<div class="v18-center-context"><div><b>来自工作台 · ${esc(V18.context.label)}</b><span>${esc(V18.context.scope)} · 已定位 ${rows.length} 项待办，可继续筛选并处理</span></div>${v18Btn('clear','查看全部待办')}</div>`);for(const key of ['pending','today','done','rejected']){const value=key==='today'?rows.filter(t=>t.status==='待处理'&&String(t.time||'').startsWith(todoDay())).length:rows.filter(t=>t.status===({pending:'待处理',done:'已处理',rejected:'已驳回'})[key]).length;const n=box.querySelector(`[data-kpi="${key}"] strong`);if(n)n.textContent=value;}}
+ if(V18.context){const rows=visibleTodos().filter(t=>V18.context.ids.includes(t.id));box.querySelector('.wk-head')?.insertAdjacentHTML('afterend',`<div class="v18-center-context"><div><b>来自${esc(V18.context.source||'工作台')} · ${esc(V18.context.label)}</b><span>${esc(V18.context.scope)} · 已定位 ${rows.length} 项待办，可继续筛选并处理</span></div>${v18Btn('clear','查看全部待办')}</div>`);for(const key of ['pending','today','done','rejected']){const value=key==='today'?rows.filter(t=>t.status==='待处理'&&String(t.time||'').startsWith(todoDay())).length:rows.filter(t=>t.status===({pending:'待处理',done:'已处理',rejected:'已驳回'})[key]).length;const n=box.querySelector(`[data-kpi="${key}"] strong`);if(n)n.textContent=value;}}
  return box.innerHTML;
 };RENDER.todos=pageTodos;
 document.addEventListener('click',e=>{if(e.target.closest('[data-v5="nav"][data-page="todos"], [data-act="go:todos"], [data-v3="homeTodos"]'))V18.context=null;},true);
@@ -65090,8 +65090,11 @@ function v68DecideApproval(id,approve,note=''){
  t.approver=v17Owner();t.approveTime=todoStamp();t.approvalNote=note.trim();return t;
 }
 function v68Review(id){
- const t=TODOS.find(t=>t.id===id);if(!t)return;const a=t.allocation||{},pending=t.status==='待处理'&&v21CanOperate(t),p=findProject(t.project);
- v68Modal(t.type,`<div class="v68-review"><div class="v68-project-head"><strong>${esc(p?.[1]||t.project)}</strong><span>${esc(t.status)}</span></div><dl>${[['申请人',t.initiator],['项目区域',t.region],['商机品类',a.cat],['接收 SM',a.sm],['SM 区域',V68_SMS.find(s=>s.name===a.sm)?.regions.join(' / ')],['申请原因',a.reason],...(a.mode==='referral'?[['转介绍人',a.referrer],['被转介绍人',a.sm],['被转介绍人组长',a.leader]]:[]),...(!pending?[['审批人',t.approver],['审批时间',t.approveTime],['审批意见',t.rejectReason||t.approvalNote||'通过'],['生成商机',t.createdOppId||'未生成']]:[])].map(([label,value])=>`<div><dt>${label}</dt><dd>${esc(value||'—')}</dd></div>`).join('')}</dl>${v69AttachmentList(a.mode==='referral'?[a.evidence?.leader].filter(Boolean):(a.attachments||[]))}${pending?'<label class="v68-field"><span>审批意见</span><textarea id="v68ApprovalNote" aria-label="审批意见" placeholder="驳回时必填"></textarea></label>':''}</div>`,pending?`<button class="btn default" data-act="closeModal">取消</button><button class="btn default" data-act="v68ApprovalReject" data-id="${esc(id)}">驳回</button><button class="btn" data-act="v68ApprovalAccept" data-id="${esc(id)}">通过并生成商机</button>`:undefined);
+ const t=TODOS.find(t=>t.id===id);if(!t||!v21FlowAllowed(t)&&!v21CanOperate(t))return;return v68ReviewRecord(t);
+}
+function v68ReviewRecord(t,preview=false){
+ const id=t.id,a=t.allocation||{},pending=!preview&&t.status==='待处理'&&v21CanOperate(t),p=findProject(t.project);
+ v68Modal(t.type,`${preview?'<div class="v68-source">演示业务资料 · 只读</div>':''}<div class="v68-review"><div class="v68-project-head"><strong>${esc(p?.[1]||t.project)}</strong><span>${esc(t.status)}</span></div><dl>${[['申请人',t.initiator],['项目区域',t.region],['商机品类',a.cat],['接收 SM',a.sm],['SM 区域',V68_SMS.find(s=>s.name===a.sm)?.regions.join(' / ')],['申请原因',a.reason],...(a.mode==='referral'?[['转介绍人',a.referrer],['被转介绍人',a.sm],['被转介绍人组长',a.leader]]:[]),...(t.status!=='待处理'?[['审批人',t.approver],['审批时间',t.approveTime],['审批意见',t.rejectReason||t.approvalNote||'通过'],['生成商机',t.createdOppId||'未生成']]:[])].map(([label,value])=>`<div><dt>${label}</dt><dd>${esc(value||'—')}</dd></div>`).join('')}</dl>${v69AttachmentList(a.mode==='referral'?[a.evidence?.leader].filter(Boolean):(a.attachments||[]))}${pending?'<label class="v68-field"><span>审批意见</span><textarea id="v68ApprovalNote" aria-label="审批意见" placeholder="驳回时必填"></textarea></label>':''}</div>`,pending?`<button class="btn default" data-act="closeModal">取消</button><button class="btn default" data-act="v68ApprovalReject" data-id="${esc(id)}">驳回</button><button class="btn" data-act="v68ApprovalAccept" data-id="${esc(id)}">通过并生成商机</button>`:undefined);
 }
 const v68BaseActs=todoActs;
 const v68BaseSubject=todoSubject;
@@ -65383,22 +65386,56 @@ function v72Inbox(){
  <aside class="v72-conversations"><div class="v72-inbox-title"><strong>消息</strong></div><div class="v72-conversation on"><div class="v72-crm-avatar">G</div><div><header><strong>敬城 CRM</strong><small>企业应用</small></header><b>${esc(latest?.title||'业务通知')}</b></div></div></aside>
  <main class="v72-chat"><header class="v72-chat-head"><div><strong>敬城 CRM</strong><span>应用通知</span></div><span class="v72-app-tag">企业应用</span></header><div class="v72-chat-body" tabindex="0" aria-label="通知消息记录">${messages.map(m=>`<section class="v73-message"><div class="v72-chat-time">${esc(m.time)}</div><div class="v72-chat-message"><div class="v72-crm-avatar">G</div><div class="v72-bubble"><div class="v72-sender">敬城 CRM</div>${v72Card(m)}<div class="v73-demo-context">${m.sample?'样例':'本地业务演示'} · 接收人：${esc(m.recipient)}</div></div></div></section>`).join('')||'<div class="v72-empty">暂无通知</div>'}</div><footer class="v72-chat-footer">卡片显示发送时的状态，点击后以业务页面当前结果为准。${V72.storageOk?'':'<b>本地通知记录未能保存，请检查浏览器存储空间。</b>'}</footer></main></section></div>`;
 }
+// Resolve sample cards to matching CRM records without creating business data.
+function v74NotificationTask(m){
+ if(m.task)return TODOS.find(t=>t.id===m.task)||null;
+ if(!m.sample)return null;
+ const status=m.status==='已确认'?'待处理':m.status;
+ const matches=TODOS.filter(t=>t.type===m.type&&t.customer===m.customer&&(!m.project||t.project===m.project)&&(!m.category||(t.allocation?.cat||todoCatKey(t))===m.category)&&t.status===status);
+ return matches.length===1?matches[0]:null;
+}
+function v74TaskContext(task){
+ v3CloseDialog();V21.stay='all';todoQuick='';todoSearch='';todoProject='';todoFilter=task.type;todoStatus=task.status;WK.sort='oldest';
+ V18.context=TODOS.some(t=>t.id===task.id)?{ids:[task.id],source:'企微通知',label:v18Name(task.type),scope:v21ScopeName()}:null;
+ openPage('todos');
+}
+function v74DemoRecord(m){
+ const mode=m.type==='转介绍商机审批待办'?'referral':'cross',sm=mode==='cross'?'中东 · 家具SM':'林晓';
+ return {id:'notification-preview-'+m.id,type:m.type,status:m.status==='已确认'?'待处理':m.status,customer:m.customer,project:m.project,cat:m.category,region:'北美',owner:m.recipient,initiator:'叶志松(Andy Ye)',time:m.time,
+ allocation:{mode,cat:m.category,sm,reason:mode==='cross'?'客户希望由已沟通的跨区域方案经理继续跟进家具方案。':'客户由内部同事转介绍，由被转介绍方案经理承接家具需求。',referrer:'覃文康(Chum)',leader:'家具组长',attachments:[],evidence:{}},
+ rejectReason:m.status==='已驳回'?'请补充被转介绍人组长同意截图。':'',approver:m.status==='已处理'||m.status==='已驳回'?'总经办审批岗':'',approveTime:m.status==='已处理'||m.status==='已驳回'?m.time:'',approvalNote:m.status==='已处理'?'审批通过':''};
+}
+function v74DemoBusiness(m){
+ const t=v74DemoRecord(m);v74TaskContext(t);
+ if(V68_APPROVALS.includes(t.type))return v68ReviewRecord(t,true);
+ const preProject=['客户待办','设计待办','创建项目待办'].includes(t.type);
+ const fields=[['客户名称',t.customer],...(!preProject?[['项目',m.projectName],['品类',m.category]]:[]),['处理状态',t.status],['负责人',t.owner],['业务事项',m.body]];
+ v68Modal(v18Name(t.type)+'详情',`<div class="v68-source">演示业务资料 · 只读</div>${v69CustomerInfo(t)}<div class="v68-review"><dl>${fields.filter(([,v])=>v).map(([k,v])=>`<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl></div>`);
+}
+function v74ProjectAllowed(project){return !!findProject(project)&&(v21SuperAdmin()||TODOS.some(t=>t.project===project&&(v21FlowAllowed(t)||v21CanOperate(t))));}
 function v72Go(id){
  const m=V72.messages.find(m=>m.id===id);if(!m)return;
- if(m.sample){
-  v68Modal('通知演示详情',`<div class="v72-sample-detail">${v72Card({...m,sample:true})}<div class="v72-sample-note">此卡片用于演示通知内容，不会创建或处理业务待办。正式通知将定位到对应的客户需求、审批、报价或订单。</div></div>`,`<button class="btn default" data-act="closeModal">关闭</button>${m.project?`<button class="btn" data-act="v72ProjectFlow" data-project="${esc(m.project)}">查看示例项目流程</button>`:''}`);
-  document.querySelector('#mBody .v72-card-action')?.remove();return;
+ const task=v74NotificationTask(m);
+ if(m.target==='quote'||m.order||m.title==='销售订单已生成'){
+  if(!v74ProjectAllowed(m.project))return toast('当前账号无权查看此项目');
+  v3CloseDialog();archiveProject=m.project;
+  if(m.order||m.title==='销售订单已生成'){pdTab='order';archOpen=false;archEditable=false;return openPage('detail');}
+  QUOTE_UI.space='全部空间';QUOTE_UI.cat=m.category&&!m.category.includes('、')?m.category:'全部品类';QUOTE_UI.search='';
+  return openPage('board');
  }
- const task=TODOS.find(t=>t.id===m.task);
- if(m.target==='quote'){
-  if(!v21SuperAdmin()&&!v21FlowAnchors().some(t=>t.project===m.project))return toast('当前账号无权查看此项目');
-  archiveProject=m.project;return openPage('board');
- }
- if(!task)return toast('此事项已不可用，请在待办中心查看当前记录');
+ if(!task){if(m.sample&&v21SuperAdmin())return v74DemoBusiness(m);return toast('此事项已不可用，请在待办中心查看当前记录');}
  if(!v21FlowAllowed(task)&&!v21CanOperate(task))return toast('当前账号已无此事项的查看或处理权限');
- if(task.status!=='待处理'||m.target==='flow')return openDealFlow(task);
- if(!v21CanOperate(task))return openDealFlow(task);
- v19ToTasks([task],'企微通知 · '+v18Name(task.type));
+ v74TaskContext(task);
+ if(V68_APPROVALS.includes(task.type))return v68Review(task.id);
+ if(task.status!=='待处理'||!v21CanOperate(task))return openDealFlow(task);
+ if(['客户待办','设计待办','创建项目待办','订单待办'].includes(task.type)){
+  const button=document.createElement('button');button.dataset.act='plannedTodoDo';button.dataset.id=task.id;return handleAct(button);
+ }
+ if(task.type==='项目待办')return v68Allocation(task.project);
+ if(task.type==='草稿报价待办'){
+  const button=document.createElement('button');button.dataset.act='v3EditTodo';button.dataset.id=task.id;return handleAct(button);
+ }
+ if(task.type==='确认商机'){archiveProject=task.project;archiveTodoId=task.id;return openDrawer('archive');}
 }
 const v72Handle=handleAct;
 handleAct=function(button){
