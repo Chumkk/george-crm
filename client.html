@@ -1729,6 +1729,19 @@ html[data-entry=client] .app,html[data-entry=client] .cq-close{display:none!impo
 #pages>.page[data-kind^="wecom-"]{padding:0!important}.v72-page{box-sizing:border-box;display:flex;flex-direction:column;width:100%;height:calc(100vh - 68px);min-height:620px;padding:22px 28px}.v72-window{height:auto;flex:1;min-height:0;max-height:none}.v72-page-head,.v72-demo-toolbar{flex-shrink:0}
 @media(max-width:1200px){.v72-page{padding:20px}.v72-window{grid-template-columns:50px 236px minmax(0,1fr)}.v72-chat-body{padding:20px 18px}.v72-chat-message>.v72-crm-avatar{display:none}.v72-demo-toolbar>span{width:100%}}
 @media(max-width:760px){.v72-window{grid-template-columns:180px minmax(0,1fr)}.v72-app-rail{display:none}.v72-page-head{align-items:flex-start;flex-direction:column;gap:8px}.v72-page-head h1{font-size:22px}.v72-message-card h2{font-size:15px}.v72-chat-body{padding:15px 10px}}
+
+.v72-window{grid-template-columns:58px 230px minmax(0,1fr)}
+.v72-conversations .v72-conversation{cursor:default;min-height:78px;border-bottom:0}
+.v72-chat-body{scrollbar-gutter:stable}
+.v73-message{margin-bottom:28px}.v73-message:last-child{margin-bottom:0}
+.v72-chat-time{margin:0 0 16px}.v72-bubble{max-width:450px}
+.v72-message-card h2{margin:19px 20px 12px;font-size:17px}
+.v73-description{font-size:12px;line-height:1.9;margin:0 20px 18px;overflow-wrap:anywhere}
+.v73-description .gray{color:#98a2ad;margin-bottom:8px}.v73-description .normal{color:#3c4b58}
+.v73-demo-context{font-size:10px;color:#8a98a5;margin-top:9px}
+@media(max-width:1200px){.v72-window{grid-template-columns:48px 188px minmax(0,1fr)}}
+@media(max-width:900px){.v72-window{grid-template-columns:1fr}.v72-app-rail,.v72-conversations{display:none}.v72-chat-message>.v72-crm-avatar{display:grid}.v72-bubble{max-width:450px}.v72-demo-toolbar>span{line-height:1.7}}
+@media(max-width:560px){.v72-demo-toolbar label{width:100%}.v72-demo-toolbar select{width:100%;min-width:0}.v72-chat-message>.v72-crm-avatar{display:none}.v72-page{padding:14px}.v72-demo-label{white-space:normal}}
 </style></head>
 <body><section id="crmBoot" aria-label="页面加载"><div class="crm-boot-content"><img src="./media-c0dfa53a5ef5434ada0a.png" alt="George 敬城国际"><h1>敬城 CRM</h1><p id="crmBootMessage" role="status" aria-live="polite">让理想空间成为日常</p><div class="crm-boot-progress" id="crmBootProgress" aria-hidden="true"></div><button id="crmBootRetry" type="button" hidden onclick="location.reload()">重新加载</button><noscript><style>#crmBootProgress{display:none!important}</style><p>请启用浏览器的 JavaScript 后刷新页面。</p></noscript></div></section>
 <div class="app">
@@ -62503,7 +62516,13 @@ mountSpace3D=function(host){
 const V5={homeFilter:'全部',navMini:wkRead('crm-nav-mini-v5',false)};
 const V5_NAV=[['工作空间',[['home','home','工作台'],['todos','check','待办中心']]],['客户与项目',[['customers','users','客户管理'],['projects','brief','项目管理'],['opps','chart','商机管理'],['invite','file','客户邀请函'],['arrival','home','邀约到店'],['sea','users','客户公海']]],['方案与报价',[['drafts','file','草稿报价'],['mall','grid','商城选品']]]];
 function v5Nav(){const kind=pageKind(page),active=({board:'projects',detail:'projects',oppDetail:'opps',custDetail:'customers',draftEditor:'drafts'})[kind]||kind;return `<div class="v5-nav-top"><span>业务工作空间</span><button data-v5="foldNav" title="${V5.navMini?'展开导航':'收起导航'}" aria-label="${V5.navMini?'展开导航':'收起导航'}"><svg class="sky-icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/></svg></button></div><nav class="v5-nav-links" aria-label="主导航">${V5_NAV.map(([name,items])=>`<section><div class="v5-nav-group">${name}</div>${items.map(([id,icon,label])=>`<button data-v5="nav" data-page="${id}" class="${active===id?'on':''}" ${active===id?'aria-current="page"':''} title="${label}">${skyIcon(icon)}<span>${label}</span>${id==='todos'?`<small>${visibleTodos().filter(t=>t.status==='待处理').length}</small>`:''}</button>`).join('')}</section>`).join('')}</nav><div class="v5-nav-bottom">${companyLogo("company-logo-light")}<p>让理想空间成为日常</p></div>`;}
-function v5SyncNav(){const nav=document.getElementById('v5Nav');if(nav)nav.innerHTML=v5Nav();document.querySelector('.app').classList.toggle('v5-nav-mini',V5.navMini);}
+function v5SyncNav(){
+ const nav=document.getElementById('v5Nav'),links=nav?.querySelector('.v5-nav-links'),scrollTop=links?.scrollTop||0;
+ if(nav)nav.innerHTML=v5Nav();
+ document.querySelector('.app').classList.toggle('v5-nav-mini',V5.navMini);
+ // Rebuilding the selected menu must not send the navigation scrollbar to the top.
+ const next=nav?.querySelector('.v5-nav-links');if(next)next.scrollTop=scrollTop;
+}
 function v5ShortDate(value){return String(value||'').slice(5,16)||'—';}
 pageHome=function(){const c=v3Counts(),pending=visibleTodos().filter(t=>t.status==='待处理'),recent=pending.filter(t=>V5.homeFilter==='全部'||(V5.homeFilter==='报价'&&t.type==='草稿报价待办')||(V5.homeFilter==='订单'&&t.type==='订单待办')).slice().sort((a,b)=>parseTodoTime(b.time)-parseTodoTime(a.time)).slice(0,5),progress=c.submitted+c.confirmed+c.bound;return `<div class="v5-home"><header class="v5-page-heading"><div><div class="v5-breadcrumb">工作空间 / 首页</div><h1>工作台</h1><p>${esc(V3.user)}，${new Date().getHours()<12?'上午':new Date().getHours()<18?'下午':'晚上'}好。今天的业务进展，尽在掌握。</p></div><div class="v5-heading-right"><span>${new Date().toLocaleDateString('zh-CN',{month:'long',day:'numeric',weekday:'long'})}</span><button class="wk-btn primary" data-act="go:draftEditor">${skyIcon('file')}新建报价</button></div></header><section class="v5-home-banner"><img src="${SKY_ASSETS.hero}" alt="现代家居空间"><div class="v5-banner-copy"><small>敬城 CRM · WORKSPACE</small><h2>让每一份期待，<br>都有恰到好处的回应。</h2><p>从客户需求到空间交付，连接业务的每一步。</p><button data-v3="homeTodos">查看待办 <span>${pending.length}</span>${skyIcon('arrow')}</button></div><div class="v5-banner-caption"><span>DESIGN FOR LIVING</span><i></i><span>成就理想空间</span></div></section><div class="v5-metrics">${[['待处理事项',pending.length,'待跟进的业务事项','brief','todos'],['待客户确认',c.submitted,'已提交报价','file','已提交'],['待绑定商机',c.confirmed,'客户已确认报价','check','已确认'],['进行中项目',PROJECTS.filter(p=>!/关闭|终止|完成/.test(p[4]||'')).length,'当前项目列表','home','projects']].map(([label,n,sub,icon,filter])=>`<button class="v5-metric" data-v3="homeMetric" data-filter="${filter}"><div><span>${label}</span>${skyIcon(icon)}</div><b>${n}<small>项</small></b><p>${sub}</p></button>`).join('')}</div><div class="v5-home-grid"><div class="v5-home-main"><section class="v5-surface"><div class="v5-surface-head"><div><h2>待办事项</h2><span>按到达时间排序</span></div><button class="v5-text-btn" data-v3="homeTodos">全部待办 ${skyIcon('arrow')}</button></div><div class="v5-task-tabs">${['全部','报价','订单'].map(f=>`<button class="${V5.homeFilter===f?'on':''}" data-v5="homeFilter" data-filter="${f}">${f==='全部'?'全部事项':f+'事项'}</button>`).join('')}</div><div class="v5-task-preview">${recent.map(t=>`<div class="v5-task-line"><div class="v5-task-icon">${skyIcon(t.type==='草稿报价待办'?'file':t.type==='订单待办'?'brief':'check')}</div><div class="v5-task-copy"><b>${esc(todoSubject(t))}</b><span>${esc(t.customer||'未关联客户')}<i>·</i>${esc(t.type)}</span></div><div class="v5-task-person"><b>${esc(t.owner||'待分配')}</b><span>${esc(v5ShortDate(t.time))}</span></div><button class="v5-row-open" data-v3="homeTask" data-id="${t.id}" aria-label="查看${esc(todoSubject(t))}">${skyIcon('arrow')}</button></div>`).join('')||'<div class="v3-empty-note">当前没有此类待处理事项</div>'}</div></section><section class="v5-surface v5-projects"><div class="v5-surface-head"><div><h2>项目概览</h2><span>客户与空间方案</span></div><button class="v5-text-btn" data-act="go:projects">全部项目 ${skyIcon('arrow')}</button></div><div class="v5-project-table">${PROJECTS.slice(0,3).map((p,i)=>`<div class="v5-project-row"><span class="v5-project-num">${String(i+1).padStart(2,'0')}</span><div><b>${esc(p[1])}</b><small>${esc(p[0])} · ${esc(p[7])}</small></div><span class="v5-project-status">${esc(p[3]||'跟进中')}</span><button class="v5-text-btn" data-act="go:board" data-proj="${p[0]}">报价总览 ${skyIcon('arrow')}</button></div>`).join('')}</div></section></div><aside class="v5-home-aside"><section class="v5-surface"><div class="v5-surface-head"><div><h2>报价进展</h2><span>${progress} 份已提交草稿</span></div>${skyIcon('chart')}</div><div class="v5-pipeline"><div class="v5-pipeline-bar">${[['submitted',c.submitted],['confirmed',c.confirmed],['bound',c.bound]].map(([k,n])=>`<i class="${k}" style="flex:${n||0}"></i>`).join('')}</div>${[['已提交',c.submitted,'等待客户确认','submitted'],['已确认',c.confirmed,'等待绑定商机','confirmed'],['已绑定',c.bound,'进入订单执行','bound']].map(([label,n,sub,tone])=>`<button data-v3="homeMetric" data-filter="${label}"><i class="${tone}"></i><div><b>${label}</b><small>${sub}</small></div><strong>${n}</strong>${skyIcon('arrow')}</button>`).join('')}</div></section><section class="v5-surface"><div class="v5-surface-head"><div><h2>常用入口</h2></div></div><div class="v5-shortcuts">${[['file','新建报价','draftEditor'],['grid','商城选品','mall'],['brief','项目管理','projects'],['users','客户管理','customers']].map(([icon,label,id])=>`<button data-act="go:${id}">${skyIcon(icon)}<span>${label}</span>${skyIcon('arrow')}</button>`).join('')}</div></section><div class="v5-home-signature">${companyLogo()}<p>让理想空间成为日常</p><small>客户 · 方案 · 交付</small></div></aside></div></div>`;};
 RENDER.home=pageHome;
@@ -65320,7 +65339,7 @@ const V72_DEMOS=[
  ['office','转介绍商机申请待审批','待处理','请核对转介绍人、被转介绍 SM 及其组长同意截图。本次申请直接创建新商机。','转介绍商机审批待办','todo']
 ];
 const v72Stored=wkRead('crm-wecom-demo-v72',{});
-const V72={messages:Array.isArray(v72Stored.messages)?v72Stored.messages:[],sequence:v72Stored.sequence||0,baseline:v72Snapshot(),filter:{},query:{},recipient:{},selected:{},storageOk:true};
+const V72={messages:Array.isArray(v72Stored.messages)?v72Stored.messages:[],sequence:v72Stored.sequence||0,baseline:v72Snapshot(),scenario:0,scrollTop:null,storageOk:true};
 function v72SaveMessages(){V72.storageOk=wkWrite('crm-wecom-demo-v72',{messages:V72.messages.slice(0,400),sequence:V72.sequence});}
 function v72Sample(index){const [role,title,status,body,type,target]=V72_DEMOS[index],preProject=['客户待办','设计待办','创建项目待办'].includes(type);return {id:'sample-'+index,role,recipient:V72_ROLES[role].person,title,status,body,type,target,project:preProject?'':'PJ0018011',projectName:preProject?'':'【GAD】测试项目',customer:'测试客户8564',category:!preProject&&['sm','pm','office'].includes(role)?'家具':'',sample:true,time:'演示样例',read:false};}
 for(const role of Object.keys(V72_ROLES))if(!V72.messages.some(m=>m.role===role)){
@@ -65330,31 +65349,42 @@ function v72Collect(){
  const next=v72Snapshot(),events=v72NotificationEvents(V72.baseline,next);V72.baseline=next;
  if(!events.length)return;
  const stamp=todoStamp();for(const event of events)V72.messages.unshift({...event,id:'event-'+(++V72.sequence),time:stamp,read:false,sample:false});
- V72.messages=V72.messages.slice(0,400);v72SaveMessages();markPagesDirty();v5SyncNav();
+ V72.messages=V72.messages.slice(0,400);V72.scrollTop=null;v72SaveMessages();markPagesDirty();v5SyncNav();
 }
 const v72BaseSave=v3Save;
 v3Save=function(){const result=v72BaseSave();if(result){try{v72Collect();}catch(error){console.warn('通知演示未更新',error);}}return result;};
-function v72RolePage(role){return 'wecom-'+role;}
-function v72Messages(role){
- const q=(V72.query[role]||'').toLowerCase(),recipient=V72.recipient[role]||'';
- return V72.messages.filter(m=>m.role===role&&(!recipient||m.recipient===recipient)&&(V72.filter[role]!=='unread'||!m.read)&&(!q||[m.title,m.body,m.customer,m.projectName,m.recipient].join(' ').toLowerCase().includes(q)));
+function v72RolePage(){return 'wecom-notifications';}
+function v73Bytes(value){return new TextEncoder().encode(value).length;}
+function v73Clip(value,budget,escape=false){
+ const raw=String(value||'').replace(/[\r\n]+/g,' '),encode=s=>escape?esc(s):s;
+ if(v73Bytes(encode(raw))<=budget)return encode(raw);
+ let result='';for(const char of raw){if(v73Bytes(encode(result+char))+3>budget)break;result+=char;}return encode(result)+'…';
 }
-function v72OpenMessage(id){const m=V72.messages.find(m=>m.id===id);if(!m)return;V72.selected[m.role]=id;m.read=true;v72SaveMessages();openPage(v72RolePage(m.role));}
+function v73TextCard(m){
+ const preProject=['客户待办','设计待办','创建项目待办'].includes(m.type);
+ const lines=['客户：'+v73Clip(m.customer||'—',64,true)];
+ if(m.projectName&&!preProject)lines.push('项目：'+v73Clip(m.projectName,84,true));
+ if(m.category&&!preProject)lines.push('品类：'+v73Clip(m.category,40,true));
+ if(m.revision)lines.push('版本：'+v73Clip(m.revision,24,true));
+ lines.push('状态：'+v73Clip(m.status,30,true));
+ const prefix='<div class="gray">'+v73Clip(m.sample&&m.time==='演示样例'?'演示样例':m.time,40,true)+'</div><div class="normal">'+lines.join('<br>')+'<br>',suffix='</div>';
+ return {title:v73Clip(m.title,120),description:prefix+v73Clip(m.body,Math.max(3,500-v73Bytes(prefix+suffix)),true)+suffix,btntxt:m.target==='quote'?'查看报价':m.target==='flow'?'查看结果':'查看待办'};
+}
 function v72Card(m){
- const targetLabel=m.sample?'查看演示详情':m.target==='quote'?'查看报价总览':m.target==='flow'?'查看办理结果':'查看待办';
- return `<article class="v72-message-card"><div class="v72-message-kicker"><span>${m.sample?'演示样例':'业务通知'}</span><span class="v72-status ${m.status==='已驳回'?'rejected':['已处理','已确认'].includes(m.status)?'done':''}">${esc(m.status)}</span></div><h2>${esc(m.title)}</h2><p>${esc(m.body)}</p><dl><div><dt>客户</dt><dd>${esc(m.customer||'—')}</dd></div>${m.projectName?`<div><dt>项目</dt><dd>${esc(m.projectName)}</dd></div>`:''}${m.category?`<div><dt>品类</dt><dd>${esc(m.category)}</dd></div>`:''}<div><dt>接收人</dt><dd>${esc(m.recipient)}</dd></div></dl><button class="v72-card-action" data-act="v72Go" data-id="${esc(m.id)}">${targetLabel}<span>›</span></button></article>`;
+ const card=v73TextCard(m);
+ return `<article class="v72-message-card"><h2>${esc(card.title)}</h2><div class="v73-description">${card.description}</div><button class="v72-card-action" data-act="v72Go" data-id="${esc(m.id)}">${card.btntxt}<span>›</span></button></article>`;
 }
-function v72Inbox(role){
- const spec=V72_ROLES[role],messages=v72Messages(role),selected=messages.find(m=>m.id===V72.selected[role])||messages[0],unread=V72.messages.filter(m=>m.role===role&&!m.read).length;
- const recipients=[...new Set(V72.messages.filter(m=>m.role===role).map(m=>m.recipient))];
- return `<div class="v72-page"><header class="v72-page-head"><div><div class="v72-eyebrow">WECom / 通知演示</div><h1>${spec.label}的企业微信</h1><p>把下一步送到负责人面前，点击通知回到对应业务。</p></div><span class="v72-demo-label">本地模拟 · 不发送真实消息</span></header>
- <div class="v72-demo-toolbar"><label>演示场景<select data-v72-scenario="${role}" aria-label="选择通知演示场景">${V72_DEMOS.map((d,i)=>d[0]===role?`<option value="${i}">${d[1]}</option>`:'').join('')}</select></label><button class="wk-btn primary" data-act="v72Simulate" data-role="${role}">模拟收到通知</button><span>实际办理 CRM 待办，也会在这里生成通知。</span></div>
- <section class="v72-window" aria-label="企业微信通知窗口"><aside class="v72-app-rail"><div class="v72-user-avatar">${spec.letter}</div><div class="v72-rail-icon active">${skyIcon('file')}</div><div class="v72-rail-icon">${skyIcon('users')}</div><div class="v72-rail-icon">${skyIcon('grid')}</div><span>企微</span></aside>
- <aside class="v72-conversations"><div class="v72-inbox-title"><strong>消息</strong><span>${unread?unread+' 未读':'全部已读'}</span></div><label class="v72-message-search">${skyIcon('search')}<input data-v72-search="${role}" aria-label="搜索通知" placeholder="搜索通知、客户、项目" value="${esc(V72.query[role]||'')}"></label><select class="v72-recipient" data-v72-recipient="${role}" aria-label="查看接收人"><option value="">${spec.label} · 全部接收人</option>${recipients.map(n=>`<option value="${esc(n)}" ${V72.recipient[role]===n?'selected':''}>${esc(n)}</option>`).join('')}</select><div class="v72-message-tabs">${[['all','全部'],['unread','未读']].map(([key,name])=>`<button class="${(V72.filter[role]||'all')===key?'on':''}" data-act="v72Filter" data-role="${role}" data-filter="${key}">${name}</button>`).join('')}<button data-act="v72ReadAll" data-role="${role}">全部已读</button></div><div class="v72-message-list">${messages.map(m=>`<button class="v72-conversation ${selected?.id===m.id?'on':''}" data-act="v72Select" data-id="${esc(m.id)}"><div class="v72-crm-avatar">G${m.read?'':'<i></i>'}</div><div><header><strong>敬城 CRM</strong><small>${m.sample?'演示':esc(m.time.slice(11))}</small></header><b>${esc(m.title)}</b><p>${esc(m.projectName||m.customer)}</p></div></button>`).join('')||'<div class="v72-empty">没有匹配的通知</div>'}</div></aside>
- <main class="v72-chat"><header class="v72-chat-head"><div><strong>敬城 CRM</strong><span>应用通知 · ${esc(selected?.recipient||spec.label)}</span></div><span class="v72-app-tag">企业应用</span></header><div class="v72-chat-body">${selected?`<div class="v72-chat-time">${esc(selected.time)}${selected.sample?' · 仅展示样式':''}</div><div class="v72-chat-message"><div class="v72-crm-avatar">G</div><div class="v72-bubble"><div class="v72-sender">敬城 CRM</div>${v72Card(selected)}<div class="v72-message-read">${selected.read?'已读':'未读'} · ${selected.sample?'演示通知':'本地模拟送达'}</div>${!selected.read?`<button class="v72-mark-read" data-act="v72Select" data-id="${esc(selected.id)}">标为已读</button>`:''}</div></div>`:'<div class="v72-empty">选择左侧通知查看内容</div>'}</div><footer class="v72-chat-footer">消息已读不代表待办已处理，办理结果以 CRM 当前状态为准。${V72.storageOk?'':'<b>本地通知记录未能保存，请检查浏览器存储空间。</b>'}</footer></main></section></div>`;
+function v72Inbox(){
+ const messages=V72.messages.slice().reverse(),latest=V72.messages[0];
+ setTimeout(()=>{const body=document.querySelector('.page.on .v72-chat-body');if(body)body.scrollTop=V72.scrollTop??body.scrollHeight;},0);
+ return `<div class="v72-page"><header class="v72-page-head"><div><div class="v72-eyebrow">WECom / 通知演示</div><h1>企业微信通知</h1><p>各类业务通知进入同一个应用会话，点击卡片查看对应事项。</p></div><span class="v72-demo-label">本地模拟 · 不发送真实消息</span></header>
+ <div class="v72-demo-toolbar"><label>演示场景<select data-v72-scenario="all" aria-label="选择通知演示场景">${Object.entries(V72_ROLES).map(([key,spec])=>`<optgroup label="${spec.label}">${V72_DEMOS.map((d,i)=>d[0]===key?`<option value="${i}" ${V72.scenario===i?'selected':''}>${d[1]}</option>`:'').join('')}</optgroup>`).join('')}</select></label><button class="wk-btn primary" data-act="v72Simulate">模拟收到通知</button><span>集中展示各接收人的样例；正式使用时每人只收到发给自己的通知。</span></div>
+ <section class="v72-window" aria-label="企业微信通知窗口"><aside class="v72-app-rail"><div class="v72-user-avatar">G</div><div class="v72-rail-icon active">${skyIcon('file')}</div><div class="v72-rail-icon">${skyIcon('users')}</div><div class="v72-rail-icon">${skyIcon('grid')}</div><span>企微</span></aside>
+ <aside class="v72-conversations"><div class="v72-inbox-title"><strong>消息</strong></div><div class="v72-conversation on"><div class="v72-crm-avatar">G</div><div><header><strong>敬城 CRM</strong><small>企业应用</small></header><b>${esc(latest?.title||'业务通知')}</b></div></div></aside>
+ <main class="v72-chat"><header class="v72-chat-head"><div><strong>敬城 CRM</strong><span>应用通知</span></div><span class="v72-app-tag">企业应用</span></header><div class="v72-chat-body" tabindex="0" aria-label="通知消息记录">${messages.map(m=>`<section class="v73-message"><div class="v72-chat-time">${esc(m.time)}</div><div class="v72-chat-message"><div class="v72-crm-avatar">G</div><div class="v72-bubble"><div class="v72-sender">敬城 CRM</div>${v72Card(m)}<div class="v73-demo-context">${m.sample?'样例':'本地业务演示'} · 接收人：${esc(m.recipient)}</div></div></div></section>`).join('')||'<div class="v72-empty">暂无通知</div>'}</div><footer class="v72-chat-footer">卡片显示发送时的状态，点击后以业务页面当前结果为准。${V72.storageOk?'':'<b>本地通知记录未能保存，请检查浏览器存储空间。</b>'}</footer></main></section></div>`;
 }
 function v72Go(id){
- const m=V72.messages.find(m=>m.id===id);if(!m)return;m.read=true;v72SaveMessages();
+ const m=V72.messages.find(m=>m.id===id);if(!m)return;
  if(m.sample){
   v68Modal('通知演示详情',`<div class="v72-sample-detail">${v72Card({...m,sample:true})}<div class="v72-sample-note">此卡片用于演示通知内容，不会创建或处理业务待办。正式通知将定位到对应的客户需求、审批、报价或订单。</div></div>`,`<button class="btn default" data-act="closeModal">关闭</button>${m.project?`<button class="btn" data-act="v72ProjectFlow" data-project="${esc(m.project)}">查看示例项目流程</button>`:''}`);
   document.querySelector('#mBody .v72-card-action')?.remove();return;
@@ -65372,24 +65402,20 @@ function v72Go(id){
 }
 const v72Handle=handleAct;
 handleAct=function(button){
- const a=button?.dataset?.act,role=button?.dataset?.role;
- if(a==='v72Select')return v72OpenMessage(button.dataset.id);
+ const a=button?.dataset?.act;
  if(a==='v72Go')return v72Go(button.dataset.id);
- if(a==='v72Filter'){V72.filter[role]=button.dataset.filter;return openPage(v72RolePage(role));}
- if(a==='v72ReadAll'){V72.messages.filter(m=>m.role===role&&(!V72.recipient[role]||m.recipient===V72.recipient[role])).forEach(m=>m.read=true);v72SaveMessages();return openPage(v72RolePage(role));}
  if(a==='v72Simulate'){
   const select=document.querySelector('.page.on [data-v72-scenario]'),index=Number(select?.value),sample=v72Sample(index);
-  sample.id='demo-'+(++V72.sequence);sample.time=todoStamp();V72.messages.unshift(sample);V72.selected[role]=sample.id;V72.filter[role]='all';V72.query[role]='';V72.recipient[role]='';v72SaveMessages();openPage(v72RolePage(role));toast('已模拟收到一条企微通知');return;
+  sample.id='demo-'+(++V72.sequence);sample.time=todoStamp();V72.messages.unshift(sample);V72.scenario=index;V72.scrollTop=null;v72SaveMessages();openPage(v72RolePage());toast('已模拟收到一条企微通知');return;
  }
  if(a==='v72ProjectFlow'){const t=TODOS.find(t=>t.project===button.dataset.project&&t.type==='项目待办');return t?openDealFlow(t):toast('该示例项目暂无流程记录');}
  return v72Handle(button);
 };
-document.addEventListener('change',event=>{const e=event.target,role=e.dataset.v72Recipient;if(role){V72.recipient[role]=e.value;openPage(v72RolePage(role));}});
-document.addEventListener('input',event=>{const e=event.target,role=e.dataset.v72Search;if(role){const cursor=e.selectionStart;V72.query[role]=e.value;openPage(v72RolePage(role));const next=document.querySelector('.page.on [data-v72-search]');next?.focus();next?.setSelectionRange(cursor,cursor);}});
-V5_NAV.push(['企微通知演示',Object.entries(V72_ROLES).map(([role,spec])=>[v72RolePage(role),'file',spec.label+'通知'])]);
-for(const [role,spec] of Object.entries(V72_ROLES)){const key=v72RolePage(role);RENDER[key]=()=>v72Inbox(role);TAB_NAME[key]='企微 · '+spec.label;PAGE_LIVE_KINDS.push(key);}
-const v72BaseNav=v5Nav;
-v5Nav=function(){const box=document.createElement('div');box.innerHTML=v72BaseNav();for(const role of Object.keys(V72_ROLES)){const count=V72.messages.filter(m=>m.role===role&&!m.read).length,button=box.querySelector('[data-page="'+v72RolePage(role)+'"]');if(button&&count)button.insertAdjacentHTML('beforeend','<small>'+count+'</small>');}return box.innerHTML;};
+document.addEventListener('change',event=>{if(event.target.hasAttribute('data-v72-scenario'))V72.scenario=Number(event.target.value);});
+document.addEventListener('scroll',event=>{if(event.target?.matches?.('.page.on .v72-chat-body'))V72.scrollTop=event.target.scrollTop;},true);
+// One application conversation; historical local read flags are retained but not exposed as WeCom receipts.
+V5_NAV.find(([name])=>name==='工作空间')[1].push([v72RolePage(),'file','企微通知']);
+RENDER[v72RolePage()]=v72Inbox;TAB_NAME[v72RolePage()]='企微通知';PAGE_LIVE_KINDS.push(v72RolePage());
 v5SyncNav();
 
 v58OpenSharedQuote();
