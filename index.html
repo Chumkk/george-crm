@@ -1686,6 +1686,49 @@ html[data-entry=client] .app,html[data-entry=client] .cq-close{display:none!impo
 .v68-field #v69SmScope:empty{display:none}
 .v69-project-scope{display:flex;flex-wrap:wrap;gap:7px 26px;padding:12px 14px;background:#f2f7fb;border-radius:6px;line-height:1.7;color:#355c76}
 .v69-project-scope span{display:flex;gap:10px}.v69-project-scope b{font-weight:400;color:#8b9eae;white-space:nowrap}
+
+.v71-flow-options{margin:20px 0 16px;padding:14px;border:1px solid #dce7ef;border-radius:10px;background:#f8fbfd}
+.v71-flow-options-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:10px}
+.v71-flow-options-head h3{margin:0;font-size:13px;font-weight:600;color:#25465e}
+.v71-flow-count{margin-left:6px;font-size:11px;font-weight:400;color:#7b91a4;font-variant-numeric:tabular-nums}
+.v71-flow-search{width:220px;max-width:50%}
+.v71-flow-search input{box-sizing:border-box;width:100%;height:32px;padding:0 10px;border:1px solid #d7e3ed;border-radius:6px;background:white;font:inherit;font-size:12px;color:#25465e}
+.v71-flow-options .deal-flow-switch{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px;max-height:244px;overflow:auto;overscroll-behavior:contain;margin:0;padding:1px 4px 1px 1px;scrollbar-gutter:stable}
+.v71-flow-options .deal-flow-switch button{display:flex;flex-direction:column;justify-content:center;gap:5px;min-width:0;min-height:64px;margin:0;padding:9px 11px;text-align:left;background:#fff;border:1px solid #dce6ef;border-radius:7px;color:#31566f;box-shadow:none;transition:background .15s,border-color .15s}
+.v71-flow-options .deal-flow-switch button:hover{border-color:#91c7e9;background:#f3faff}
+.v71-flow-options .deal-flow-switch button.on{border-color:#3ca7e4;background:#eaf6ff;box-shadow:inset 3px 0 #3ca7e4}
+.v71-option-top{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;min-width:0}
+.v71-option-top strong{font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.v71-option-sm{font-size:11px;color:#72899d;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+.v71-flow-status{display:inline-flex!important;flex:none;align-items:center;gap:4px;padding:2px 6px;border-radius:4px;line-height:17px!important;font-size:10px!important;font-weight:400!important;white-space:nowrap}
+.v71-flow-status:before{content:"";width:4px;height:4px;background:currentColor;border-radius:50%}
+.v71-flow-status.pending{color:#aa762f!important;background:#fff4e2}
+.v71-flow-status.done{color:#3c8b72!important;background:#eaf6ef}
+.v71-flow-status.rejected{color:#be6262!important;background:#fff0ef}
+.v71-flow-options button[hidden],.v71-flow-empty[hidden]{display:none!important}
+.v71-flow-empty{margin:0;padding:24px;text-align:center;color:#7b91a4;font-size:12px}
+.v71-request-switch{gap:10px!important;padding-bottom:10px!important;scrollbar-gutter:stable}
+.v71-request-switch>button{width:240px;min-height:90px;flex:0 0 240px;box-sizing:border-box;padding:12px!important;display:flex;flex-direction:column;gap:8px;text-align:left}
+.v71-request-heading{display:flex!important;align-items:center;justify-content:space-between;gap:12px;width:100%;margin:0!important}
+.v71-request-heading>span:first-child{font-size:11px;color:#7b91a4}
+.v71-request-switch b{display:block;width:100%;margin:0!important;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;line-height:18px}
+.v71-request-switch small{display:block;width:100%;margin:0!important;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.v71-flow-options button:focus-visible,.v71-request-switch button:focus-visible,.v71-flow-search input:focus-visible{outline:2px solid #2e9de0;outline-offset:2px}
+.v71-sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(max-width:640px){.v71-flow-options .deal-flow-switch{grid-template-columns:repeat(2,minmax(0,1fr))}.v71-flow-search{width:180px}.v71-flow-options{padding:10px}.v71-option-top{flex-wrap:wrap;gap:4px}}
+
+.v72-page{max-width:1500px;margin:auto;padding:26px 30px 32px;color:#294052}
+.v72-page-head{display:flex;align-items:center;justify-content:space-between;gap:24px;margin-bottom:22px}.v72-eyebrow{font-size:10px;letter-spacing:1.8px;color:#7c93a2;margin-bottom:7px}.v72-page-head h1{font-size:26px;margin:0 0 8px;font-weight:650}.v72-page-head p{margin:0;color:#8093a0;font-size:12px}.v72-demo-label{border:1px solid #dce7ec;padding:7px 11px;border-radius:20px;font-size:11px;color:#6b8494;background:#fff;white-space:nowrap}
+.v72-demo-toolbar{display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap}.v72-demo-toolbar label{display:flex;align-items:center;gap:12px;font-size:12px}.v72-demo-toolbar select{max-width:370px;width:330px;height:36px;border:1px solid #d8e3e9;border-radius:6px;padding:0 10px;background:#fff;color:#315469}.v72-demo-toolbar>span{font-size:11px;color:#8294a1}
+.v72-window{display:grid;grid-template-columns:58px 278px minmax(0,1fr);height:calc(100vh - 278px);min-height:520px;max-height:780px;border:1px solid #d9e1e8;border-radius:12px;overflow:hidden;box-shadow:0 14px 46px #163b5410;background:#f4f5f6}
+.v72-app-rail{background:#e4e8eb;display:flex;align-items:center;flex-direction:column;gap:25px;padding:18px 0;color:#7e8b96}.v72-user-avatar{width:34px;height:34px;border-radius:8px;background:#829baa;color:#fff;display:grid;place-items:center;font-size:15px;margin-bottom:8px}.v72-rail-icon{width:36px;height:36px;border-radius:7px;display:grid;place-items:center}.v72-rail-icon.active{color:#318bde;background:#cbdceb}.v72-rail-icon svg{width:20px;height:20px}.v72-app-rail>span{margin-top:auto;font-size:11px;color:#8896a0}
+.v72-conversations{display:flex;flex-direction:column;min-height:0;border-right:1px solid #dce2e7;background:#f8f9fa}.v72-inbox-title{display:flex;justify-content:space-between;align-items:center;padding:20px 17px 14px}.v72-inbox-title strong{font-size:16px;color:#253542}.v72-inbox-title span{font-size:10px;color:#8b9aa5}.v72-message-search{display:flex;align-items:center;background:#edf0f2;border-radius:5px;padding:0 9px;margin:0 14px 10px;gap:7px}.v72-message-search svg{width:14px;height:14px;color:#8999a4}.v72-message-search input{border:0;background:none;width:100%;height:32px;outline:none;font-size:11px;color:#4a6272}.v72-recipient{margin:0 14px 10px;border:1px solid #dce4e9;border-radius:5px;background:white;height:30px;min-width:0;padding:0 7px;font-size:11px;color:#657b8b}.v72-message-tabs{display:flex;gap:13px;padding:0 16px 10px;align-items:center}.v72-message-tabs button{padding:4px 0;color:#8796a3;border:0;background:none;font-size:11px;cursor:pointer}.v72-message-tabs button.on{color:#298ee5;border-bottom:2px solid #298ee5}.v72-message-tabs button:last-child{margin-left:auto;font-size:10px}.v72-message-list{overflow:auto;min-height:0;flex:1;overscroll-behavior:contain}
+.v72-conversation{display:flex;width:100%;min-height:92px;border:0;border-bottom:1px solid #e9eef1;background:transparent;padding:17px 14px;gap:11px;text-align:left;cursor:pointer}.v72-conversation:hover{background:#edf1f4}.v72-conversation.on{background:#e0ebf4}.v72-crm-avatar{position:relative;flex-shrink:0;display:grid;place-items:center;width:38px;height:38px;border-radius:7px;background:#398fe5;color:#fff;font-size:22px;font-weight:600;font-family:Georgia,serif}.v72-crm-avatar i{position:absolute;width:8px;height:8px;border-radius:50%;background:#f66b63;right:-3px;top:-3px;border:2px solid #f8f9fa;box-sizing:content-box}.v72-conversation>div:last-child{min-width:0;flex:1}.v72-conversation header{display:flex;justify-content:space-between;gap:10px;align-items:center}.v72-conversation header strong{font-size:12px;font-weight:550;color:#354e60}.v72-conversation header small{font-size:9px;color:#9aa6af}.v72-conversation b{font-size:11px;font-weight:400;color:#567084;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:6px}.v72-conversation p{font-size:10px;color:#8d9da9;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:5px 0 0}
+.v72-chat{display:flex;flex-direction:column;min-width:0;min-height:0;background:#f2f4f6}.v72-chat-head{height:76px;flex:none;border-bottom:1px solid #e1e6eb;display:flex;align-items:center;justify-content:space-between;padding:0 25px;background:#fafbfc}.v72-chat-head strong{font-size:16px;font-weight:550;display:block;color:#243c4f}.v72-chat-head>div>span{display:block;margin-top:5px;color:#98a6b0;font-size:11px}.v72-app-tag{font-size:10px;color:#7fa78e;background:#eaf5ee;padding:4px 6px;border-radius:3px}.v72-chat-body{flex:1;overflow:auto;padding:22px 28px;min-height:0;overscroll-behavior:contain}.v72-chat-time{text-align:center;color:#9da8b0;font-size:10px;margin-bottom:24px}.v72-chat-message{display:flex;gap:13px;align-items:flex-start}.v72-bubble{max-width:460px;min-width:0;flex:1}.v72-sender{font-size:11px;color:#8c9ba7;margin-bottom:8px}.v72-message-card{border:1px solid #e1e6e9;border-radius:5px;background:white;box-shadow:0 2px 5px #22364a03;overflow:hidden;color:#365267}.v72-message-kicker{display:flex;align-items:center;justify-content:space-between;padding:17px 20px 0;gap:12px}.v72-message-kicker>span:first-child{font-size:10px;color:#97a7b3}.v72-message-card h2{font-size:18px;line-height:1.5;font-weight:600;margin:10px 20px 12px;color:#263e50}.v72-message-card p{font-size:12px;line-height:1.9;margin:0 20px 16px;color:#7c8f9b}.v72-status{font-size:10px;white-space:nowrap;border-radius:4px;padding:3px 6px;color:#af843c;background:#fcf3e3}.v72-status.done{color:#348267;background:#eaf6ee}.v72-status.rejected{color:#c15f59;background:#fff0ee}.v72-message-card dl{margin:0 20px 18px}.v72-message-card dl>div{display:grid;grid-template-columns:58px 1fr;gap:12px;font-size:12px;line-height:1.6;margin:8px 0}.v72-message-card dt{color:#94a1aa}.v72-message-card dd{margin:0;overflow-wrap:anywhere;color:#415e72}.v72-card-action{display:flex;align-items:center;justify-content:space-between;width:100%;border:0;border-top:1px solid #ecf0f3;background:#fff;padding:14px 20px;font-size:12px;color:#348fdf;cursor:pointer}.v72-card-action:hover{background:#f7fbff}.v72-card-action>span{font-size:20px;line-height:15px}.v72-message-read{font-size:10px;color:#9dabb5;margin-top:10px}.v72-mark-read{padding:3px 0;background:none;border:0;color:#5a9dc9;font-size:10px;cursor:pointer}.v72-chat-footer{padding:14px 24px;border-top:1px solid #e0e6eb;background:#fafbfc;color:#9ba8b1;font-size:10px;line-height:1.8}.v72-chat-footer b{display:block;color:#b57237}.v72-empty{padding:50px 20px;text-align:center;font-size:12px;color:#93a2ae}.v72-sample-detail{max-width:540px;margin:0 auto}.v72-sample-note{padding:15px 0;font-size:12px;color:#8094a1;line-height:1.8}
+.v72-page button:focus-visible,.v72-page select:focus-visible,.v72-page input:focus-visible{outline:2px solid #398fe5;outline-offset:2px}
+#pages>.page[data-kind^="wecom-"]{padding:0!important}.v72-page{box-sizing:border-box;display:flex;flex-direction:column;width:100%;height:calc(100vh - 68px);min-height:620px;padding:22px 28px}.v72-window{height:auto;flex:1;min-height:0;max-height:none}.v72-page-head,.v72-demo-toolbar{flex-shrink:0}
+@media(max-width:1200px){.v72-page{padding:20px}.v72-window{grid-template-columns:50px 236px minmax(0,1fr)}.v72-chat-body{padding:20px 18px}.v72-chat-message>.v72-crm-avatar{display:none}.v72-demo-toolbar>span{width:100%}}
+@media(max-width:760px){.v72-window{grid-template-columns:180px minmax(0,1fr)}.v72-app-rail{display:none}.v72-page-head{align-items:flex-start;flex-direction:column;gap:8px}.v72-page-head h1{font-size:22px}.v72-message-card h2{font-size:15px}.v72-chat-body{padding:15px 10px}}
 </style></head>
 <body><section id="crmBoot" aria-label="页面加载"><div class="crm-boot-content"><img src="./media-c0dfa53a5ef5434ada0a.png" alt="George 敬城国际"><h1>敬城 CRM</h1><p id="crmBootMessage" role="status" aria-live="polite">让理想空间成为日常</p><div class="crm-boot-progress" id="crmBootProgress" aria-hidden="true"></div><button id="crmBootRetry" type="button" hidden onclick="location.reload()">重新加载</button><noscript><style>#crmBootProgress{display:none!important}</style><p>请启用浏览器的 JavaScript 后刷新页面。</p></noscript></div></section>
 <div class="app">
@@ -65118,6 +65161,236 @@ handleAct=function(button){if(['plannedTodoSubmit','confirmCreate','saveProjectE
 const v69ModalObserver=new MutationObserver(()=>{const modal=$('#modalBox');modal?.classList.toggle('v69-allocation-modal',!!document.querySelector('#mask.on .v68-allocation'));document.querySelectorAll('#mBody .planned-head').forEach(el=>el.remove());});
 v69ModalObserver.observe($('#mBody'),{childList:true,subtree:true});
 markPagesDirty();if(!V3.client&&['home','todos'].includes(pageKind(page)))openPage(pageKind(page));
+
+// Display-only progress summaries. Task records remain the source of truth.
+const V71_FLOW_RANK={'客户待办':0,'设计待办':1,'创建项目待办':2,'项目待办':3,'确认商机':4,'跨区域商机审批待办':4,'转介绍商机审批待办':4,'草稿报价待办':5,'订单待办':6};
+function v71FlowBranchKey(t){
+ return (V71_FLOW_RANK[t.type]??-1)>=4?String(t.allocation?.cat||todoCatKey(t))+'|'+String(t.allocation?.sm||todoSmKey(t)):'';
+}
+function v71RequestTasks(origin){
+ const request=origin?.requestId||origin?.id;
+ if(!request)return [];
+ const project=origin.project&&origin.project!=='-'?origin.project:PROJECTS.find(p=>PROJECT_EXTRA[p[0]]?.requestId===request)?.[0];
+ return TODOS.filter(t=>Object.hasOwn(V71_FLOW_RANK,t.type)&&t.type!=='客户待办'&&
+  (t.id===origin.id||t.requestId===request||project&&t.project===project&&(!t.requestId||t.requestId===request)));
+}
+function v71FlowLatest(tasks){
+ // A generated downstream task may still be blocked after an upstream return.
+ const eligible=tasks.filter(t=>Object.hasOwn(V71_FLOW_RANK,t.type)&&
+  !(t.status==='待处理'&&typeof todoBlockedReason==='function'&&todoBlockedReason(t)));
+ const available=eligible.length?eligible:tasks;
+ const pending=available.filter(t=>t.status==='待处理');
+ const list=pending.length?pending:available;
+ return [...list].sort((a,b)=>(V71_FLOW_RANK[b.type]??-1)-(V71_FLOW_RANK[a.type]??-1)||
+  String(b.time||'').localeCompare(String(a.time||'')))[0]||null;
+}
+function v71FlowStatus(tasks){
+ const branches=new Map();
+ for(const t of tasks){const key=v71FlowBranchKey(t);if(key){if(!branches.has(key))branches.set(key,[]);branches.get(key).push(t);}}
+ const latest=branches.size?[...branches.values()].map(v71FlowLatest):[v71FlowLatest(tasks)];
+ const states=latest.filter(Boolean).map(t=>t.status);
+ return states.includes('待处理')?'待处理':states.includes('已驳回')?'已驳回':states.length&&states.every(s=>s==='已处理')?'已处理':'待处理';
+}
+function v71FlowStatusHtml(status){
+ const tone=status==='已处理'?'done':status==='已驳回'?'rejected':'pending';
+ return `<span class="v71-flow-status ${tone}" aria-label="处理状态：${esc(status)}">${esc(status)}</span>`;
+}
+function v71FilterFlowOptions(input){
+ const panel=input.closest('.v71-flow-options'),query=input.value.trim().toLocaleLowerCase();
+ let count=0;
+ for(const button of panel.querySelectorAll('[data-act="dealFlowSwitch"]')){
+  button.hidden=!button.dataset.search.includes(query);if(!button.hidden)count++;
+ }
+ panel.querySelector('.v71-flow-empty').hidden=count>0;
+ panel.querySelector('.v71-flow-count').textContent=query?count+' / '+panel.dataset.total:panel.dataset.total;
+}
+const v71PreviousOpenFlow=openDealFlow;
+openDealFlow=function(item,branch){
+ const previous=document.querySelector('#mBody .v71-flow-options');
+ const scope=item.id+'|'+(item.type==='客户待办'?V45_FLOW.requestId:v45RequestOf(item));
+ const retained=previous?.dataset.scope===scope?{query:previous.querySelector('input').value,scroll:previous.querySelector('.deal-flow-switch').scrollTop}:null;
+ const result=v71PreviousOpenFlow(item,branch),body=document.getElementById('mBody');
+ if(!body)return result;
+ const requests=item.type==='客户待办'?v45Requests(item.id):[];
+ const origin=TODOS.find(t=>t.id===(requests.length?V45_FLOW.requestId:v45RequestOf(item)));
+ const related=origin?v71RequestTasks(origin):chainTodosOf(item).concat(TODOS.filter(t=>
+  V68_APPROVALS.includes(t.type)&&item.project&&item.project!=='-'&&t.project===item.project));
+ if(requests.length){
+  const cards=`<div class="v45-request-switch v71-request-switch" role="group" aria-label="客户需求">${requests.map((t,i)=>{
+   const project=t.project&&t.project!=='-'?(PROJECTS.find(p=>p[0]===t.project)?.[1]||t.project):'';
+   return `<button type="button" data-act="v45FlowRequest" data-id="${esc(item.id)}" data-request="${esc(t.id)}" class="${t.id===V45_FLOW.requestId?'on':''}" aria-pressed="${t.id===V45_FLOW.requestId}"><span class="v71-request-heading"><span>需求 ${requests.length-i}</span>${v71FlowStatusHtml(v71FlowStatus(v71RequestTasks(t)))}</span><b title="${esc(t.needInfo?.need||'空间方案需求')}">${esc(t.needInfo?.need||'空间方案需求')}</b>${project?`<small>${esc(project)}</small>`:''}</button>`;
+  }).join('')}</div>`;
+  const old=body.querySelector('.v45-request-switch');if(old)old.outerHTML=cards;else body.insertAdjacentHTML('afterbegin',cards);
+ }
+ const switcher=body.querySelector('.deal-flow-switch');
+ if(switcher){
+  const groups=chainBranchGroups(chainTodosOf(item));
+  const panel=document.createElement('section');panel.className='v71-flow-options';panel.dataset.scope=item.id+'|'+(requests.length?V45_FLOW.requestId:v45RequestOf(item));panel.dataset.total=String(groups.length);
+  panel.innerHTML=`<div class="v71-flow-options-head"><h3>品类商机 <span class="v71-flow-count">${groups.length}</span></h3><label class="v71-flow-search"><span class="v71-sr-only">搜索品类或 SM</span><input type="search" placeholder="搜索品类 / SM" autocomplete="off"></label></div>`;
+  switcher.before(panel);panel.append(switcher);switcher.setAttribute('role','group');switcher.setAttribute('aria-label','品类商机');
+  for(const button of switcher.querySelectorAll('button')){
+   const group=groups.find(g=>dealGroupKey(g)===button.dataset.key);if(!group)continue;
+   const selected=button.classList.contains('on');button.setAttribute('aria-pressed',String(selected));
+   button.dataset.search=(group.cat+' '+group.sm).toLocaleLowerCase();
+   const status=v71FlowStatus(related.filter(t=>v71FlowBranchKey(t)===button.dataset.key));
+   button.innerHTML=`<span class="v71-option-top"><strong>${esc(group.cat)}</strong>${v71FlowStatusHtml(status)}</span><span class="v71-option-sm" title="${esc(group.sm)}">${esc(group.sm||'未指定 SM')}</span>`;
+  }
+  panel.insertAdjacentHTML('beforeend','<p class="v71-flow-empty" role="status" hidden>没有匹配的品类或 SM</p>');
+  const input=panel.querySelector('input');if(retained){input.value=retained.query;v71FilterFlowOptions(input);switcher.scrollTop=retained.scroll;}
+  const note=panel.nextElementSibling;if(note?.classList.contains('deal-flow-note'))note.remove();
+ }
+ if(!retained)body.scrollTop=0;
+ return result;
+};
+document.addEventListener('input',event=>{if(event.target.matches('.v71-flow-search input'))v71FilterFlowOptions(event.target);});
+
+const V72_TYPES={'客户待办':'sales','设计待办':'designer','创建项目待办':'pm','项目待办':'pm','确认商机':'sm','跨区域商机审批待办':'office','转介绍商机审批待办':'office','草稿报价待办':'sm','订单待办':'sm'};
+function v72Snapshot(){
+ return {todos:Object.fromEntries(TODOS.filter(t=>V72_TYPES[t.type]).map(t=>[t.id,{...t,needInfo:undefined,handoff:undefined,allocation:t.allocation?{sm:t.allocation.sm,cat:t.allocation.cat}:undefined,attachments:undefined}])),
+ quotes:Object.fromEntries(Object.entries(V3.meta).filter(([,m])=>m.submitted).map(([id,m])=>[id,{project:m.project,revision:m.revision,categories:m.categories.slice(),confirmedCats:m.confirmedCats.slice(),bindings:v3Copy(m.bindings||{})}]))};
+}
+function v72NotificationEvents(before,after){
+ const events=[],tasks=Object.values(after.todos),projectName=id=>PROJECTS.find(p=>p[0]===id)?.[1]||'',pm=id=>PROJECTS.find(p=>p[0]===id)?.[9]||'',customer=id=>PROJECTS.find(p=>p[0]===id)?.[7]||'';
+ const send=(role,recipient,data)=>{if(recipient&&recipient!=='-')events.push({role,recipient,...data});};
+ const draftOwner=(project,cat)=>tasks.find(t=>t.project===project&&t.type==='草稿报价待办'&&todoCatKey(t)===cat)?.owner||quoteSmOf(cat);
+ const confirmationKeys=new Set(),orderKeys=new Set();
+ for(const [id,q] of Object.entries(after.quotes)){
+  const old=before.quotes[id],base={project:q.project,projectName:projectName(q.project),customer:customer(q.project),quote:id,target:'quote'};
+  if(!old||old.revision!==q.revision){
+   const changed=old?.confirmedCats?.length;
+   send('pm',pm(q.project),{...base,event:'quote-submitted',title:changed?'报价已更新，需客户重新确认':'品类报价已提交',category:q.categories.join('、'),status:'已提交',body:changed?'未绑定报价已重新提交，客户确认状态已重置，请跟进本次报价确认。':'项目报价总览和客户报价页面已同步更新，可查看本次品类报价。'});
+  }
+  for(const cat of q.confirmedCats){
+   if(old?.revision===q.revision&&old.confirmedCats.includes(cat))continue;
+   const key=q.project+'|'+cat;if(confirmationKeys.has(key))continue;confirmationKeys.add(key);
+   const task=tasks.find(t=>t.project===q.project&&t.type==='订单待办'&&todoCatKey(t)===cat&&t.status==='待处理');
+   const data={...base,event:'quote-confirmed',title:'客户已确认品类报价',category:cat,status:'已确认',body:'客户已确认本品类全部空间的报价，可继续绑定商机并生成销售订单。',task:task?.id,target:task?'todo':'quote'};
+   const owner=draftOwner(q.project,cat);send('sm',owner,data);if(pm(q.project)!==owner)send('pm',pm(q.project),{...data,target:'quote'});
+  }
+  for(const [cat,binding] of Object.entries(q.bindings)){
+   if(old?.bindings?.[cat]?.orderNo===binding.orderNo)continue;
+   orderKeys.add(q.project+'|'+cat);
+   const data={...base,event:'order-created',title:'销售订单已生成',category:cat,status:'已处理',body:'已确认草稿已绑定商机，销售订单 '+(binding.orderNo||'')+' 已生成。后续调整使用编辑订单。',order:binding.orderNo};
+   const owner=draftOwner(q.project,cat);send('sm',owner,data);if(pm(q.project)!==owner)send('pm',pm(q.project),data);
+  }
+ }
+ for(const t of tasks){
+  const old=before.todos[t.id],preProject=['客户待办','设计待办','创建项目待办'].includes(t.type),base={task:t.id,project:t.project,projectName:preProject?'':projectName(t.project),customer:t.customer,category:preProject?'':t.allocation?.cat||todoCatKey(t),target:'todo',status:t.status,type:t.type};
+  if(!old&&t.status==='待处理'){
+   if(t.type==='订单待办'&&confirmationKeys.has(t.project+'|'+todoCatKey(t)))continue;
+   send(V72_TYPES[t.type],t.owner,{...base,event:'todo-arrived',title:(typeof v18Name==='function'?v18Name(t.type):t.type)+'已到达',body:t.type==='草稿报价待办'?'商机已生成，请从待办进入线上报价，自动带入本品类全部相关空间。':t.type==='跨区域商机审批待办'||t.type==='转介绍商机审批待办'?'请核对项目、接收 SM 及申请附件。通过后直接生成商机和草稿报价待办。':'你有一项新的业务待办，请查看资料并处理。'});
+  }
+  if(old&&old.owner!==t.owner){
+   send(V72_TYPES[t.type],t.owner,{...base,event:'owner-changed',title:'待办已移交给你',body:'负责人调整后，此待办已从 '+old.owner+' 移交给你，请继续跟进。'});
+   send(V72_TYPES[t.type],old.owner,{...base,event:'owner-released',title:'待办已移交',body:'此待办已移交给 '+t.owner+'，请以当前业务归属为准。',target:'flow'});
+  }
+  if(old&&old.status!==t.status&&['已处理','已驳回'].includes(t.status)){
+   if(t.status==='已处理'&&(t.type==='草稿报价待办'&&confirmationKeys.has(t.project+'|'+todoCatKey(t))||t.type==='订单待办'&&orderKeys.has(t.project+'|'+todoCatKey(t))))continue;
+   const approval=V68_APPROVALS.includes(t.type),role=['设计待办','创建项目待办','客户待办'].includes(t.type)?'sales':'pm';
+   if(t.initiator===t.owner||t.initiator==='客户')continue;
+   send(role,t.initiator,{...base,event:'todo-result',title:approval?(t.status==='已处理'?'商机申请已通过':'商机申请已驳回'):(typeof v18Name==='function'?v18Name(t.type):t.type)+(t.status==='已处理'?'已完成':'已驳回'),body:t.status==='已驳回'?(t.rejectReason||t.note||'请查看驳回原因并调整后重新发起。'):approval?'总经办已审批通过，已直接生成商机和对应 SM 的草稿报价待办。':'事项已完成，可查看本次需求的后续流转进度。',target:'flow'});
+  }
+ }
+ return events;
+}
+
+/* Local notification demonstration; no requests are sent to WeCom. */
+const V72_ROLES={sales:{label:'客户负责人',person:'覃文康(Chum)',letter:'客'},designer:{label:'设计师',person:'林嘉怡(中东设计师)',letter:'设'},pm:{label:'项目经理 PM',person:'叶志松(Andy Ye)',letter:'P'},sm:{label:'方案经理 SM',person:'林晓',letter:'S'},office:{label:'总经办',person:'总经办审批岗',letter:'审'}};
+const V72_DEMOS=[
+ ['sales','客户待办已到达','待处理','客户已创建，请补充本次需求并选择是否需要设计。','客户待办','todo'],
+ ['sales','设计需求已完成','已处理','设计师已确认本次需求的空间和品类，已交接 PM 创建项目。','设计待办','flow'],
+ ['sales','客户需求被退回','已驳回','请补充客户的平面资料及空间用途后，重新发起本次设计需求。','设计待办','flow'],
+ ['designer','新的设计需求待处理','待处理','请确认本次客户需求的空间和品类，并上传设计资料后交接 PM。','设计待办','todo'],
+ ['designer','新的独立设计需求','待处理','同一客户新增二期需求。本次需求独立流转，并生成独立项目。','设计待办','todo'],
+ ['designer','设计待办已移交给你','待处理','设计负责人已调整，请接续处理本次需求，查看历史资料。','设计待办','todo'],
+ ['pm','设计资料已交接，请创建项目','待处理','设计师已确认空间和品类。请完善项目资料，可二次调整空间与品类。','创建项目待办','todo'],
+ ['pm','无需设计，请创建项目','待处理','客户无需设计。请在创建项目时确认空间及品类。','创建项目待办','todo'],
+ ['pm','项目已创建，请分配品类商机','待处理','按项目区域和品类选择 SM；跨区域与转介绍申请交由总经办审批。','项目待办','todo'],
+ ['pm','跨区域商机申请已通过','已处理','总经办审批通过，已直接生成商机和接收 SM 的草稿报价待办。','跨区域商机审批待办','flow'],
+ ['pm','转介绍商机申请已驳回','已驳回','驳回原因：请补充被转介绍人组长同意截图。未生成商机或草稿报价待办。','转介绍商机审批待办','flow'],
+ ['pm','家具报价已提交','已提交','SM 已提交家具品类全部相关空间的报价，两端报价总览已同步更新。','草稿报价待办','quote'],
+ ['pm','报价已更新，需客户重新确认','未确认','未绑定报价重新提交后，客户确认状态已重置，请跟进客户确认最新版本。','草稿报价待办','quote'],
+ ['pm','客户已确认家具报价','已确认','客户完成手机号验证码验证，已确认本次家具品类报价。','订单待办','quote'],
+ ['sm','确认商机待办已到达','待处理','PM 已按项目区域和你的品类分配商机，请确认是否承接。','确认商机','todo'],
+ ['sm','草稿报价待办已到达','待处理','商机已生成。进入线上报价后将自动带入本品类全部相关空间。','草稿报价待办','todo'],
+ ['sm','商机审批通过，请开始报价','待处理','跨区域或转介绍申请已获总经办批准。无需再次确认商机，直接处理草稿报价待办。','草稿报价待办','todo'],
+ ['sm','客户已确认报价，请衔接订单','已确认','本品类报价已确认，订单待办已生成。请绑定草稿与商机并生成销售订单。','订单待办','todo'],
+ ['sm','销售订单已生成','已处理','已绑定草稿生成销售订单。后续变更请使用编辑订单功能。','订单待办','flow'],
+ ['office','跨区域商机申请待审批','待处理','请核对项目区域、品类、接收 SM 和申请附件。通过后直接生成商机及草稿报价待办。','跨区域商机审批待办','todo'],
+ ['office','转介绍商机申请待审批','待处理','请核对转介绍人、被转介绍 SM 及其组长同意截图。本次申请直接创建新商机。','转介绍商机审批待办','todo']
+];
+const v72Stored=wkRead('crm-wecom-demo-v72',{});
+const V72={messages:Array.isArray(v72Stored.messages)?v72Stored.messages:[],sequence:v72Stored.sequence||0,baseline:v72Snapshot(),filter:{},query:{},recipient:{},selected:{},storageOk:true};
+function v72SaveMessages(){V72.storageOk=wkWrite('crm-wecom-demo-v72',{messages:V72.messages.slice(0,400),sequence:V72.sequence});}
+function v72Sample(index){const [role,title,status,body,type,target]=V72_DEMOS[index],preProject=['客户待办','设计待办','创建项目待办'].includes(type);return {id:'sample-'+index,role,recipient:V72_ROLES[role].person,title,status,body,type,target,project:preProject?'':'PJ0018011',projectName:preProject?'':'【GAD】测试项目',customer:'测试客户8564',category:!preProject&&['sm','pm','office'].includes(role)?'家具':'',sample:true,time:'演示样例',read:false};}
+for(const role of Object.keys(V72_ROLES))if(!V72.messages.some(m=>m.role===role)){
+ const choices=V72_DEMOS.map((x,i)=>x[0]===role?i:-1).filter(i=>i>=0);V72.messages.push(...choices.slice(0,2).map(v72Sample));
+}
+function v72Collect(){
+ const next=v72Snapshot(),events=v72NotificationEvents(V72.baseline,next);V72.baseline=next;
+ if(!events.length)return;
+ const stamp=todoStamp();for(const event of events)V72.messages.unshift({...event,id:'event-'+(++V72.sequence),time:stamp,read:false,sample:false});
+ V72.messages=V72.messages.slice(0,400);v72SaveMessages();markPagesDirty();v5SyncNav();
+}
+const v72BaseSave=v3Save;
+v3Save=function(){const result=v72BaseSave();if(result){try{v72Collect();}catch(error){console.warn('通知演示未更新',error);}}return result;};
+function v72RolePage(role){return 'wecom-'+role;}
+function v72Messages(role){
+ const q=(V72.query[role]||'').toLowerCase(),recipient=V72.recipient[role]||'';
+ return V72.messages.filter(m=>m.role===role&&(!recipient||m.recipient===recipient)&&(V72.filter[role]!=='unread'||!m.read)&&(!q||[m.title,m.body,m.customer,m.projectName,m.recipient].join(' ').toLowerCase().includes(q)));
+}
+function v72OpenMessage(id){const m=V72.messages.find(m=>m.id===id);if(!m)return;V72.selected[m.role]=id;m.read=true;v72SaveMessages();openPage(v72RolePage(m.role));}
+function v72Card(m){
+ const targetLabel=m.sample?'查看演示详情':m.target==='quote'?'查看报价总览':m.target==='flow'?'查看办理结果':'查看待办';
+ return `<article class="v72-message-card"><div class="v72-message-kicker"><span>${m.sample?'演示样例':'业务通知'}</span><span class="v72-status ${m.status==='已驳回'?'rejected':['已处理','已确认'].includes(m.status)?'done':''}">${esc(m.status)}</span></div><h2>${esc(m.title)}</h2><p>${esc(m.body)}</p><dl><div><dt>客户</dt><dd>${esc(m.customer||'—')}</dd></div>${m.projectName?`<div><dt>项目</dt><dd>${esc(m.projectName)}</dd></div>`:''}${m.category?`<div><dt>品类</dt><dd>${esc(m.category)}</dd></div>`:''}<div><dt>接收人</dt><dd>${esc(m.recipient)}</dd></div></dl><button class="v72-card-action" data-act="v72Go" data-id="${esc(m.id)}">${targetLabel}<span>›</span></button></article>`;
+}
+function v72Inbox(role){
+ const spec=V72_ROLES[role],messages=v72Messages(role),selected=messages.find(m=>m.id===V72.selected[role])||messages[0],unread=V72.messages.filter(m=>m.role===role&&!m.read).length;
+ const recipients=[...new Set(V72.messages.filter(m=>m.role===role).map(m=>m.recipient))];
+ return `<div class="v72-page"><header class="v72-page-head"><div><div class="v72-eyebrow">WECom / 通知演示</div><h1>${spec.label}的企业微信</h1><p>把下一步送到负责人面前，点击通知回到对应业务。</p></div><span class="v72-demo-label">本地模拟 · 不发送真实消息</span></header>
+ <div class="v72-demo-toolbar"><label>演示场景<select data-v72-scenario="${role}" aria-label="选择通知演示场景">${V72_DEMOS.map((d,i)=>d[0]===role?`<option value="${i}">${d[1]}</option>`:'').join('')}</select></label><button class="wk-btn primary" data-act="v72Simulate" data-role="${role}">模拟收到通知</button><span>实际办理 CRM 待办，也会在这里生成通知。</span></div>
+ <section class="v72-window" aria-label="企业微信通知窗口"><aside class="v72-app-rail"><div class="v72-user-avatar">${spec.letter}</div><div class="v72-rail-icon active">${skyIcon('file')}</div><div class="v72-rail-icon">${skyIcon('users')}</div><div class="v72-rail-icon">${skyIcon('grid')}</div><span>企微</span></aside>
+ <aside class="v72-conversations"><div class="v72-inbox-title"><strong>消息</strong><span>${unread?unread+' 未读':'全部已读'}</span></div><label class="v72-message-search">${skyIcon('search')}<input data-v72-search="${role}" aria-label="搜索通知" placeholder="搜索通知、客户、项目" value="${esc(V72.query[role]||'')}"></label><select class="v72-recipient" data-v72-recipient="${role}" aria-label="查看接收人"><option value="">${spec.label} · 全部接收人</option>${recipients.map(n=>`<option value="${esc(n)}" ${V72.recipient[role]===n?'selected':''}>${esc(n)}</option>`).join('')}</select><div class="v72-message-tabs">${[['all','全部'],['unread','未读']].map(([key,name])=>`<button class="${(V72.filter[role]||'all')===key?'on':''}" data-act="v72Filter" data-role="${role}" data-filter="${key}">${name}</button>`).join('')}<button data-act="v72ReadAll" data-role="${role}">全部已读</button></div><div class="v72-message-list">${messages.map(m=>`<button class="v72-conversation ${selected?.id===m.id?'on':''}" data-act="v72Select" data-id="${esc(m.id)}"><div class="v72-crm-avatar">G${m.read?'':'<i></i>'}</div><div><header><strong>敬城 CRM</strong><small>${m.sample?'演示':esc(m.time.slice(11))}</small></header><b>${esc(m.title)}</b><p>${esc(m.projectName||m.customer)}</p></div></button>`).join('')||'<div class="v72-empty">没有匹配的通知</div>'}</div></aside>
+ <main class="v72-chat"><header class="v72-chat-head"><div><strong>敬城 CRM</strong><span>应用通知 · ${esc(selected?.recipient||spec.label)}</span></div><span class="v72-app-tag">企业应用</span></header><div class="v72-chat-body">${selected?`<div class="v72-chat-time">${esc(selected.time)}${selected.sample?' · 仅展示样式':''}</div><div class="v72-chat-message"><div class="v72-crm-avatar">G</div><div class="v72-bubble"><div class="v72-sender">敬城 CRM</div>${v72Card(selected)}<div class="v72-message-read">${selected.read?'已读':'未读'} · ${selected.sample?'演示通知':'本地模拟送达'}</div>${!selected.read?`<button class="v72-mark-read" data-act="v72Select" data-id="${esc(selected.id)}">标为已读</button>`:''}</div></div>`:'<div class="v72-empty">选择左侧通知查看内容</div>'}</div><footer class="v72-chat-footer">消息已读不代表待办已处理，办理结果以 CRM 当前状态为准。${V72.storageOk?'':'<b>本地通知记录未能保存，请检查浏览器存储空间。</b>'}</footer></main></section></div>`;
+}
+function v72Go(id){
+ const m=V72.messages.find(m=>m.id===id);if(!m)return;m.read=true;v72SaveMessages();
+ if(m.sample){
+  v68Modal('通知演示详情',`<div class="v72-sample-detail">${v72Card({...m,sample:true})}<div class="v72-sample-note">此卡片用于演示通知内容，不会创建或处理业务待办。正式通知将定位到对应的客户需求、审批、报价或订单。</div></div>`,`<button class="btn default" data-act="closeModal">关闭</button>${m.project?`<button class="btn" data-act="v72ProjectFlow" data-project="${esc(m.project)}">查看示例项目流程</button>`:''}`);
+  document.querySelector('#mBody .v72-card-action')?.remove();return;
+ }
+ const task=TODOS.find(t=>t.id===m.task);
+ if(m.target==='quote'){
+  if(!v21SuperAdmin()&&!v21FlowAnchors().some(t=>t.project===m.project))return toast('当前账号无权查看此项目');
+  archiveProject=m.project;return openPage('board');
+ }
+ if(!task)return toast('此事项已不可用，请在待办中心查看当前记录');
+ if(!v21FlowAllowed(task)&&!v21CanOperate(task))return toast('当前账号已无此事项的查看或处理权限');
+ if(task.status!=='待处理'||m.target==='flow')return openDealFlow(task);
+ if(!v21CanOperate(task))return openDealFlow(task);
+ v19ToTasks([task],'企微通知 · '+v18Name(task.type));
+}
+const v72Handle=handleAct;
+handleAct=function(button){
+ const a=button?.dataset?.act,role=button?.dataset?.role;
+ if(a==='v72Select')return v72OpenMessage(button.dataset.id);
+ if(a==='v72Go')return v72Go(button.dataset.id);
+ if(a==='v72Filter'){V72.filter[role]=button.dataset.filter;return openPage(v72RolePage(role));}
+ if(a==='v72ReadAll'){V72.messages.filter(m=>m.role===role&&(!V72.recipient[role]||m.recipient===V72.recipient[role])).forEach(m=>m.read=true);v72SaveMessages();return openPage(v72RolePage(role));}
+ if(a==='v72Simulate'){
+  const select=document.querySelector('.page.on [data-v72-scenario]'),index=Number(select?.value),sample=v72Sample(index);
+  sample.id='demo-'+(++V72.sequence);sample.time=todoStamp();V72.messages.unshift(sample);V72.selected[role]=sample.id;V72.filter[role]='all';V72.query[role]='';V72.recipient[role]='';v72SaveMessages();openPage(v72RolePage(role));toast('已模拟收到一条企微通知');return;
+ }
+ if(a==='v72ProjectFlow'){const t=TODOS.find(t=>t.project===button.dataset.project&&t.type==='项目待办');return t?openDealFlow(t):toast('该示例项目暂无流程记录');}
+ return v72Handle(button);
+};
+document.addEventListener('change',event=>{const e=event.target,role=e.dataset.v72Recipient;if(role){V72.recipient[role]=e.value;openPage(v72RolePage(role));}});
+document.addEventListener('input',event=>{const e=event.target,role=e.dataset.v72Search;if(role){const cursor=e.selectionStart;V72.query[role]=e.value;openPage(v72RolePage(role));const next=document.querySelector('.page.on [data-v72-search]');next?.focus();next?.setSelectionRange(cursor,cursor);}});
+V5_NAV.push(['企微通知演示',Object.entries(V72_ROLES).map(([role,spec])=>[v72RolePage(role),'file',spec.label+'通知'])]);
+for(const [role,spec] of Object.entries(V72_ROLES)){const key=v72RolePage(role);RENDER[key]=()=>v72Inbox(role);TAB_NAME[key]='企微 · '+spec.label;PAGE_LIVE_KINDS.push(key);}
+const v72BaseNav=v5Nav;
+v5Nav=function(){const box=document.createElement('div');box.innerHTML=v72BaseNav();for(const role of Object.keys(V72_ROLES)){const count=V72.messages.filter(m=>m.role===role&&!m.read).length,button=box.querySelector('[data-page="'+v72RolePage(role)+'"]');if(button&&count)button.insertAdjacentHTML('beforeend','<small>'+count+'</small>');}return box.innerHTML;};
+v5SyncNav();
 
 v58OpenSharedQuote();
 window.crmBootReady();
