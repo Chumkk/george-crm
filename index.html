@@ -65455,6 +65455,81 @@ V5_NAV.find(([name])=>name==='工作空间')[1].push([v72RolePage(),'file','企�
 RENDER[v72RolePage()]=v72Inbox;TAB_NAME[v72RolePage()]='企微通知';PAGE_LIVE_KINDS.push(v72RolePage());
 v5SyncNav();
 
+/* Persistent demo tasks share the task list, but remain outside the business workflow. */
+const V75={records:wkRead('crm-notification-todos-v75',[])};
+if(!Array.isArray(V75.records))V75.records=[];
+function v75FindTask(id){return TODOS.find(t=>t.id===id)||V75.records.find(t=>t.id===id)||null;}
+function v75DemoKey(m){return JSON.stringify([m.type,m.title,m.customer,m.project||'',m.category||'',m.role]);}
+function v75BindSample(m){
+ if(!m.sample||m.target==='quote'||m.order||m.title==='销售订单已生成')return false;
+ if(m.task&&v75FindTask(m.task))return false;
+ const key=v75DemoKey(m);let task=V75.records.find(t=>t.notificationKey===key);
+ if(!task){
+  task=v74DemoRecord(m);task.id='NT-DEMO-'+String(V75.records.length+1).padStart(3,'0');
+  task.notificationDemo=true;task.notificationKey=key;task.title=m.title;task.time=m.time==='演示样例'?todoStamp():m.time;
+  task.sourceMessage={...m};task.assignmentManaged=true;
+  if(V68_APPROVALS.includes(task.type))task.owner=V68_OFFICE;
+  else if(task.type==='设计待办')task.owner=V72_ROLES.designer.person;
+  V75.records.push(task);
+ }
+ m.task=task.id;return true;
+}
+function v75SaveDemoTasks(){return wkWrite('crm-notification-todos-v75',V75.records);}
+const v75SampleBase=v72Sample;
+v72Sample=function(index){const m=v75SampleBase(index);v75BindSample(m);v75SaveDemoTasks();return m;};
+const v75MessagesBase=v72SaveMessages;
+v72SaveMessages=function(){for(const m of V72.messages)v75BindSample(m);v75SaveDemoTasks();return v75MessagesBase();};
+// Migrate old cards before the user enters the task list; repeated reloads never add duplicates.
+for(const m of V72.messages)v75BindSample(m);
+v72SaveMessages();
+const v75VisibleBase=visibleTodos;
+visibleTodos=function(){return [...v75VisibleBase(),...V75.records.filter(t=>crmTodoEnabled(t)&&!TODOS.some(row=>row.id===t.id))];};
+const v75OperateBase=v21CanOperate;
+v21CanOperate=function(t){return !t?.notificationDemo&&v75OperateBase(t);};
+const v75ActsBase=todoActs;
+todoActs=function(t){return t.notificationDemo?[{t:'查看演示记录',act:'v75DemoDetail',extra:`data-id="${esc(t.id)}"`}]:v75ActsBase(t);};
+const v75RowsBase=v21Rows;
+v21Rows=function(){
+ const rows=v75RowsBase();
+ if(V18.context?.source==='企微通知')for(const id of V18.context.ids){const t=v75FindTask(id);if(t&&!rows.some(r=>r.id===id)&&v21FlowAllowed(t))rows.push(t);}
+ return rows;
+};
+function v75SearchTask(task){
+ v3CloseDialog();document.getElementById('mask')?.classList.remove('on');document.getElementById('drawer')?.classList.remove('on');
+ v21View();V21.stay='all';V21.view=v21Manager()?'team':v17Owner();
+ todoQuick='';todoProject='';todoFilter=task.type;todoStatus='全部';todoSearch=task.id;WK.sort='recent';
+ V18.context={ids:[task.id],source:'企微通知',label:v18Name(task.type),scope:v21ScopeName()};
+ markPagesDirty();openPage('todos');
+}
+const v75GoBase=v72Go;
+v72Go=function(id){
+ const m=V72.messages.find(m=>m.id===id);if(!m)return;
+ // Quotations and generated orders keep their own CRM destinations.
+ if(m.target==='quote'||m.order||m.title==='销售订单已生成')return v75GoBase(id);
+ if(m.sample&&v75BindSample(m))v72SaveMessages();
+ const task=v75FindTask(m.task);
+ if(!task)return toast('对应待办已不存在，请在待办中心查看当前记录');
+ if(!v21FlowAllowed(task)&&!v21CanOperate(task))return toast('当前账号无权查看这条待办');
+ return v75SearchTask(task);
+};
+const v75HandleBase=handleAct;
+handleAct=function(button){
+ if(button?.dataset?.act==='v75DemoDetail'){
+  const task=v75FindTask(button.dataset.id);if(!task?.notificationDemo||!v21FlowAllowed(task))return;
+  if(V68_APPROVALS.includes(task.type))return v68ReviewRecord(task,true);
+  return v74DemoBusiness(task.sourceMessage);
+ }
+ return v75HandleBase(button);
+};
+const v75TodosBase=pageTodos;
+pageTodos=function(){
+ const box=document.createElement('div');box.innerHTML=v75TodosBase();
+ for(const row of box.querySelectorAll('[data-todo-id]'))if(v75FindTask(row.dataset.todoId)?.notificationDemo)row.querySelector('.wk-task-title')?.insertAdjacentHTML('beforeend','<span class="wk-status">演示记录</span>');
+ return box.innerHTML;
+};
+RENDER.todos=pageTodos;
+markPagesDirty();v5SyncNav();
+
 v58OpenSharedQuote();
 window.crmBootReady();
 </script>
