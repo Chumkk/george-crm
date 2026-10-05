@@ -58039,7 +58039,7 @@ function v72NotificationEvents(before,after){
    send(V72_TYPES[t.type],t.owner,{...base,event:'todo-arrived',title:(typeof v18Name==='function'?v18Name(t.type):t.type)+'已到达',body:t.type==='草稿报价待办'?'商机已生成，请从待办进入线上报价，自动带入本品类全部相关空间。':t.type==='跨区域商机审批待办'||t.type==='转介绍商机审批待办'?'请核对项目、接收 SM 及申请附件。通过后直接生成商机和草稿报价待办。':'你有一项新的业务待办，请查看资料并处理。'});
   }
   if(old&&(t.editRevision||0)>(old.editRevision||0)){
-   send(V72_TYPES[t.type],t.owner,{...base,event:t.lastEdit?.fromStatus==='已驳回'?'todo-resubmitted':'todo-updated',title:(typeof v18Name==='function'?v18Name(t.type):t.type)+(t.lastEdit?.fromStatus==='已驳回'?'已重新提交':'已更新'),revision:String(t.editRevision),body:t.lastEdit?.fromStatus==='已驳回'?'发起人已修改并重新提交这条待办，请查看最新资料并处理。':'发起人已修改这条待办，请查看最新资料并继续处理。'});
+   send(V72_TYPES[t.type],t.owner,{...base,initiator:v72Person(t.lastEdit?.actor)||actor,event:t.lastEdit?.fromStatus==='已驳回'?'todo-resubmitted':'todo-updated',title:(typeof v18Name==='function'?v18Name(t.type):t.type)+(t.lastEdit?.fromStatus==='已驳回'?'已重新提交':'已更新'),revision:String(t.editRevision),body:t.lastEdit?.fromStatus==='已驳回'?'发起人已修改并重新提交这条待办，请查看最新资料并处理。':'发起人已修改这条待办，请查看最新资料并继续处理。'});
   }
   if(old&&old.owner!==t.owner){
    base.initiator=actor||'系统自动触发';
@@ -58289,7 +58289,7 @@ markPagesDirty();v5SyncNav();
 
 /* Initiators correct a task in place; processing and business creation remain separate actions. */
 function v81CanEditTodo(t){
- return !!t&&!t.notificationDemo&&['待处理','已驳回'].includes(t.status)&&!!v72Person(t.initiator)&&v72Person(t.initiator)===v72Person(v17Owner());
+ return !!t&&!t.notificationDemo&&['待处理','已驳回'].includes(t.status)&&(v21SuperAdmin()||!!v72Person(t.initiator)&&v72Person(t.initiator)===v72Person(v17Owner()));
 }
 function v81SubmitCustomerNeed(item,need){
  if(!item||item.type!=='客户待办'||item.status!=='待处理'||!v21CanOperate(item))throw Error('当前客户待办不可办理');
@@ -58314,8 +58314,24 @@ function v81SubmitCustomerNeed(item,need){
  }
  return {next,duplicate:false};
 }
+function v81SourceNeed(t){
+ if(t.needInfo)return t.needInfo;if(CUSTOMER_NEED[t.id])return CUSTOMER_NEED[t.id];
+ for(const id of [t.sourceTodoId,t.requestId]){
+  const source=TODOS.find(row=>row.id===id&&row.id!==t.id&&row.customer===t.customer&&row.type!=='客户待办');
+  if(source?.needInfo)return source.needInfo;if(source&&CUSTOMER_NEED[source.id])return CUSTOMER_NEED[source.id];
+ }
+ // A customer's latest requirement must not replace an older request branch's original data.
+ if(t.requestId||t.sourceTodoId||t.customerTodoId)return {};
+ const legacy=TODOS.filter(row=>row.type==='客户待办'&&row.customer===t.customer&&(row.needInfo||CUSTOMER_NEED[row.id]));
+ const branched=TODOS.some(row=>row.customer===t.customer&&row.requestId);
+ return !branched&&legacy.length===1?(legacy[0].needInfo||CUSTOMER_NEED[legacy[0].id]):{};
+}
+function v81SourceHandoff(t){
+ const source=TODOS.find(row=>row.id===t.sourceTodoId&&row.customer===t.customer&&row.type==='设计待办');
+ return t.handoff||DESIGN_HANDOFF[t.id]||source?.handoff||source&&DESIGN_HANDOFF[source.id]||v81SourceNeed(t);
+}
 function v81EditValues(t){
- const pre=['客户待办','设计待办','创建项目待办'].includes(t.type),data=t.type==='创建项目待办'?(t.handoff||t.needInfo||{}):(t.needInfo||{}),a=t.allocation;
+ const pre=['客户待办','设计待办','创建项目待办'].includes(t.type),data=t.type==='创建项目待办'?v81SourceHandoff(t):v81SourceNeed(t),a=t.allocation;
  return {summary:pre?String(data.need??t.needInfo?.need??''):String(t.title||''),note:pre?String(data.note||''):String(t.note||''),attachments:v3Copy(a?(a.mode==='referral'?[a.evidence?.leader].filter(Boolean):a.attachments||[]):pre?v69LegacyFiles(data):v69LegacyFiles(t)),
   ...(t.type==='创建项目待办'&&data.spaceCats?.length?{spaceCats:v3Copy(data.spaceCats)}:{}),
   ...(a?{allocation:{reason:String(a.reason||''),sm:a.sm,referrer:a.referrer||'',leader:a.leader||''}}:{})};
@@ -58344,16 +58360,16 @@ function v81NormaliseEdit(t,values){
 }
 function v81SubmitTodoEdit(id,values,expectedRevision){
  const t=TODOS.find(t=>t.id===id);
- if(!v81CanEditTodo(t))throw Error('仅发起人可编辑待处理或已驳回的待办');
+ if(!v81CanEditTodo(t))throw Error('当前账号无权编辑此待办，或待办已处理');
  if(expectedRevision!==undefined&&(t.editRevision||0)!==Number(expectedRevision))throw Error('这条待办已更新，请重新打开后编辑');
  const before=v81EditValues(t),next=v81NormaliseEdit(t,values),rejected=t.status==='已驳回';
  if(!rejected&&JSON.stringify(before)===JSON.stringify(next))return {changed:false,task:t};
  const backup=v3Copy(t),oldCustomerNeed=CUSTOMER_NEED[id],oldHandoff=DESIGN_HANDOFF[id],stamp=todoStamp();
  const pre=['客户待办','设计待办','创建项目待办'].includes(t.type),files=next.attachments.map(f=>f.name).join('、');
  if(pre){
-  t.needInfo={...(t.needInfo||{}),need:next.summary};
+  t.needInfo={...v81SourceNeed(t),need:next.summary};
   if(t.type==='创建项目待办'){
-   t.handoff={...(t.handoff||{}),need:next.summary,note:next.note,files,attachments:v3Copy(next.attachments)};
+   t.handoff={...v81SourceHandoff(t),need:next.summary,note:next.note,files,attachments:v3Copy(next.attachments)};
    if(next.spaceCats)Object.assign(t.handoff,{spaceCats:v3Copy(next.spaceCats),spaces:next.spaceCats.map(s=>s.name).join('、'),cats:[...new Set(next.spaceCats.flatMap(s=>s.cats))].join('、')});
    if(t.projectForm&&next.spaceCats)t.projectForm={...t.projectForm,spaceCats:v3Copy(next.spaceCats),purchaseCategory:[...new Set(next.spaceCats.flatMap(s=>s.cats))]};
    DESIGN_HANDOFF[id]=v3Copy(t.handoff);
@@ -58382,7 +58398,7 @@ function v81SubmitTodoEdit(id,values,expectedRevision){
  return {changed:true,task:t};
 }
 function v81OpenTodoEdit(id){
- const t=TODOS.find(t=>t.id===id);if(!v81CanEditTodo(t))return toast('仅发起人可编辑待处理或已驳回的待办');
+ const t=TODOS.find(t=>t.id===id);if(!v81CanEditTodo(t))return toast('当前账号无权编辑此待办，或待办已处理');
  const value=v81EditValues(t),pre=['客户待办','设计待办','创建项目待办'].includes(t.type),a=t.allocation,key='todo-edit-'+id;
  let fields=`<label class="full">${pre?'客户需求摘要':'待办说明'}<textarea id="v81Summary" maxlength="5000">${esc(value.summary)}</textarea></label>`;
  if(a){
@@ -58393,7 +58409,7 @@ function v81OpenTodoEdit(id){
  fields+=`<label class="full">补充说明<textarea id="v81Note" maxlength="5000">${esc(value.note)}</textarea></label><div class="full"><div class="design-handoff-h">${a?.mode==='referral'?'被转介绍人组长同意截图':'相关附件'}</div>${v69UploadHtml(key,value.attachments,{images:a?.mode==='referral',max:a?.mode==='referral'?1:10})}</div>`;
  const context=`<div class="v68-project-head"><strong>${esc(t.customer||t.type)}</strong><span>${esc(t.status)}</span></div><div class="v69-project-scope"><span><b>发起人</b>${esc(t.initiator)}</span><span><b>处理人</b>${esc(t.owner)}</span>${t.project&&t.project!=='-'?`<span><b>项目</b>${esc(findProject(t.project)?.[1]||t.project)}</span>`:''}</div>`;
  const history=(t.editHistory||[]).length?`<details class="v68-review"><summary>修改记录（${t.editHistory.length}）</summary><dl>${t.editHistory.slice().reverse().map(h=>`<div><dt>${esc(h.time)}</dt><dd>${esc(h.actor)} · ${h.fromStatus==='已驳回'?'修改并重新提交':'修改资料'}${h.decision?.reason?`<br>原驳回原因：${esc(h.decision.reason)}`:''}</dd></div>`).join('')}</dl></details>`:'';
- v68Modal('编辑'+v18Name(t.type),`${context}${t.status==='已驳回'?`<div class="v68-source">驳回原因：${esc(t.rejectReason||t.approvalNote||'未填写')}</div>`:''}<div class="planned-form two v81-edit-form">${fields}</div>${history}`,`<button class="btn default" data-act="closeModal">取消</button><button class="btn" data-act="v81SaveTodoEdit" data-id="${esc(id)}" data-revision="${t.editRevision||0}">${t.status==='已驳回'?'保存并重新提交':'保存修改并通知'}</button>`);
+ v68Modal('编辑'+v18Name(t.type),`${context}${t.status==='已驳回'?`<div class="v68-source">驳回原因：${esc(t.rejectReason||t.approvalNote||'未填写')}</div>`:''}<div class="planned-form two v81-edit-form">${fields}</div>${history}`,`<button class="btn default" data-act="closeModal">取消</button><button class="btn" data-act="v81SaveTodoEdit" data-id="${esc(id)}" data-revision="${t.editRevision||0}">重新提交待办</button>`);
 }
 const v81ConfirmTodoHtml=MODALS.confirmTodo.html;
 MODALS.confirmTodo.html=function(){return v81ConfirmTodoHtml.call(this).replace('确认驳回该待办？驳回后不可再确认。','确认驳回该待办？发起人可修改后重新提交。');};
