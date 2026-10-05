@@ -4,6 +4,31 @@
   const surfaces = new Map();
   let publish = () => {},
     installed = false;
+  const taskRelation = { auth: "", value: "responsible", context: null };
+  function relationRows() {
+    const owner = v17Owner();
+    if (taskRelation.auth !== owner) {
+      taskRelation.auth = owner;
+      taskRelation.value = "responsible";
+      taskRelation.context = null;
+    }
+    // A notification must locate its exact task even when it was sent to the initiator.
+    if (V18.context && taskRelation.context !== V18.context) {
+      taskRelation.value = "all";
+      taskRelation.context = V18.context;
+    }
+    const visible = visibleTodos();
+    if (taskRelation.value === "responsible")
+      return visible.filter((t) => t.owner === owner);
+    if (taskRelation.value === "initiated")
+      return visible.filter((t) => t.initiator === owner);
+    const scoped = v21Rows();
+    const initiated = visible.filter(
+      (t) => t.initiator === owner &&
+        (V21.view === "team" || V21.view === owner || t.owner === V21.view),
+    );
+    return [...new Map([...scoped, ...initiated].map((t) => [t.id, t])).values()];
+  }
   const changed = () => {
     if (installed) publish();
   };
@@ -122,10 +147,13 @@
     },
     todos() {
       v21View();
-      const all = v21Rows().filter(
+      const all = relationRows().filter(
         (t) => !V18.context || V18.context.ids.includes(t.id),
       );
-      const matched = searchedTodos(),
+      const matched = all
+          .filter((t) => todoMatchesSearch(t, (todoSearch || "").trim()))
+          .filter((t) => todoQuick !== "today" || String(v21Arrival(t) || "").startsWith(todoDay()))
+          .filter((t) => V21.stay === "all" || t.status === "待处理" && (todoStayHours(t) ?? -1) >= Number(V21.stay) * 24),
         byStatus = matched.filter(
           (t) => todoStatus === "全部" || t.status === todoStatus,
         );
@@ -144,6 +172,7 @@
         status: todoStatus,
         query: todoSearch,
         quick: todoQuick,
+        relation: taskRelation.value,
         sort: WK.sort,
         stay: V21.stay,
         view: V21.view,
@@ -199,9 +228,22 @@
       openPage("todos");
     },
     todoScope(value) {
+      taskRelation.value = "all";
       v21Switch(value);
     },
+    todoRelation(value) {
+      if (!["all", "responsible", "initiated"].includes(value)) return;
+      taskRelation.auth = v17Owner();
+      taskRelation.value = value;
+      taskRelation.context = null;
+      if (V18.context) todoSearch = "";
+      V18.context = null;
+      V21.view = v21Manager() ? "team" : v17Owner();
+      openPage("todos");
+    },
     todoReset() {
+      taskRelation.value = "responsible";
+      taskRelation.context = null;
       todoSearch = "";
       todoFilter = "全部";
       todoStatus = "待处理";
@@ -212,6 +254,8 @@
       openPage("todos");
     },
     todoClearContext() {
+      taskRelation.value = "all";
+      taskRelation.context = null;
       V18.context = null;
       todoSearch = "";
       todoFilter = "全部";
