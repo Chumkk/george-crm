@@ -100,8 +100,11 @@
     icon: (name) => skyIcon(name),
     navigate: (id, keep = true) => openPage(id, { keep }),
     closeTab(id) {
-      const el = document.querySelector(`[data-close="${CSS.escape(id)}"]`);
-      if (el) el.click();
+      if (["home", "projects"].includes(id) || !tabs.includes(id)) return;
+      tabs = tabs.filter((tab) => tab !== id);
+      surfaces.delete(id);
+      dropPageEl(id);
+      openPage(page === id ? tabs.at(-1) || "projects" : page, { keep: true });
     },
     fold() {
       V5.navMini = !V5.navMini;
@@ -251,7 +254,8 @@
       V72.scenario = Number(value);
       changed();
     },
-    simulate: () => api.action("v72Simulate"),
+    simulate: () =>
+      api.action("v72Simulate", { scenario: String(V72.scenario) }),
     openNotification: (id) => v72Go(id),
     drafts: () => ({
       filter: V3.filter,

@@ -58180,7 +58180,9 @@ handleAct=function(button){
  const a=button?.dataset?.act;
  if(a==='v72Go')return v72Go(button.dataset.id);
  if(a==='v72Simulate'){
-  const select=document.querySelector('.page.on [data-v72-scenario]'),index=Number(select?.value),sample=v72Sample(index);
+  const select=document.querySelector('.page.on [data-v72-scenario]'),index=Number(button.dataset.scenario??select?.value??V72.scenario);
+  if(!Number.isInteger(index)||!V72_DEMOS[index])return toast('请选择有效的通知演示场景');
+  const sample=v72Sample(index);
   sample.id='demo-'+(++V72.sequence);sample.time=todoStamp();V72.messages.unshift(sample);V72.scenario=index;V72.scrollTop=null;v72SaveMessages();openPage(v72RolePage());toast('已模拟收到一条企微通知');return;
  }
  if(a==='v72ProjectFlow'){const t=TODOS.find(t=>t.project===button.dataset.project&&t.type==='项目待办');return t?openDealFlow(t):toast('该示例项目暂无流程记录');}
