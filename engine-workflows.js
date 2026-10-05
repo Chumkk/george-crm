@@ -54970,7 +54970,7 @@ function v3ScopeRecords(project,cat){return Object.entries(V3.meta).filter(([cod
 function v3RebuildDraftQuotes(code){const m=v3Meta(code),d=m.submitted,list=projectQuoteRows(m.project);list.forEach(q=>q.products=q.products.filter(p=>p[6]?.draftCode!==code&&(p[6]?.draftCode||!m.categories.includes(p[1]))));for(const s of d.spaces){let q=list.find(q=>q.space===s.name);if(!q){q={space:s.name,floor:'-',dept:'',manager:'',name:s.name+'方案',products:[],amount:0,confirmedCats:[],coverage:0,missing:[],diag:'由草稿报价同步。',desc:'按空间与品类汇总的已提交报价。'};list.push(q);}for(const p of s.products||[]){const idx=q.products.findIndex(x=>x[3]===p.sku&&x[1]===p.cat&&!x[6]?.draftCode);const row=[p.name,p.cat,qMoney(p.amt),p.sku,p.qty,qMoney(p.price),{draftCode:code,revision:m.revision}];if(idx>=0)q.products[idx]=row;else q.products.push(row);}q.updatedAt=m.submittedAt;q.updatedBy=Object.values(d.categoryManagers||{}).join(' / ')||d.sm;}
  for(const q of list){q.amount=q.products.reduce((n,p)=>n+qNum(p[2]),0);q.manager=quoteCatsOf([q]).map(c=>c+' · '+quoteSmOf(c)).join(' / ');q.dept=quoteCatsOf([q]).join(' / ');}markDraftCats(m.project,m.categories);}
 function v3Invalidate(project,cats){for(const cat of cats){for(const [code,m] of v3ScopeRecords(project,cat)){if(m.bindings[cat])continue;m.confirmedCats=m.confirmedCats.filter(c=>c!==cat);m.status=v3Status(m);}projectQuoteRows(project).forEach(q=>q.confirmedCats=(q.confirmedCats||[]).filter(c=>c!==cat));for(const t of TODOS){if(t.project!==project||t.cat!==cat)continue;if(t.type==='订单待办'&&t.status==='待处理'&&t.v3){t.status='已驳回';t.note='报价已重新提交，等待客户重新确认';}if(t.type==='草稿报价待办'&&t.status==='已处理'&&t.v3){t.status='待处理';t.approver='-';t.approveTime='-';}}}QUOTE_UI.clientSelected={};}
-applyDraftSaved=function(input){const d=v3Normalize(input);if(!d.project||!PROJECTS.some(p=>p[0]===d.project)||!v3Cats(d).length)return toast('请选择关联项目并填写产品明细');const old=d.draftCode&&v3Meta(d.draftCode);if(old?.submitted&&old.project!==d.project)return toast('已提交草稿不可更换项目，请复制新草稿');if(old&&Object.keys(old.bindings).length)return toast('已绑定草稿不能重新提交，请复制新草稿');const code=upsertDraftFromPims(d),m=v3Meta(code);const changed=!m.submitted||m.confirmedCats.length>0||v3Signature(m.submitted)!==v3Signature(d);const priorCats=m.categories.slice();m.project=d.project;m.categories=v3Cats(d);m.active=true;if(changed){v3Invalidate(d.project,[...new Set([...priorCats,...m.categories])]);m.revision++;m.confirmedCats=[];m.bindings={};}m.submitted=v3Copy({...DRAFT_DATA[code]});m.submittedAt=v3Stamp();m.status=v3Status(m);archiveProject=d.project;v3RebuildDraftQuotes(code);
+applyDraftSaved=function(input){const d=v3Normalize(input);if(!d.project||!PROJECTS.some(p=>p[0]===d.project)||!v3Cats(d).length)return toast('请选择关联项目并填写产品明细');const old=d.draftCode&&v3Meta(d.draftCode);if(old?.submitted&&old.project!==d.project)return toast('已提交草稿不可更换项目，请复制新草稿');if(old&&Object.keys(old.bindings).length)return toast('已绑定草稿不能重新提交，请复制新草稿');const code=upsertDraftFromPims(d),m=v3Meta(code);const changed=!m.submitted||m.confirmedCats.length>0||v3Signature(m.submitted)!==v3Signature(d);const priorCats=m.categories.slice();m.project=d.project;m.categories=v3Cats(d);m.active=true;if(changed){v3Invalidate(d.project,[...new Set([...priorCats,...m.categories])]);m.revision++;m.confirmedCats=[];m.bindings={};}m.submitted=v3Copy({...DRAFT_DATA[code]});m.submittedAt=v3Stamp();m.submittedBy=v17Owner();m.status=v3Status(m);archiveProject=d.project;v3RebuildDraftQuotes(code);
  for(const cat of m.categories){if(m.confirmedCats.includes(cat))continue;let t=TODOS.find(t=>t.project===d.project&&t.type==='草稿报价待办'&&t.cat===cat&&t.status!=='已驳回');if(!t)t=addChainTodo({type:'草稿报价待办',project:d.project,customer:d.customer||findProject(d.project)[7],cat,owner:quoteSmOf(cat),initiator:quoteSmOf(cat)});Object.assign(t,{status:'待处理',owner:quoteSmOf(cat),title:cat+'草稿已提交，等待客户确认',draft:code,drafts:[...new Set([...(t.drafts||[]),code])],v3:true,approver:'-',approveTime:'-'});}
  const durable=v3Save();markPagesDirty();document.getElementById('pimsFrame')?.contentWindow?.postMessage({type:'pimsSaveAck',draftCode:code,durable},'*');toast('草稿已提交并同步报价总览；客户确认后完成报价待办。');openPage('drafts');};
 /* Attach stable draft identities to seeded submissions without changing quote totals. */
@@ -54996,7 +54996,7 @@ bindDraftHtml=function(selected){const o=bindTargetOpp();V3.bindCat=o?.[3]||'';s
 fillBindDraftFields=function(code){const o=bindTargetOpp(),cat=o?.[3]||V3.bindCat,amount=v3BindAmount(code,cat),comm=Math.round(amount*.1);for(const [id,v] of [['bindAmt',amount],['bindDiscAmt',amount],['bindComm',comm],['bindOrderAmt',amount-comm]])if($('#'+id))$('#'+id).value=String(v);for(const id of ['bindAmt','bindDiscAmt'])if($('#'+id))$('#'+id).readOnly=true;if($('#bindPiWrap'))$('#bindPiWrap').innerHTML=bindPiBlock(v3BindLines(code,cat));};
 const v3OldBindForm=bindBindDraftForm;bindBindDraftForm=function(){v3OldBindForm();fillBindDraftFields($('#bindDraftSel')?.value||'');};
 const v3OldConfirmBind=confirmBindDraft;
-confirmBindDraft=function(item){const code=$('#bindDraftSel')?.value||'',o=bindTargetOpp(item);if(!o||!v3BindEligible(o).some(r=>r[0]===code)){toast('请选择本项目、本品类已确认且未绑定的草稿');return false;}const m=v3Meta(code),cat=o[3],amount=v3BindAmount(code,cat);const comm=Number($('#bindComm')?.value);if(!Number.isFinite(comm)||comm<0||comm>amount)return toast('佣金需介于0与已确认金额之间'),false;$('#bindDiscAmt').value=String(amount);const pending=item||TODOS.find(t=>t.type==='订单待办'&&t.status==='待处理'&&t.project===o[4]&&t.cat===cat);if(pending){pending.opp=o[0];pending.cat=cat;}const result=v3OldConfirmBind(pending);if(!result)return false;const order=ORDERS.find(r=>orderOppOf(r)===o[0]&&r[2]==='销售订单');m.bindings[cat]={oppId:o[0],orderNo:order?.[0]||'',revision:m.revision,boundAt:v3Stamp()};m.status=v3Status(m);const r=DRAFTS.find(r=>r[0]===code);r[8]=m.tags.join('、');v3Save();markPagesDirty();openPage(page);return true;};
+confirmBindDraft=function(item){const code=$('#bindDraftSel')?.value||'',o=bindTargetOpp(item);if(!o||!v3BindEligible(o).some(r=>r[0]===code)){toast('请选择本项目、本品类已确认且未绑定的草稿');return false;}const m=v3Meta(code),cat=o[3],amount=v3BindAmount(code,cat);const comm=Number($('#bindComm')?.value);if(!Number.isFinite(comm)||comm<0||comm>amount)return toast('佣金需介于0与已确认金额之间'),false;$('#bindDiscAmt').value=String(amount);const pending=item||TODOS.find(t=>t.type==='订单待办'&&t.status==='待处理'&&t.project===o[4]&&t.cat===cat);if(pending){pending.opp=o[0];pending.cat=cat;}const result=v3OldConfirmBind(pending);if(!result)return false;const order=ORDERS.find(r=>orderOppOf(r)===o[0]&&r[2]==='销售订单');m.bindings[cat]={oppId:o[0],orderNo:order?.[0]||'',revision:m.revision,boundAt:v3Stamp(),boundBy:v17Owner()};m.status=v3Status(m);const r=DRAFTS.find(r=>r[0]===code);r[8]=m.tags.join('、');v3Save();markPagesDirty();openPage(page);return true;};
 const v3PriorHandle=handleAct;
 handleAct=function(t){const a=t?.dataset?.act;if(a==='clientConfirmQuote')return v3ConfirmCategory();if(a==='v3EditTodo'){const item=TODOS.find(x=>x.id===t.dataset.id);if(!item)return;if(item.draft)return openDraftEditor(item.draft);const proxy=document.createElement('button');proxy.dataset.act='createDraftQuote';proxy.dataset.id=item.id;return v3PriorHandle(proxy);}if(['todoEnd','plannedTodoSubmit'].includes(a)){const item=TODOS.find(x=>x.id===t.dataset.id);if(item?.type==='草稿报价待办')return toast('请通过报价编辑提交草稿；此待办在客户确认后自动完成。');}if(a==='modal:bindDraft'){V3.bindCat='';if(t.dataset.proj)archiveProject=t.dataset.proj;if(t.dataset.opp)viewOpp=t.dataset.opp;}if(a==='plannedTodoDo'){const item=TODOS.find(x=>x.id===t.dataset.id);if(item?.type==='订单待办')V3.bindCat=item.cat;}const result=v3PriorHandle(t);if(['confirmBindDraft','plannedTodoSubmit','confirmOpp','todoSubmit'].includes(a))v3Save();return result;};
 v3Save();
@@ -58007,15 +58007,17 @@ document.addEventListener('input',event=>{if(event.target.matches('.v71-flow-sea
 const V72_TYPES={'客户待办':'sales','设计待办':'designer','创建项目待办':'pm','项目待办':'pm','确认商机':'sm','跨区域商机审批待办':'office','转介绍商机审批待办':'office','草稿报价待办':'sm','订单待办':'sm'};
 function v72Snapshot(){
  return {todos:Object.fromEntries(TODOS.filter(t=>V72_TYPES[t.type]).map(t=>[t.id,{...t,needInfo:undefined,handoff:undefined,allocation:t.allocation?{sm:t.allocation.sm,cat:t.allocation.cat}:undefined,attachments:undefined}])),
- quotes:Object.fromEntries(Object.entries(V3.meta).filter(([,m])=>m.submitted).map(([id,m])=>[id,{project:m.project,revision:m.revision,categories:m.categories.slice(),confirmedCats:m.confirmedCats.slice(),bindings:v3Copy(m.bindings||{})}]))};
+ quotes:Object.fromEntries(Object.entries(V3.meta).filter(([,m])=>m.submitted).map(([id,m])=>[id,{project:m.project,revision:m.revision,submittedBy:m.submittedBy,confirmedBy:m.confirmedBy,categories:m.categories.slice(),confirmedCats:m.confirmedCats.slice(),bindings:v3Copy(m.bindings||{})}]))};
 }
+function v72Person(value){return typeof value==='string'&&value.trim()&&value.trim()!=='-'?value.trim():'';}
 function v72NotificationEvents(before,after){
  const events=[],tasks=Object.values(after.todos),projectName=id=>PROJECTS.find(p=>p[0]===id)?.[1]||'',pm=id=>PROJECTS.find(p=>p[0]===id)?.[9]||'',customer=id=>PROJECTS.find(p=>p[0]===id)?.[7]||'';
- const send=(role,recipient,data)=>{if(recipient&&recipient!=='-')events.push({role,recipient,...data});};
+ const actor=v72Person(v17Owner());
+ const send=(role,recipient,data)=>{if(recipient&&recipient!=='-')events.push({role,recipient,initiator:actor||'系统自动触发',...data});};
  const draftOwner=(project,cat)=>tasks.find(t=>t.project===project&&t.type==='草稿报价待办'&&todoCatKey(t)===cat)?.owner||quoteSmOf(cat);
  const confirmationKeys=new Set(),orderKeys=new Set();
  for(const [id,q] of Object.entries(after.quotes)){
-  const old=before.quotes[id],base={project:q.project,projectName:projectName(q.project),customer:customer(q.project),quote:id,target:'quote'};
+  const old=before.quotes[id],base={project:q.project,projectName:projectName(q.project),customer:customer(q.project),quote:id,target:'quote',initiator:v72Person(q.submittedBy)||actor};
   if(!old||old.revision!==q.revision){
    const changed=old?.confirmedCats?.length;
    send('pm',pm(q.project),{...base,event:'quote-submitted',title:changed?'报价已更新，需客户重新确认':'品类报价已提交',category:q.categories.join('、'),status:'已提交',body:changed?'未绑定报价已重新提交，客户确认状态已重置，请跟进本次报价确认。':'项目报价总览和客户报价页面已同步更新，可查看本次品类报价。'});
@@ -58024,27 +58026,29 @@ function v72NotificationEvents(before,after){
    if(old?.revision===q.revision&&old.confirmedCats.includes(cat))continue;
    const key=q.project+'|'+cat;if(confirmationKeys.has(key))continue;confirmationKeys.add(key);
    const task=tasks.find(t=>t.project===q.project&&t.type==='订单待办'&&todoCatKey(t)===cat&&t.status==='待处理');
-   const data={...base,event:'quote-confirmed',title:'客户已确认品类报价',category:cat,status:'已确认',body:'客户已确认本品类全部空间的报价，可继续绑定商机并生成销售订单。',task:task?.id,target:task?'todo':'quote'};
+   const data={...base,initiator:v72Person(q.confirmedBy)||(customer(q.project)?customer(q.project)+'（客户）':'客户'),event:'quote-confirmed',title:'客户已确认品类报价',category:cat,status:'已确认',body:'客户已确认本品类全部空间的报价，可继续绑定商机并生成销售订单。',task:task?.id,target:task?'todo':'quote'};
    const owner=draftOwner(q.project,cat);send('sm',owner,data);if(pm(q.project)!==owner)send('pm',pm(q.project),{...data,target:'quote'});
   }
   for(const [cat,binding] of Object.entries(q.bindings)){
    if(old?.bindings?.[cat]?.orderNo===binding.orderNo)continue;
    orderKeys.add(q.project+'|'+cat);
-   const data={...base,event:'order-created',title:'销售订单已生成',category:cat,status:'已处理',body:'已确认草稿已绑定商机，销售订单 '+(binding.orderNo||'')+' 已生成。后续调整使用编辑订单。',order:binding.orderNo};
+   const data={...base,initiator:v72Person(binding.boundBy)||actor,event:'order-created',title:'销售订单已生成',category:cat,status:'已处理',body:'已确认草稿已绑定商机，销售订单 '+(binding.orderNo||'')+' 已生成。后续调整使用编辑订单。',order:binding.orderNo};
    const owner=draftOwner(q.project,cat);send('sm',owner,data);if(pm(q.project)!==owner)send('pm',pm(q.project),data);
   }
  }
  for(const t of tasks){
-  const old=before.todos[t.id],preProject=['客户待办','设计待办','创建项目待办'].includes(t.type),base={task:t.id,project:t.project,projectName:preProject?'':projectName(t.project),customer:t.customer,category:preProject?'':t.allocation?.cat||todoCatKey(t),target:'todo',status:t.status,type:t.type};
+  const old=before.todos[t.id],preProject=['客户待办','设计待办','创建项目待办'].includes(t.type),base={task:t.id,project:t.project,projectName:preProject?'':projectName(t.project),customer:t.customer,category:preProject?'':t.allocation?.cat||todoCatKey(t),target:'todo',status:t.status,type:t.type,initiator:v72Person(t.initiator)||actor};
   if(!old&&t.status==='待处理'){
    if(t.type==='订单待办'&&confirmationKeys.has(t.project+'|'+todoCatKey(t)))continue;
    send(V72_TYPES[t.type],t.owner,{...base,event:'todo-arrived',title:(typeof v18Name==='function'?v18Name(t.type):t.type)+'已到达',body:t.type==='草稿报价待办'?'商机已生成，请从待办进入线上报价，自动带入本品类全部相关空间。':t.type==='跨区域商机审批待办'||t.type==='转介绍商机审批待办'?'请核对项目、接收 SM 及申请附件。通过后直接生成商机和草稿报价待办。':'你有一项新的业务待办，请查看资料并处理。'});
   }
   if(old&&old.owner!==t.owner){
+   base.initiator=actor||'系统自动触发';
    send(V72_TYPES[t.type],t.owner,{...base,event:'owner-changed',title:'待办已移交给你',body:'负责人调整后，此待办已从 '+old.owner+' 移交给你，请继续跟进。'});
    send(V72_TYPES[t.type],old.owner,{...base,event:'owner-released',title:'待办已移交',body:'此待办已移交给 '+t.owner+'，请以当前业务归属为准。',target:'flow'});
   }
   if(old&&old.status!==t.status&&['已处理','已驳回'].includes(t.status)){
+   base.initiator=v72Person(t.approver)||actor||'系统自动触发';
    if(t.status==='已处理'&&(t.type==='草稿报价待办'&&confirmationKeys.has(t.project+'|'+todoCatKey(t))||t.type==='订单待办'&&orderKeys.has(t.project+'|'+todoCatKey(t))))continue;
    const approval=V68_APPROVALS.includes(t.type),role=['设计待办','创建项目待办','客户待办'].includes(t.type)?'sales':'pm';
    if(t.initiator===t.owner||t.initiator==='客户')continue;
@@ -58080,9 +58084,22 @@ const V72_DEMOS=[
  ['office','转介绍商机申请待审批','待处理','请核对转介绍人、被转介绍 SM 及其组长同意截图。本次申请直接创建新商机。','转介绍商机审批待办','todo']
 ];
 const v72Stored=wkRead('crm-wecom-demo-v72',{});
+const V72_DEMO_INITIATORS=['sales','designer','designer','sales','sales','sales','designer','sales','pm','office','office','sm','sm','customer','pm','sm','office','customer','sm','pm','pm'];
+function v72SampleInitiator(index,customer='测试客户8564'){
+ const role=V72_DEMO_INITIATORS[index];
+ return role==='customer'?customer+'（客户）':V72_ROLES[role]?.person||'系统自动触发';
+}
+function v72MessageInitiator(m){
+ if(v72Person(m.initiator))return m.initiator;
+ if(m.sample){
+  const index=V72_DEMOS.findIndex(d=>d[0]===m.role&&d[1]===m.title);
+  if(index>=0)return v72SampleInitiator(index,m.customer);
+ }
+ return '历史记录未记录';
+}
 const V72={messages:Array.isArray(v72Stored.messages)?v72Stored.messages:[],sequence:v72Stored.sequence||0,baseline:v72Snapshot(),scenario:0,scrollTop:null,storageOk:true};
 function v72SaveMessages(){V72.storageOk=wkWrite('crm-wecom-demo-v72',{messages:V72.messages.slice(0,400),sequence:V72.sequence});}
-function v72Sample(index){const [role,title,status,body,type,target]=V72_DEMOS[index],preProject=['客户待办','设计待办','创建项目待办'].includes(type);return {id:'sample-'+index,role,recipient:V72_ROLES[role].person,title,status,body,type,target,project:preProject?'':'PJ0018011',projectName:preProject?'':'【GAD】测试项目',customer:'测试客户8564',category:!preProject&&['sm','pm','office'].includes(role)?'家具':'',sample:true,time:'演示样例',read:false};}
+function v72Sample(index){const [role,title,status,body,type,target]=V72_DEMOS[index],preProject=['客户待办','设计待办','创建项目待办'].includes(type);return {id:'sample-'+index,role,recipient:V72_ROLES[role].person,initiator:v72SampleInitiator(index),title,status,body,type,target,project:preProject?'':'PJ0018011',projectName:preProject?'':'【GAD】测试项目',customer:'测试客户8564',category:!preProject&&['sm','pm','office'].includes(role)?'家具':'',sample:true,time:'演示样例',read:false};}
 for(const role of Object.keys(V72_ROLES))if(!V72.messages.some(m=>m.role===role)){
  const choices=V72_DEMOS.map((x,i)=>x[0]===role?i:-1).filter(i=>i>=0);V72.messages.push(...choices.slice(0,2).map(v72Sample));
 }
@@ -58103,12 +58120,12 @@ function v73Clip(value,budget,escape=false){
 }
 function v73TextCard(m){
  const preProject=['客户待办','设计待办','创建项目待办'].includes(m.type);
- const lines=['客户：'+v73Clip(m.customer||'—',64,true)];
- if(m.projectName&&!preProject)lines.push('项目：'+v73Clip(m.projectName,84,true));
- if(m.category&&!preProject)lines.push('品类：'+v73Clip(m.category,40,true));
- if(m.revision)lines.push('版本：'+v73Clip(m.revision,24,true));
- lines.push('状态：'+v73Clip(m.status,30,true));
- const prefix='<div class="gray">'+v73Clip(m.sample&&m.time==='演示样例'?'演示样例':m.time,40,true)+'</div><div class="normal">'+lines.join('<br>')+'<br>',suffix='</div>';
+ const lines=['发起人：'+v73Clip(v72MessageInitiator(m),60,true),'客户：'+v73Clip(m.customer||'—',54,true)];
+ if(m.projectName&&!preProject)lines.push('项目：'+v73Clip(m.projectName,66,true));
+ if(m.category&&!preProject)lines.push('品类：'+v73Clip(m.category,36,true));
+ if(m.revision)lines.push('版本：'+v73Clip(m.revision,18,true));
+ lines.push('状态：'+v73Clip(m.status,24,true));
+ const prefix='<div class="gray">'+v73Clip(m.sample&&m.time==='演示样例'?'演示样例':m.time,36,true)+'</div><div class="normal">'+lines.join('<br>')+'<br>',suffix='</div>';
  return {title:v73Clip(m.title,120),description:prefix+v73Clip(m.body,Math.max(3,500-v73Bytes(prefix+suffix)),true)+suffix,btntxt:m.target==='quote'?'查看报价':m.target==='flow'?'查看结果':'查看待办'};
 }
 function v72Card(m){
@@ -58220,7 +58237,7 @@ v72Sample=function(index){const m=v75SampleBase(index);v75BindSample(m);v75SaveD
 const v75MessagesBase=v72SaveMessages;
 v72SaveMessages=function(){for(const m of V72.messages)v75BindSample(m);v75SaveDemoTasks();return v75MessagesBase();};
 // Migrate old cards before the user enters the task list; repeated reloads never add duplicates.
-for(const m of V72.messages)v75BindSample(m);
+for(const m of V72.messages){m.initiator=v72MessageInitiator(m);v75BindSample(m);}
 v72SaveMessages();
 const v75VisibleBase=visibleTodos;
 visibleTodos=function(){return [...v75VisibleBase(),...V75.records.filter(t=>crmTodoEnabled(t)&&!TODOS.some(row=>row.id===t.id))];};
