@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SCRM 客户工作台</title>
+  <link rel="icon" type="image/svg+xml" href="./gos-scrm-brand-logo.svg" />
+  <link rel="stylesheet" href="./gos-scrm-vendor.css?v=e05cd38a3ec5" />
+  <link rel="stylesheet" href="./gos-scrm-embed.css?v=b705ba8f7cab" />
+  <script type="importmap">{"imports":{"./gos-scrm-vendor.js":"./gos-scrm-vendor.js?v=ec463d15f661","./gos-scrm-storage.js":"./gos-scrm-storage.js?v=1ad1f88efc87","./AiDesign-DQiqufn1.js":"./AiDesign-DQiqufn1.js?v=baae88a892a9","./DesignCanvas-C3y-5gv4.js":"./DesignCanvas-C3y-5gv4.js?v=f5493c1294e7","./DesignPreparation-COAKxD4d.js":"./DesignPreparation-COAKxD4d.js?v=bef3b4731cd7","./DesignResultViewer-Bw0A97zv.js":"./DesignResultViewer-Bw0A97zv.js?v=0e3c301dd895","./gos-scrm-adapter.js":"./gos-scrm-adapter.js?v=d659bdfb18f8"}}</script>
+  <script>window.__CRM_GOS_ASSET_URLS__={"gos-scrm-vendor.js":"./gos-scrm-vendor.js?v=ec463d15f661","gos-scrm-vendor.css":"./gos-scrm-vendor.css?v=e05cd38a3ec5","gos-scrm-embed.css":"./gos-scrm-embed.css?v=b705ba8f7cab","gos-scrm-storage.js":"./gos-scrm-storage.js?v=1ad1f88efc87","AiDesign-DQiqufn1.js":"./AiDesign-DQiqufn1.js?v=baae88a892a9","DesignCanvas-C3y-5gv4.js":"./DesignCanvas-C3y-5gv4.js?v=f5493c1294e7","DesignPreparation-CEa1YPEf.css":"./DesignPreparation-CEa1YPEf.css?v=983a817663db","DesignPreparation-COAKxD4d.js":"./DesignPreparation-COAKxD4d.js?v=bef3b4731cd7","DesignResultViewer-Bw0A97zv.js":"./DesignResultViewer-Bw0A97zv.js?v=0e3c301dd895","DesignResultViewer-jFoACV1h.css":"./DesignResultViewer-jFoACV1h.css?v=e286356295be","index-BhG_xKEW.css":"./index-BhG_xKEW.css?v=e05cd38a3ec5","gos-scrm-adapter.js":"./gos-scrm-adapter.js?v=d659bdfb18f8"};</script>
+  <script src="./gos-scrm-storage.js?v=1ad1f88efc87"></script>
+  <script src="./gos-scrm-adapter.js?v=d659bdfb18f8"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="module">
+    try {
+      if (!window.__CRM_GOS_STORAGE_READY__) throw window.__CRM_GOS_STORAGE_ERROR__ || new Error("浏览器存储不可用");
+      await import("./gos-scrm-vendor.js?v=ec463d15f661");
+    } catch (error) {
+      console.error("SCRM 加载失败", error);
+      const panel = document.createElement("div");
+      panel.id = "gos-load-error";
+      panel.textContent = window.__CRM_GOS_STORAGE_ERROR__?.message || "SCRM 加载失败，请检查浏览器存储或网络后重试。";
+      const button = document.createElement("button");
+      button.textContent = "重新加载";
+      button.onclick = () => location.reload();
+      panel.append(document.createElement("br"), button);
+      document.getElementById("root").replaceChildren(panel);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+/* Original GOS stylesheet remains byte-for-byte unchanged. */
+html, body, #root { width: 100%; height: 100%; min-width: 0; margin: 0; }
+.gb-shell > .gb-sidebar,
+.gb-shell-frame > .gb-topbar { display: none !important; }
+.gb-shell, .gb-shell-frame, .gb-shell-main, .gb-shell-content { min-width: 0; }
+.gb-shell-content { padding: 0 !important; }
+/* Follow the original sales/AI panel overlay behavior inside narrower hosts. */
+@media (max-width: 1650px) {
+  .gb-shell-content .scrm-shell,
+  .gb-shell-content .scrm-shell.has-tool-panel,
+  .gb-shell-content .scrm-shell.has-tool-panel.is-ai-design-open {
+    --crm-gos-conversation-width: min(300px, var(--conversation-width, 360px), 30%);
+    grid-template-columns: 64px var(--crm-gos-conversation-width) 7px minmax(0, 1fr) 0 52px;
+  }
+  .gb-shell-content .scrm-shell .scrm-tool-side-panel.is-open {
+    position: absolute;
+    inset: 0 52px 0 auto;
+    z-index: 5;
+    grid-column: auto;
+    width: min(var(--tool-panel-width, 580px), calc(100% - var(--crm-gos-conversation-width) - 123px));
+    min-width: 0;
+    box-shadow: -8px 0 24px #1e355014;
+  }
+  .gb-shell-content .scrm-shell.is-ai-design-open .scrm-tool-side-panel.is-open {
+    width: min(var(--ai-design-panel-width, 420px), calc(100% - var(--crm-gos-conversation-width) - 123px));
+  }
+}
+.gos-crm-panel { box-sizing: border-box; height: 100%; min-height: 0; overflow: auto; overscroll-behavior: contain; }
+.gos-crm-panel dl { margin: 14px 0 0; }
+.gos-crm-panel dl > div { display: grid; grid-template-columns: minmax(100px, 36%) minmax(0, 1fr); gap: 12px; padding: 7px 0; align-items: start; }
+.gos-crm-panel dt { margin: 0; color: #64748b; font-size: 12px; line-height: 1.6; }
+.gos-crm-panel dd { margin: 0; color: #1f2937; font-size: 13px; line-height: 1.6; overflow-wrap: anywhere; white-space: pre-wrap; }
+.gos-crm-action { box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; min-height: 30px; max-width: 100%; padding: 5px 10px; margin: 4px 6px 4px 0; border: 1px solid #d6dfe9; border-radius: 6px; background: #fff; color: #1a4d8f; font: inherit; font-size: 12px; line-height: 1.5; text-align: left; white-space: normal; overflow-wrap: anywhere; cursor: pointer; }
+.gos-crm-action:hover { border-color: #2e7bd6; background: #edf5ff; }
+.gos-crm-action:focus-visible { outline: 2px solid #2e7bd6; outline-offset: 2px; }
+.gos-crm-action.is-primary, .gos-crm-action.ant-btn-primary { color: #fff; border-color: #1a4d8f; background: #1a4d8f; }
+.gos-crm-action.is-primary:hover, .gos-crm-action.ant-btn-primary:hover { background: #2564a5; }
+.gos-crm-action:disabled { opacity: .5; cursor: not-allowed; }
+.gos-crm-panel .scrm-customer-tags > span { display: inline-block; margin: 3px 5px 3px 0; padding: 2px 7px; border: 1px solid #d7e4f3; border-radius: 5px; background: #edf5ff; color: #315c8d; font-size: 12px; line-height: 1.5; }
+#gos-load-error { box-sizing: border-box; margin: 24px; padding: 20px; font: 14px/1.6 sans-serif; background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; }
+#gos-load-error button { margin-top: 12px; cursor: pointer; }
