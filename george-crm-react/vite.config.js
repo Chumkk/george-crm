@@ -10,7 +10,7 @@ import { buildGosVendor } from "./build/gos-vendor.mjs";
 const root = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
 const schedulerEntry = require.resolve("scheduler", { paths: [fs.realpathSync(path.join(root, "node_modules/react-dom"))] });
-const engineFiles = ["startup", "policy", "crm", "workflows", "quoteRevision", "projectQuoteList", "customerQuoteLayout", "orderRevision", "customerHub", "todoDemoFill", "allocationBatch", "projectFormProgress", "customerIntake", "businessSync", "designWorkflow", "opportunityQuotes", "managementWorkflow", "progressTracking", "taskFollowup", "taskMonitoringDemo", "todoDrawers", "designQuotation", "expenseWorkflow", "managementMonitoring", "designGds", "procurementWorkflow", "unifiedAllocation", "designOrderDelivery", "designScenario", "taskHistory", "bridge"];
+const engineFiles = ["startup", "policy", "crm", "workflows", "quoteRevision", "projectQuoteList", "customerQuoteLayout", "orderRevision", "customerHub", "todoDemoFill", "allocationBatch", "projectFormProgress", "customerIntake", "businessSync", "designWorkflow", "opportunityQuotes", "managementWorkflow", "progressTracking", "taskFollowup", "taskMonitoringDemo", "todoDrawers", "designQuotation", "expenseWorkflow", "managementMonitoring", "designGds", "procurementWorkflow", "unifiedAllocation", "designOrderDelivery", "designScenario", "acceptanceEditing", "taskHistory", "bridge"];
 const threeEnd = "window.THREE=exports;})();";
 
 function readEngines() {

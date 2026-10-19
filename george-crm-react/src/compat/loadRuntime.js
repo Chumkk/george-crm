@@ -24,7 +24,7 @@ export function loadRuntime() {
         status.replaceChildren(message, button);
       },
     });
-    await loadOrderedScripts(document, ["startup", "policy", "crm", "workflows", "quoteRevision", "projectQuoteList", "customerQuoteLayout", "orderRevision", "customerHub", "todoDemoFill", "allocationBatch", "projectFormProgress", "customerIntake", "businessSync", "designWorkflow", "opportunityQuotes", "managementWorkflow", "progressTracking", "taskFollowup", "taskMonitoringDemo", "todoDrawers", "designQuotation", "expenseWorkflow", "managementMonitoring", "designGds", "procurementWorkflow", "unifiedAllocation", "designOrderDelivery", "designScenario", "taskHistory", "bridge"]
+    await loadOrderedScripts(document, ["startup", "policy", "crm", "workflows", "quoteRevision", "projectQuoteList", "customerQuoteLayout", "orderRevision", "customerHub", "todoDemoFill", "allocationBatch", "projectFormProgress", "customerIntake", "businessSync", "designWorkflow", "opportunityQuotes", "managementWorkflow", "progressTracking", "taskFollowup", "taskMonitoringDemo", "todoDrawers", "designQuotation", "expenseWorkflow", "managementMonitoring", "designGds", "procurementWorkflow", "unifiedAllocation", "designOrderDelivery", "designScenario", "acceptanceEditing", "taskHistory", "bridge"]
       .map((name) => `${import.meta.env.BASE_URL}${__CRM_ENGINE_ASSETS__[name]}`));
     if (!window.GeorgeRuntime) throw Error("业务模块未能启动");
     return window.GeorgeRuntime;
