@@ -165,7 +165,7 @@ export function TodoCenter({ api }) {
     <button
       key={type}
       data-task-type={type}
-      className={model.filter === type ? "on" : ""}
+      className={model.filter === type || (["确认商机", "报价待办"].includes(model.filter) && model.rows.length > 0 && model.rows.every(task => task.typeLabel === type)) ? "on" : ""}
       onClick={() => api.todoUpdate({ filter: type })}
     >
       <Icon
@@ -175,7 +175,7 @@ export function TodoCenter({ api }) {
         }
       />
       <span>{type === "全部" ? "全部待办" : taskLabel(type)}</span>
-      <small>{model.counts[type] || 0}</small>
+      <small className={(model.counts[type] || 0) > 0 ? "rx-task-count has-count" : "rx-task-count"}>{model.counts[type] || 0}</small>
     </button>
   );
   return (

@@ -264,7 +264,7 @@
           (t) => todoStatus === "全部" || t.status === todoStatus,
         );
       const list = byStatus
-        .filter((t) => todoFilter === "全部" || t.type === todoFilter)
+        .filter((t) => typeof crmTaskMatchesCategory === "function" ? crmTaskMatchesCategory(t, todoFilter) : todoFilter === "全部" || t.type === todoFilter)
         .slice()
         .sort((a, b) =>
           (taskSort === "oldest"
@@ -301,16 +301,16 @@
           rejected: all.filter((t) => t.status === "已驳回").length,
         },
         counts: Object.fromEntries(
-          ["全部", ...new Set(visibleTodos().map((t) => t.type))].map(
+          ["全部", ...new Set(visibleTodos().map((t) => t.type)), "采购商机接单", "设计商机接单", "产品报价", "设计报价"].map(
             (type) => [
               type,
-              byStatus.filter((t) => type === "全部" || t.type === type).length,
+              byStatus.filter((t) => typeof crmTaskMatchesCategory === "function" ? crmTaskMatchesCategory(t, type) : type === "全部" || t.type === type).length,
             ],
           ),
         ),
         rows: list.map((t) => ({
           ...t,
-          typeLabel: v18Name(t.type),
+          typeLabel: typeof crmTaskCategory === "function" ? crmTaskCategory(t) : v18Name(t.type),
           subject: t.type === '项目待办' && /可多次拉商机，结束后关闭/.test(t.title || '') ? '按区域与品类分配商机' : todoSubject(t),
           meta: todoMeta(t),
           coordination: t.coordination || null,
@@ -337,7 +337,7 @@
       const canOperate = task.status === "待处理" && v21CanOperate(task) && (task.type !== "设计确认待办" || (dr185Source(task) ? dr185Can(task) : typeof mgReviewActive !== "function" || mgReviewActive(task)));
       const code = task.draft || "", meta = typeof V3 !== "undefined" ? V3.meta?.[code] : null;
       const quotation = task.type === "报价待办" && meta?.submitted ? { code, revision: meta.revision || 0, submittedAt: meta.submittedAt || "" } : null;
-      return { id: task.id, type: task.type, project: task.project || "", opp: task.opp || "", status: task.status, designType, owner: task.owner || "", subject: task.title || task.type, canOperate, quotation, reviewTodoId: task.reviewTodoId || "", sourceTodoId: task.sourceTodoId || "", designSubmission: task.designSubmission || 0 };
+      return { id: task.id, type: task.type, category: typeof crmTaskCategory === "function" ? crmTaskCategory(task) : task.type, project: task.project || "", opp: task.opp || "", status: task.status, designType, owner: task.owner || "", subject: task.title || task.type, canOperate, quotation, reviewTodoId: task.reviewTodoId || "", sourceTodoId: task.sourceTodoId || "", designSubmission: task.designSubmission || 0 };
     },
     guideTaskLink(id, nextType) {
       const rows = relationRows(), source = rows.find(task => task.id === id);
