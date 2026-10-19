@@ -318,7 +318,7 @@
           stayLabel: todoStayLabel(t),
           followup: typeof tfTaskMeta === "function" ? tfTaskMeta(t) : null,
           businessInfo: typeof mgTaskBusinessInfo === "function" ? mgTaskBusinessInfo(t) : null,
-          opportunityName: t.type === "转介绍商机审批待办" && typeof mgInvitationName === "function" ? (typeof OPPS !== "undefined" && OPPS.find(o => o[0] === t.opp || o[0] === t.createdOppId)?.[1]) || mgInvitationName(t) : "",
+          opportunityName: ["转介绍商机审批待办", "报价待办"].includes(t.type) ? (typeof OPPS !== "undefined" && OPPS.find(o => o[0] === t.opp || o[0] === t.createdOppId)?.[1]) || (typeof mgInvitationName === "function" ? mgInvitationName(t) : "") : "",
           orderNumber: quotationOrderNumber(t),
           canOperate: v21CanOperate(t),
           customerMeta: ["客户待办", "设计待办", "创建项目待办"].includes(

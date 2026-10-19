@@ -3,14 +3,14 @@ export const TASK_GROUPS = [
   ["设计师", ["设计待办"]],
   ["商机负责人（SM / 设计师）", ["确认商机", "报价待办"]],
   ["费用经办人员", ["费用订单待办"]],
-  ["审批负责人", ["跨区域商机审批待办", "转介绍商机审批待办", "邀请函审核"]],
-  ["客户负责人", ["公海跟进"]],
+  ["审批负责人", ["跨区域商机审批待办", "转介绍商机审批待办"]],
 ];
+export const PAUSED_TASK_TYPES = new Set(["邀请函审核", "邀请函审批", "邀请函审核待办", "邀请函审批待办", "公海跟进", "公海跟进待办", "客户跟进", "客户跟进待办"]);
 export const RETIRED_TASK_TYPES = new Set([
   "客户待办", "创建项目待办", "草稿报价待办", "订单待办", "设计单", "设计订单待办",
 ]);
 export function isCurrentTask(task) {
-  return !!task && !RETIRED_TASK_TYPES.has(task.type) && !task.retiredWorkflow135 && !task.legacyDesignArchive187 &&
+  return !!task && !RETIRED_TASK_TYPES.has(task.type) && !PAUSED_TASK_TYPES.has(task.type) && !task.retiredWorkflow135 && !task.legacyDesignArchive187 &&
     (!['设计待办','设计确认待办'].includes(task.type) || !!task.project && task.project !== '-');
 }
 export function isCurrentNotification(message) {
@@ -33,7 +33,7 @@ export function taskSubtitle(task) {
   const projectReference = ["项目待办", "确认商机", "确认商机待办", "费用订单待办"].includes(task.type);
   let subject = text(task.subject);
   if (projectReference) subject = project || subject;
-  if (task.type === "转介绍商机审批待办") subject = text(task.opportunityName) || subject;
+  if (["转介绍商机审批待办", "报价待办"].includes(task.type)) subject = text(task.opportunityName) || project || subject;
   if (["邀请函审核", "邀请函审核待办", "公海跟进", "公海跟进待办"].includes(task.type)) subject = text(task.customer) || subject;
   const code = ["设计待办", "设计确认待办"].includes(task.type) ? text(task.order)
     : task.type === "报价待办" ? text(task.orderNumber) : projectReference ? projectCode : "";
