@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   PageHeading,
   Status,
@@ -8,6 +8,7 @@ import {
 } from "../../components/ui";
 import { TASK_GROUPS, taskLabel, taskSubtitle, metricFilter, splitActions, taskRejectionReason, isCurrentTask } from "./model";
 import "./taskFollowup.css";
+import { TaskHistoryDrawer } from "./TaskHistoryDrawer";
 function TaskAction({ api, action, appearance = "secondary" }) {
   if (!action) return null;
   if (action.html) return <FragmentHtml html={action.html} />;
@@ -23,7 +24,7 @@ function TaskAction({ api, action, appearance = "secondary" }) {
     </button>
   );
 }
-function TaskRow({ task, api }) {
+function TaskRow({ task, api, onHistory }) {
   const isDesignDelivery = ["设计待办", "设计确认待办"].includes(task.type);
   const subtitle = taskSubtitle(task);
   const actions = splitActions(task.actions.filter((action) => action.act !== "viewDealFlow"));
@@ -56,14 +57,11 @@ function TaskRow({ task, api }) {
         <div className="rx-task-title">
           <strong>{task.typeLabel}</strong>
           {task.businessInfo && <>
-            {!isDesignDelivery && <span className="rx-task-tag">{task.businessInfo.label}</span>}
+            {!isDesignDelivery && !["设计服务", "设计单报价"].includes(task.businessInfo.label) && <span className="rx-task-tag">{task.businessInfo.label}</span>}
             {task.businessInfo.scope && <span className="rx-task-tag addon">{task.businessInfo.scope}</span>}
             {task.businessInfo.quoteStatus && <span className={`rx-task-tag ${task.businessInfo.quoteStatus === '已确认' ? 'confirmed' : 'quoted'}`} title={task.businessInfo.confirmedAt ? `客户确认时间：${task.businessInfo.confirmedAt}` : undefined}>{task.businessInfo.quoteStatus}</span>}
           </>}
           <Status value={task.status} />
-          {task.followup?.deadline?.overdue && (
-            <span className="rx-task-overdue">{task.followup.deadline.overdueLabel}</span>
-          )}
         </div>
         {((subtitle.subject && subtitle.subject !== task.typeLabel) || subtitle.code) && (
           <p className="rx-task-subject">
@@ -77,18 +75,11 @@ function TaskRow({ task, api }) {
             <FragmentHtml html={task.customerMeta} />
           ) : subtitle.showProjectMeta && <span>{subtitle.projectCode}</span>}
         </div>
-        <div className="rx-task-arrival">{task.arrival} 到达</div>
-        {task.followup?.deadline && (
-          <div className={`rx-task-deadline ${task.followup.deadline.overdue ? "overdue" : ""}`}>
-            {task.followup.deadline.label}
-          </div>
-        )}
       </div>
       <div className="rx-task-owner">
-        <strong>{task.owner}</strong>
+        <strong>待办人 · {task.owner || "未记录"}</strong>
         {task.type === "设计确认待办" && task.coordination?.mode !== "self" && (task.coordination?.person || task.coordination?.gdsPerson || task.coordination?.mode === "designer") && <span>协调员 · {task.coordination.person || task.coordination.gdsPerson || "GDS 安排"}</span>}
         <span>发起人 · {task.meta.initiator || task.initiator || "—"}</span>
-        <small>{task.stayLabel}</small>
       </div>
       <div className="rx-task-actions" role="group" aria-label="待办操作">
         {mainAction && (
@@ -113,11 +104,12 @@ function TaskRow({ task, api }) {
             ))}
           </div>
         )}
-        {views.length > 0 && (
+        {(
           <div className={`rx-task-view-actions ${mainAction || secondary.length ? "with-operations" : ""}`}>
             {views.map((action, i) => (
               <TaskAction key={`view-${i}`} api={api} action={action} appearance="link" />
             ))}
+            <button className="rx-btn quiet" onClick={() => onHistory(task.id)}>处理记录</button>
           </div>
         )}
         {task.followup?.reminder?.visible && (
@@ -129,6 +121,10 @@ function TaskRow({ task, api }) {
         {task.followup?.reminderHint && (
           <small className="rx-task-reminder-info">{task.followup.reminderHint}</small>
         )}
+      </div>
+      <div className="rx-task-timing">
+        <div><span>到达时间 · {task.arrival || "未记录"}</span><span>停留时间 · {(task.stayLabel || "未记录").replace(/^(已停留|处理用时|用时)\s*/, "")}</span></div>
+        {task.followup?.deadline && <div><span>期望完成时间 · {task.followup.deadline.date ? task.followup.deadline.date + " 23:59" : "未设置"}</span><span className={task.followup.deadline.overdue ? "rx-task-overdue-duration" : ""}>{task.followup.deadline.overdue ? "逾期时间 · " + task.followup.deadline.overdueLabel.replace(/^已逾期\s*/, "") : ""}</span></div>}
       </div>
       {task.status === "已驳回" && (
         <div className="rx-task-rejection">
@@ -143,6 +139,8 @@ export function TodoCenter({ api }) {
   const snapshot = api.todos();
   const model = { ...snapshot, rows: snapshot.rows.filter(isCurrentTask) };
   const [query, setQuery] = useState(model.query);
+  const [historyId, setHistoryId] = useState("");
+  const closeHistory = useCallback(() => setHistoryId(""), []);
   const categoryNav = useRef(null);
   useEffect(() => setQuery(model.query), [model.query]);
   useLayoutEffect(() => {
@@ -356,7 +354,7 @@ export function TodoCenter({ api }) {
               <span>{model.rows.length} 项</span>
             </header>
             {model.rows.map((task) => (
-              <TaskRow key={task.id} task={task} api={api} />
+              <TaskRow key={task.id} task={task} api={api} onHistory={setHistoryId} />
             ))}
             {!model.rows.length && (
               <EmptyState
@@ -376,6 +374,7 @@ export function TodoCenter({ api }) {
           </section>
         </div>
       </div>
+      {historyId && <TaskHistoryDrawer api={api} id={historyId} onClose={closeHistory} />}
     </div>
   );
 }

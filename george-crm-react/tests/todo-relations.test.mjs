@@ -88,6 +88,19 @@ function boot({ owner = "PM", manager = true } = {}) {
 
 const ids = (result) => Array.from(result.rows, (row) => row.id).sort();
 
+test("处理记录只允许查看授权待办，返回副本且不改变任务与筛选", () => {
+  const { api, context } = boot();
+  const event = { kind: "reminded", actor: "PM" };
+  context.th192History = t => ({ id: t.id, events: [event] });
+  context.th192Copy = value => JSON.parse(JSON.stringify(value));
+  const allowed = api.todoHistory("mine");
+  allowed.events[0].actor = "changed";
+  assert.equal(event.actor, "PM");
+  assert.equal(api.todoHistory("unrelated"), null);
+  assert.equal(api.todoHistory("missing"), null);
+  assert.equal(api.todos().filter, "全部");
+});
+
 test("采购和设计接单/报价独立计数筛选，保留关联范围和原任务身份", () => {
   const { api, context, state } = boot();
   const seed = { owner: "PM", initiator: "PM", status: "待处理", time: "2026-10-05 08:00", customer: "Oceanview", project: "PJ1" };

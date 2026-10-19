@@ -330,6 +330,11 @@
         })),
       };
     },
+    todoHistory(id) {
+      const task = relationRows().find(item => item.id === id);
+      if (!task || typeof th192History !== "function") return null;
+      return th192Copy(th192History(task));
+    },
     guideTaskState(id) {
       const task = relationRows().find(item => item.id === id);
       if (!task) return null;
