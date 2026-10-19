@@ -6,7 +6,7 @@ import {
   FragmentHtml,
   Icon,
 } from "../../components/ui";
-import { TASK_GROUPS, taskLabel, metricFilter, splitActions, taskRejectionReason, isCurrentTask } from "./model";
+import { TASK_GROUPS, taskLabel, taskSubtitle, metricFilter, splitActions, taskRejectionReason, isCurrentTask } from "./model";
 import "./taskFollowup.css";
 function TaskAction({ api, action, appearance = "secondary" }) {
   if (!action) return null;
@@ -25,6 +25,7 @@ function TaskAction({ api, action, appearance = "secondary" }) {
 }
 function TaskRow({ task, api }) {
   const isDesignDelivery = ["设计待办", "设计确认待办"].includes(task.type);
+  const subtitle = taskSubtitle(task);
   const actions = splitActions(task.actions.filter((action) => action.act !== "viewDealFlow"));
   const rejectionReason = taskRejectionReason(task);
   const isView = (action) =>
@@ -59,28 +60,22 @@ function TaskRow({ task, api }) {
             {task.businessInfo.scope && <span className="rx-task-tag addon">{task.businessInfo.scope}</span>}
             {task.businessInfo.quoteStatus && <span className={`rx-task-tag ${task.businessInfo.quoteStatus === '已确认' ? 'confirmed' : 'quoted'}`} title={task.businessInfo.confirmedAt ? `客户确认时间：${task.businessInfo.confirmedAt}` : undefined}>{task.businessInfo.quoteStatus}</span>}
           </>}
-          {isDesignDelivery && task.order && (
-            <span className="rx-task-tag design-order">设计单 · {task.order}</span>
-          )}
           <Status value={task.status} />
           {task.followup?.deadline?.overdue && (
             <span className="rx-task-overdue">{task.followup.deadline.overdueLabel}</span>
           )}
         </div>
-        {task.subject !== task.typeLabel && (
-          <p className="rx-task-subject">{task.subject}</p>
+        {((subtitle.subject && subtitle.subject !== task.typeLabel) || subtitle.code) && (
+          <p className="rx-task-subject">
+            <span>{subtitle.subject}</span>
+            {subtitle.code && <span className="rx-task-reference">{subtitle.code}</span>}
+          </p>
         )}
         <div className="rx-task-meta">
-          <span>{task.customer}</span>
+          {subtitle.showCustomer && <span>{task.customer}</span>}
           {task.customerMeta ? (
             <FragmentHtml html={task.customerMeta} />
-          ) : (
-            <span>
-              {task.meta.projCode && task.meta.projCode !== "-"
-                ? task.meta.projCode
-                : task.project}
-            </span>
-          )}
+          ) : subtitle.showProjectMeta && <span>{subtitle.projectCode}</span>}
         </div>
         <div className="rx-task-arrival">{task.arrival} 到达</div>
         {task.followup?.deadline && (
@@ -384,4 +379,3 @@ export function TodoCenter({ api }) {
     </div>
   );
 }
-

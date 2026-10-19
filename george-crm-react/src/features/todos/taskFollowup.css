@@ -1,0 +1,19 @@
+.rx-task-overdue{display:inline-flex;padding:3px 8px;border-radius:5px;background:#fff0e9;color:#ad4f28;font-size:11px;font-weight:500;line-height:1.5}
+.rx-task-tag{display:inline-flex;padding:3px 7px;border-radius:4px;font-size:11px;font-weight:400;line-height:1.5;color:#267dab;background:#eaf5fd;white-space:nowrap}.rx-task-tag.addon{color:#846725;background:#faf4e4}.rx-task-tag.quoted{color:#3972a0;background:#edf3fb}.rx-task-tag.confirmed{color:#287c60;background:#eaf6f0}
+.rx-task-deadline{font-size:11px;color:#758c9e;margin-top:7px;line-height:1.6}
+.rx-task-deadline.overdue,.tf137-deadline.overdue{color:#ad4f28}
+.rx-task-reminder-info{display:flex;flex-direction:column;gap:3px;font-size:10px;color:#8194a3;line-height:1.5;overflow-wrap:anywhere}
+.rx-task-action:disabled{opacity:.5;cursor:not-allowed;box-shadow:none}
+.rx-task-subject{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 10px;overflow-wrap:anywhere}
+.rx-task-reference{font-size:11px;color:#8399aa;white-space:nowrap}
+.rx-task-meta:empty{display:none}
+.tf137-deadline{padding:9px 12px;background:#f6f9fc;border-radius:5px;color:#607b90;font-size:12px;line-height:1.6}
+.tf138-expected{display:flex;flex-direction:column;gap:7px;padding:14px 16px;background:#f6faff;border:1px solid #d9e8f3;border-radius:8px;grid-column:1/-1}
+.planned-form .tf138-expected>label{display:block;font-size:13px;color:#304e64;font-weight:600}
+.tf138-date-control{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.planned-form .tf138-date-control>input{width:230px;max-width:100%;margin:0;background:white;min-height:38px;padding:8px 10px;border-radius:5px;border:1px solid #cadce9;font:inherit;color:#284960}
+.tf138-date-control>span,.tf138-date-shortcuts>span{font-size:11px;color:#8194a3}
+.tf138-date-shortcuts{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.tf138-date-shortcuts>button{font:inherit;font-size:12px;line-height:1.5;padding:5px 11px;border:1px solid #cadce9;background:white;color:#436c89;border-radius:5px;cursor:pointer}
+.tf138-date-shortcuts>button:hover,.tf138-date-shortcuts>button[aria-pressed="true"]{background:#e5f3fc;border-color:#75b7df;color:#117db5}
+.tf138-expected>small{font-size:11px;line-height:1.6;color:#738b9d}
