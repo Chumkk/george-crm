@@ -29,27 +29,27 @@ test('保存失败不记录成功动作，重试只记一次；外层失败回�
 });
 test('旧待办使用可靠到达字段计时，不补造发起或当时操作人',()=>{
  const t=task(),{c}=boot([t]);const before=JSON.stringify(t),view=c.th192History(t,Date.parse('2026-10-19T10:00:00+08:00'));
- assert.equal(JSON.stringify(t),before);assert.equal(view.partial,true);assert.equal(view.summary.total,'2小时');assert.equal(view.summary.basis,'已保存到达时间');assert.equal(view.segments.length,0);assert.equal(view.events[0].kind,'arrived');assert.equal(view.events[0].actor,'');
+ assert.equal(JSON.stringify(t),before);assert.equal(view.partial,true);assert.equal(view.summary.total,'2小时');assert.equal(view.summary.basis,'已保存到达时间');assert.equal(view.segments[0].start,'');assert.equal(view.segments[0].firstResponse,'未记录');assert.equal(view.events[0].kind,'arrived');assert.equal(view.events[0].actor,'');
 });
 test('旧记录的催办、移交、驳回和重提证据可读，缺失时间不用于耗时',()=>{
  const t={...task(),status:'已驳回',approveTime:'2026-10-19 10:00',approver:'SM-A',rejectReason:'资料不足',ownerHistory:[{from:'A',to:'SM-A',time:'',actor:'PM'}],reminders:[{by:'PM',to:'SM-A',at:'2026-10-19 09:00',messageId:'R'}]}, {c}=boot([t]);
- const view=c.th192History(t);assert.equal(view.events.length,4);assert.ok(view.events.some(e=>e.kind==='rejected'&&e.reason==='资料不足'));assert.equal(view.summary.transfers,1);assert.equal(view.summary.firstResponse,'2小时');
+ const view=c.th192History(t);assert.equal(view.events.length,4);assert.ok(view.events.some(e=>e.kind==='rejected'&&e.reason==='资料不足'));assert.equal(view.summary.transfers,1);assert.equal(view.segments[0].firstResponse,'未记录');assert.equal(view.segments[0].firstHandledAt,t.approveTime);
 });
 
 test('已有待办完成后重新打开，可靠到达与新完成记录计算耗时并冻结结果',()=>{
  const t=task(),{c,store}=boot([t]);t.status='已处理';c.actor='SM-A';t.approver='SM-A';t.approveTime='2026-10-19 10:00';c.v3Save();
  const saved=JSON.parse(store.get('crm-flow-v3')).todos[0],view=c.th192History(saved);
- assert.notEqual(view.summary.total,'未记录');assert.notEqual(view.summary.firstResponse,'未记录');assert.ok(view.summary.firstHandledAt);assert.ok(!view.events.some(e=>e.kind==='created'));
- const later=c.th192History(saved,Date.now()+86400000);assert.equal(later.summary.total,view.summary.total);assert.equal(later.summary.firstResponse,view.summary.firstResponse);
+ assert.notEqual(view.summary.total,'未记录');assert.ok(view.segments[0].firstHandledAt);assert.equal(view.segments[0].firstResponse,'未记录');assert.ok(!view.events.some(e=>e.kind==='created'));
+ const later=c.th192History(saved,Date.now()+86400000);assert.equal(later.summary.total,view.summary.total);assert.equal(later.segments[0].firstHandledAt,view.segments[0].firstHandledAt);
 });
 
 test('重提到达时间不替代原始计时起点，催办不计作首次办理',()=>{
  const t={...task(),v21ArrivedAt:'2026-10-19 12:00',status:'已处理',approveTime:'2026-10-19 13:00',approver:'SM-A',reminders:[{messageId:'R',at:'2026-10-19 08:30',by:'PM',to:'SM-A'}]}, {c}=boot([t]);c.v21Arrival=t=>t.v21ArrivedAt;
- const view=c.th192History(t);assert.equal(view.summary.total,'5小时');assert.equal(view.summary.firstResponse,'5小时');assert.equal(view.summary.startedAt,t.time);
+ const view=c.th192History(t);assert.equal(view.summary.total,'5小时');assert.equal(view.segments[0].firstHandledAt,t.approveTime);assert.equal(view.summary.startedAt,t.time);
 });
 
 test('确实缺少起点或完成时间不编造耗时，但保留可核实的办理时间',()=>{
- const t={...task(),time:'-',status:'已处理',approveTime:'2026-10-19 10:00',approver:'SM-A'}, {c}=boot([t]);let view=c.th192History(t);assert.equal(view.summary.total,'未记录');assert.equal(view.summary.firstResponse,'未记录');assert.equal(view.summary.firstHandledAt,t.approveTime);
+ const t={...task(),time:'-',status:'已处理',approveTime:'2026-10-19 10:00',approver:'SM-A'}, {c}=boot([t]);let view=c.th192History(t);assert.equal(view.summary.total,'未记录');assert.equal(view.segments[0].firstResponse,'未记录');assert.equal(view.segments[0].firstHandledAt,t.approveTime);
  t.time='2026-10-19 08:00';t.approveTime='-';view=c.th192History(t);assert.equal(view.summary.total,'未记录');
 });
 
@@ -64,10 +64,27 @@ test('合并同一待办的跨入口持久化日志，隔离同编号不同项�
  store.set('crm-flow-v3',JSON.stringify({todos:[{...t,lifecycle192:[...t.lifecycle192,extra]}]}));c.v3Save();assert.equal(t.lifecycle192.length,2);
  store.set('crm-flow-v3',JSON.stringify({todos:[{...t,project:'OTHER',lifecycle192:[c.th192Event(t,'edited','other-project')]}]}));c.v3Save();assert.ok(!t.lifecycle192.some(e=>e.evidence==='other-project'));
 });
-test('按负责人分段，转派与驳回等待补充分别计时；催办不当成实际响应',()=>{
+test('各负责人分别计算首次响应用时；转派不当成办理，驳回等待补充单独记录',()=>{
  const t={...task(),status:'已处理'}, {c}=boot([t]);const at=h=>'2026-10-19T'+h+':00+08:00';
  t.lifecycle192=[c.th192Event(t,'created','c',{at:at('08:00'),actor:'PM',toOwner:'SM-A'}),c.th192Event(t,'reminded','r',{at:at('08:30'),actor:'PM',toOwner:'SM-A'}),c.th192Event(t,'transferred','t',{at:at('09:00'),actor:'SM-A',fromOwner:'SM-A',toOwner:'SM-B'}),c.th192Event(t,'rejected','j',{at:at('10:00'),actor:'SM-B'}),c.th192Event(t,'resubmitted','s',{at:at('12:00'),actor:'PM',toOwner:'SM-B'}),c.th192Event(t,'completed','d',{at:at('13:00'),actor:'SM-B'})];
- const view=c.th192History(t,Date.parse(at('14:00')));assert.deepEqual(Array.from(view.segments,s=>s.duration),['1小时','1小时','2小时','1小时']);assert.equal(view.segments[2].kind,'等待补充资料');assert.equal(view.summary.firstResponse,'1小时');assert.equal(view.responses[0].duration,'30分钟');
+ const view=c.th192History(t,Date.parse(at('14:00')));assert.deepEqual(Array.from(view.segments,s=>s.duration),['1小时','1小时','2小时','1小时']);assert.equal(view.segments[2].kind,'等待补充资料');assert.deepEqual(Array.from(view.segments,s=>s.firstResponse),['本次未办理','1小时','2小时','1小时']);assert.equal(view.responses,undefined);assert.equal(view.summary.firstResponse,undefined);
+});
+
+test('更换负责人后重新计算本人的响应时间，同一人接回也开新时段',()=>{
+ const t=task(),{c}=boot([t]),at=h=>'2026-10-19T'+h+':00+08:00';
+ t.lifecycle192=[c.th192Event(t,'created','c',{at:at('08:00'),toOwner:'A'}),c.th192Event(t,'edited','a',{at:at('08:30'),actor:'A'}),c.th192Event(t,'transferred','t1',{at:at('09:00'),fromOwner:'A',toOwner:'B',actor:'PM'}),c.th192Event(t,'reminded','r',{at:at('09:10'),actor:'PM',toOwner:'B'}),c.th192Event(t,'edited','pm',{at:at('09:15'),actor:'PM'}),c.th192Event(t,'quote-created','b',{at:at('10:00'),actor:'B'}),c.th192Event(t,'transferred','t2',{at:at('11:00'),fromOwner:'B',toOwner:'A',actor:'PM'})];
+ const view=c.th192History(t,Date.parse(at('12:00')));assert.deepEqual(Array.from(view.segments,s=>s.owner),['A','B','A']);assert.deepEqual(Array.from(view.segments,s=>s.firstResponse),['30分钟','1小时','尚未办理']);assert.deepEqual(Array.from(view.segments,s=>s.duration),['1小时','2小时','1小时']);
+});
+
+test('历史转派有可靠交接时间则按实际证据计算，没有接手时间不补造',()=>{
+ const t={...task(),owner:'B',status:'已处理',approveTime:'2026-10-19 11:00',approver:'代办管理员',ownerHistory:[{from:'A',to:'B',actor:'PM',time:'2026-10-19 09:00'}]}, {c}=boot([t]);
+ const view=c.th192History(t);assert.equal(view.segments[0].start,'');assert.equal(view.segments[0].duration,'未记录');assert.equal(view.segments[1].owner,'B');assert.equal(view.segments[1].firstResponse,'2小时');assert.equal(view.segments[1].firstHandledBy,'代办管理员');assert.equal(view.segments[1].result,'已完成');
+});
+
+test('原负责人驳回后重提，已知接手链延续原接收人而不丢失姓名',()=>{
+ const t={...task(),status:'已处理'},{c}=boot([t]),at=h=>'2026-10-19T'+h+':00+08:00';
+ t.lifecycle192=[c.th192Event(t,'created','c',{at:at('08:00'),toOwner:'SM-A'}),c.th192Event(t,'rejected','r',{at:at('09:00'),actor:'SM-A'}),c.th192Event(t,'resubmitted','s',{at:at('10:00'),actor:'PM'}),c.th192Event(t,'completed','d',{at:at('11:00'),actor:'SM-A'})];
+ const view=c.th192History(t);assert.deepEqual(Array.from(view.segments,s=>s.owner),['SM-A','PM','SM-A']);assert.equal(view.segments[2].firstResponse,'1小时');
 });
 test('GDS 逐图确认、驳回、重提保留图纸身份及来源，不代替整项任务完成',()=>{
  const t={...task(),type:'设计确认待办',drawings:[]}, {c}=boot([t]);

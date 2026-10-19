@@ -30,8 +30,8 @@ export function TaskHistoryDrawer({ api, id, onClose }) {
       <div className="rx-history-body" tabIndex={0}>
         {!data ? <p role="alert">当前无权查看此待办，或记录已不可用。</p> : <>
           <div className="rx-history-subject"><strong>{data.subject}</strong><Status value={data.status} /><p>{[data.project, data.order].filter(Boolean).join(" · ")}</p><p>待办人 · {data.owner || "未记录"}　发起人 · {data.initiator || "未记录"}</p></div>
-          <div className="rx-history-metrics">{[["总历时", data.summary.total], ["首次办理", data.summary.firstResponse], ["催办次数", data.summary.reminders], ["转派次数", data.summary.transfers]].map(([label, value]) => <div key={label}><span>{label}</span><strong>{value}</strong></div>)}</div>
-          <p className="rx-history-partial">{data.summary.startedAt ? `计时起点 · ${stamp(data.summary.startedAt)}（${data.summary.basis}）` : "计时起点未记录"}{data.summary.firstHandledAt && `；${data.partial ? "首个已记录办理" : "首次办理"} · ${stamp(data.summary.firstHandledAt)}`}。{data.partial ? "历史操作可能不完整，缺失记录不补造。" : "完成后总历时固定；查看和催办不计为首次办理。"}</p>
+          <div className="rx-history-metrics">{[["总历时", data.summary.total], ["催办次数", data.summary.reminders], ["转派次数", data.summary.transfers]].map(([label, value]) => <div key={label}><span>{label}</span><strong>{value}</strong></div>)}</div>
+          <p className="rx-history-partial">{data.summary.startedAt ? `计时起点 · ${stamp(data.summary.startedAt)}（${data.summary.basis}）` : "计时起点未记录"}。{data.partial ? "历史操作可能不完整，缺失记录不补造。" : "完成后总历时固定。"}</p>
           <h3>处理时间线 <small>{data.events.length} 条记录 · 北京时间</small></h3>
           <ol className="rx-history-timeline">{data.events.map(event => <li key={event.id} className={`event-${event.kind}`}>
             <div className="rx-history-event-title"><strong>{event.title}</strong><time>{stamp(event.at)}</time></div>
@@ -42,9 +42,13 @@ export function TaskHistoryDrawer({ api, id, onClose }) {
             {event.changes?.length > 0 && <details className="rx-history-changes"><summary>查看修改内容</summary>{event.changes.map((change, index) => <p key={index}><strong>{change.label}</strong><br/>{change.before} → {change.after}</p>)}</details>}
           </li>)}</ol>
           {!data.events.length && <p className="rx-history-partial">暂无可核实的处理记录。</p>}
-          <h3>负责人分段耗时</h3>
-          {data.segments.length ? <div className="rx-history-segments">{data.segments.map((segment, index) => <div key={index}><strong>{segment.owner || "未记录"}<small>{segment.kind}{segment.active ? " · 进行中" : ""}</small></strong><span>{stamp(segment.start)}<br/>→ {segment.end ? stamp(segment.end) : "现在"}</span><b>{segment.duration}</b></div>)}</div> : <p className="rx-history-partial">尚无完整的负责人处理时段记录。</p>}
-          {data.responses.length > 0 && <><h3>催办接收人的响应</h3><div className="rx-history-responses">{data.responses.map(response => <p key={response.reminder}><span>催办 · {stamp(response.at)}{response.respondedAt && <small>实际办理 · {stamp(response.respondedAt)}</small>}</span><strong>{response.duration}</strong></p>)}</div></>}
+          <h3>各负责人处理情况</h3>
+          <div className="rx-history-owners">{data.segments.map((segment, index) => <article key={index}>
+            <header><strong>{segment.owner || "负责人未记录"}</strong><span>{segment.result}</span></header>
+            <p>{segment.kind}</p>
+            <dl>{[[segment.kind === "等待补充资料" ? "退回时间" : "接手时间", stamp(segment.start)], ["结束时间", segment.end ? stamp(segment.end) : segment.active ? "进行中" : "未记录"], [segment.partial ? "首个已记录办理" : "首次办理时间", segment.firstHandledAt ? stamp(segment.firstHandledAt) : segment.firstResponse], ["首次响应用时", segment.firstResponse], [segment.kind === "等待补充资料" ? "资料补充用时" : "本次处理用时", segment.duration]].map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>
+            {segment.firstHandledBy && segment.firstHandledBy !== segment.owner && <small>实际办理人 · {segment.firstHandledBy}</small>}
+          </article>)}</div>
         </>}
       </div><footer><button className="rx-btn secondary" onClick={onClose}>关闭</button></footer>
     </section>

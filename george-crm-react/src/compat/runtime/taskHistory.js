@@ -40,8 +40,8 @@ function th192Delta(t,old,now,actor){
  const current=th192Tracked(t),events=[];
  if(!old)return [th192Event(t,'created','created',{at:now,actor,source:t.type==='设计确认待办'?'GDS':'CRM',toStatus:t.status,toOwner:t.owner,detail:'关联原业务生成待办，发起人 · '+(t.initiator||'未记录')}),...current.evidence.map(e=>({...e,legacy:false,businessAt:e.at,at:now,actor:e.actor||actor}))];
  const known=new Set(old.evidence.map(e=>e.evidence));
- for(const evidence of current.evidence)if(!known.has(evidence.evidence))events.push({...evidence,legacy:false,businessAt:evidence.at,at:now,actor:evidence.actor||actor});
- const add=(kind,key,data)=>events.push(th192Event(t,kind,key,{at:now,actor,...data}));
+ for(const evidence of current.evidence)if(!known.has(evidence.evidence))events.push({...evidence,legacy:false,businessAt:evidence.at,at:now,actor:evidence.actor||actor,responsibleOwner:t.owner});
+ const add=(kind,key,data)=>events.push(th192Event(t,kind,key,{at:now,actor,responsibleOwner:t.owner,...data}));
  if(t.type==='报价待办'&&current.draft&&current.draft!==old.draft)add('quote-created','quote-created:'+current.draft,{quotation:current.draft,detail:'创建并关联本商机报价'});
  if(old.owner!==t.owner&&!events.some(e=>e.kind==='transferred'))add('transferred','owner:'+JSON.stringify([now,old.owner,t.owner,actor]),{fromOwner:old.owner,toOwner:t.owner});
  if(old.status!==t.status&&!events.some(e=>e.toStatus===t.status)){
@@ -55,16 +55,27 @@ function th192Delta(t,old,now,actor){
 function th192Duration(start,end){if(start===null||end===null||end<start)return '未记录';const minutes=Math.floor((end-start)/60000);return minutes<1?'不足1分钟':minutes<60?minutes+'分钟':minutes<1440?Math.floor(minutes/60)+'小时'+(minutes%60?minutes%60+'分钟':''):Math.floor(minutes/1440)+'天'+(Math.floor(minutes%1440/60)?Math.floor(minutes%1440/60)+'小时':'');}
 function th192Segments(task,events,now){
  const segments=[];let current=null;
- const close=at=>{if(current){segments.push({...current,end:at,duration:th192Duration(th192Time(current.start),th192Time(at))});current=null;}};
+ const open=(owner,start,kind='负责人处理',partial=false)=>{current={owner:th192Text(owner),kind,start,partial,firstHandledAt:'',firstHandledBy:''};};
+ const handling=e=>['rejected','completed','delivery','drawing-confirm','drawing-reject','drawing-resubmit','quote-created','quote-submitted'].includes(e.kind)||e.kind==='edited'&&e.actor===current?.owner||e.kind==='resubmitted'&&current?.kind==='等待补充资料';
+ const response=(segment,finished)=>segment.firstHandledAt?th192Duration(th192Time(segment.start),th192Time(segment.firstHandledAt)):segment.partial?'未记录':finished?'本次未办理':'尚未办理';
+ const close=(at,result)=>{if(current){segments.push({...current,end:at,result,duration:th192Duration(th192Time(current.start),th192Time(at)),firstResponse:response(current,true)});current=null;}};
+ const hasAssignment=events.some(e=>['created','transferred','resubmitted'].includes(e.kind)&&th192Time(e.at)!==null);
  for(const e of events){
-  if(e.legacy||th192Time(e.at)===null)continue;
-  if(e.kind==='created'){close(e.at);current={owner:e.toOwner||'',kind:'负责人处理',start:e.at};}
-  else if(e.kind==='transferred'){close(e.at);current={owner:e.toOwner||'',kind:'负责人处理',start:e.at};}
-  else if(e.kind==='rejected'){close(e.at);current={owner:task.originalInitiator||task.initiator||'',kind:'等待补充资料',start:e.at};}
-  else if(e.kind==='resubmitted'){close(e.at);current={owner:e.toOwner||task.owner||'',kind:'负责人处理',start:e.at};}
-  else if(e.kind==='completed')close(e.at);
+  if(th192Time(e.at)===null)continue;
+  if(!current&&!hasAssignment&&handling(e))open(e.responsibleOwner||task.owner,'','负责人处理',true);
+  if(current&&handling(e)&&!current.firstHandledAt){current.firstHandledAt=e.at;current.firstHandledBy=th192Text(e.actor);}
+  if(e.kind==='created'){close(e.at,'已结束');open(e.toOwner,e.at,'负责人处理',!!e.legacy);}
+  else if(e.kind==='transferred'){
+   if(current&&e.fromOwner&&current.owner!==e.fromOwner){close('','记录不完整');}
+   if(!current&&e.fromOwner)open(e.fromOwner,'','负责人处理',true);
+   close(e.at,'已转派');open(e.toOwner,e.at,'负责人处理',!!e.legacy);
+  }
+  else if(e.kind==='rejected'){const resumeOwner=current?.owner||e.responsibleOwner||'';close(e.at,'已驳回');open(task.originalInitiator||task.initiator,e.at,'等待补充资料',!!e.legacy);current.resumeOwner=resumeOwner;}
+  else if(e.kind==='resubmitted'){const owner=e.toOwner||e.responsibleOwner||current?.resumeOwner;close(e.at,'已重新提交');open(owner,e.at,'负责人处理',!!e.legacy);}
+  else if(e.kind==='completed')close(e.at,'已完成');
  }
- if(current&&task.status!=='已处理')segments.push({...current,end:'',duration:th192Duration(th192Time(current.start),now),active:true});
+ if(!current&&!segments.length)open(task.owner,'','负责人处理',true);
+ if(current)segments.push({...current,end:'',result:task.status==='已处理'?'完成时间未记录':current.kind==='等待补充资料'?'等待重新提交':'处理中',duration:th192Duration(th192Time(current.start),task.status==='已处理'?null:now),firstResponse:response(current,task.status==='已处理'),active:task.status!=='已处理'});
  return segments;
 }
 function th192History(t,now=Date.now()){
@@ -81,15 +92,8 @@ function th192History(t,now=Date.now()){
  const originalArrival=th192Time(archivedStart)!==null?archivedStart:th192Time(t.time)!==null?t.time:events.find(e=>e.kind==='arrived'&&th192Time(e.at)!==null)?.at;
  const startedAt=start?.at||originalArrival||'',started=th192Time(startedAt);
  const finish=t.status==='已处理'?[...events].reverse().find(e=>e.kind==='completed'&&th192Time(e.at)!==null):null;
- let first=null,owner=start?.toOwner||t.owner;
- for(const e of events){
-  const at=th192Time(e.at);if(at===null||started!==null&&at<started)continue;
-  if(['rejected','completed','delivery','drawing-confirm','drawing-reject','quote-created','quote-submitted'].includes(e.kind)||e.actor&&e.actor===owner&&['edited','transferred'].includes(e.kind)){first=e;break;}
-  if(e.kind==='transferred')owner=e.toOwner;
- }
  const reminders=events.filter(e=>e.kind==='reminded');
- const responses=reminders.map(e=>{const at=th192Time(e.at),next=at!==null&&events.slice(events.indexOf(e)+1).find(r=>!r.legacy&&th192Time(r.at)>=at&&r.actor===e.toOwner&&['edited','transferred','rejected','completed','delivery','drawing-confirm','drawing-reject','quote-created','quote-submitted'].includes(r.kind));return {reminder:e.id,at:e.at,respondedAt:next?.at||'',duration:next?th192Duration(at,th192Time(next.at)):'尚无实际办理记录'};});
- return {id:t.id,title:typeof crmTaskCategory==='function'?crmTaskCategory(t):t.type,subject:typeof todoSubject==='function'?todoSubject(t):t.title||'',project:t.project||'',order:t.order||'',status:t.status,owner:t.owner||'',initiator:t.initiator||'',events,segments:th192Segments(t,events,now),responses,summary:{total:th192Duration(started,t.status==='已处理'?th192Time(finish?.at):now),firstResponse:first?th192Duration(started,th192Time(first.at)):started!==null?'尚无实际办理记录':'未记录',startedAt,firstHandledAt:first?.at||'',basis:start?'发起记录':'已保存到达时间',reminders:reminders.length,transfers:events.filter(e=>e.kind==='transferred').length},partial:events.some(e=>e.legacy)||!start};
+ return {id:t.id,title:typeof crmTaskCategory==='function'?crmTaskCategory(t):t.type,subject:typeof todoSubject==='function'?todoSubject(t):t.title||'',project:t.project||'',order:t.order||'',status:t.status,owner:t.owner||'',initiator:t.initiator||'',events,segments:th192Segments(t,events,now),summary:{total:th192Duration(started,t.status==='已处理'?th192Time(finish?.at):now),startedAt,basis:start?'发起记录':'已保存到达时间',reminders:reminders.length,transfers:events.filter(e=>e.kind==='transferred').length},partial:events.some(e=>e.legacy)||!start};
 }
 TH192.baseline=th192Snapshot();
 const th192SaveBase=v3Save;
