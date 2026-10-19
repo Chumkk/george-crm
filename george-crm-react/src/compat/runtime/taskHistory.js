@@ -55,7 +55,7 @@ function th192Delta(t,old,now,actor){
 function th192Duration(start,end){if(start===null||end===null||end<start)return '未记录';const minutes=Math.floor((end-start)/60000);return minutes<1?'不足1分钟':minutes<60?minutes+'分钟':minutes<1440?Math.floor(minutes/60)+'小时'+(minutes%60?minutes%60+'分钟':''):Math.floor(minutes/1440)+'天'+(Math.floor(minutes%1440/60)?Math.floor(minutes%1440/60)+'小时':'');}
 function th192Segments(task,events,now){
  const segments=[];let current=null;
- const open=(owner,start,kind='负责人处理',partial=false)=>{current={owner:th192Text(owner),kind,start,partial,firstHandledAt:'',firstHandledBy:''};};
+ const open=(owner,start,kind='负责人处理',partial=false)=>{current={owner:th192Text(owner),kind,start,partial,firstHandledAt:'',firstHandledBy:'',firstEventId:''};};
  const handling=e=>['rejected','completed','delivery','drawing-confirm','drawing-reject','drawing-resubmit','quote-created','quote-submitted'].includes(e.kind)||e.kind==='edited'&&e.actor===current?.owner||e.kind==='resubmitted'&&current?.kind==='等待补充资料';
  const response=(segment,finished)=>segment.firstHandledAt?th192Duration(th192Time(segment.start),th192Time(segment.firstHandledAt)):segment.partial?'未记录':finished?'本次未办理':'尚未办理';
  const close=(at,result)=>{if(current){segments.push({...current,end:at,result,duration:th192Duration(th192Time(current.start),th192Time(at)),firstResponse:response(current,true)});current=null;}};
@@ -63,7 +63,7 @@ function th192Segments(task,events,now){
  for(const e of events){
   if(th192Time(e.at)===null)continue;
   if(!current&&!hasAssignment&&handling(e))open(e.responsibleOwner||task.owner,'','负责人处理',true);
-  if(current&&handling(e)&&!current.firstHandledAt){current.firstHandledAt=e.at;current.firstHandledBy=th192Text(e.actor);}
+  if(current&&handling(e)&&!current.firstHandledAt){current.firstHandledAt=e.at;current.firstHandledBy=th192Text(e.actor);current.firstEventId=e.id;}
   if(e.kind==='created'){close(e.at,'已结束');open(e.toOwner,e.at,'负责人处理',!!e.legacy);}
   else if(e.kind==='transferred'){
    if(current&&e.fromOwner&&current.owner!==e.fromOwner){close('','记录不完整');}
@@ -77,6 +77,16 @@ function th192Segments(task,events,now){
  if(!current&&!segments.length)open(task.owner,'','负责人处理',true);
  if(current)segments.push({...current,end:'',result:task.status==='已处理'?'完成时间未记录':current.kind==='等待补充资料'?'等待重新提交':'处理中',duration:th192Duration(th192Time(current.start),task.status==='已处理'?null:now),firstResponse:response(current,task.status==='已处理'),active:task.status!=='已处理'});
  return segments;
+}
+function th195CardTiming(task,now=Date.now()){
+ const arrival=typeof v21Arrival==='function'?v21Arrival(task):task.time;
+ const kind=task.status==='已处理'?'completed':task.status==='已驳回'?'rejected':'';
+ let handledAt='';
+ if(kind){
+  handledAt=th192Time(task.approveTime)!==null?task.approveTime:'';
+  if(!handledAt){const events=th192Merge(th192Evidence(task),task.lifecycle192||[],th192Archived(task));handledAt=events.filter(e=>e.kind===kind&&th192Time(e.at)!==null).sort((a,b)=>th192Time(b.at)-th192Time(a.at))[0]?.at||'';}
+ }
+ return {closed:!!kind,handledAt,handledLabel:kind==='rejected'?'驳回时间':'处理时间',durationLabel:kind?'响应用时':'停留时间',duration:th192Duration(th192Time(arrival),kind?th192Time(handledAt):now)};
 }
 function th192History(t,now=Date.now()){
  const events=th192Merge(th192Evidence(t),t.lifecycle192||[],th192Archived(t));
@@ -93,7 +103,9 @@ function th192History(t,now=Date.now()){
  const startedAt=start?.at||originalArrival||'',started=th192Time(startedAt);
  const finish=t.status==='已处理'?[...events].reverse().find(e=>e.kind==='completed'&&th192Time(e.at)!==null):null;
  const reminders=events.filter(e=>e.kind==='reminded');
- return {id:t.id,title:typeof crmTaskCategory==='function'?crmTaskCategory(t):t.type,subject:typeof todoSubject==='function'?todoSubject(t):t.title||'',project:t.project||'',order:t.order||'',status:t.status,owner:t.owner||'',initiator:t.initiator||'',events,segments:th192Segments(t,events,now),summary:{total:th192Duration(started,t.status==='已处理'?th192Time(finish?.at):now),startedAt,basis:start?'发起记录':'已保存到达时间',reminders:reminders.length,transfers:events.filter(e=>e.kind==='transferred').length},partial:events.some(e=>e.legacy)||!start};
+ const segments=th192Segments(t,events,now),firsts=new Map(segments.filter(s=>s.firstEventId).map(s=>[s.firstEventId,s]));
+ const timeline=events.map(e=>{const s=firsts.get(e.id);return s?{...e,firstResponse:{owner:s.owner,kind:s.kind,startedAt:s.start,duration:s.firstResponse,partial:s.partial}}:e;});
+ return {id:t.id,title:typeof crmTaskCategory==='function'?crmTaskCategory(t):t.type,subject:typeof todoSubject==='function'?todoSubject(t):t.title||'',project:t.project||'',order:t.order||'',status:t.status,owner:t.owner||'',initiator:t.initiator||'',events:timeline,segments,summary:{total:th192Duration(started,t.status==='已处理'?th192Time(finish?.at):now),startedAt,basis:start?'发起记录':'已保存到达时间',reminders:reminders.length,transfers:events.filter(e=>e.kind==='transferred').length},partial:events.some(e=>e.legacy)||!start};
 }
 TH192.baseline=th192Snapshot();
 const th192SaveBase=v3Save;

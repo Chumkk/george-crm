@@ -107,3 +107,32 @@ test('旧页面覆盖业务缓存也保留独立处理履历，重开不补造�
  delete t.lifecycle192;store.set('crm-flow-v3',JSON.stringify({todos:[t]}));const view=c.th192History(t);assert.ok(view.events.some(e=>e.id===id));
  c.v3Save();assert.equal(t.lifecycle192.filter(e=>e.kind==='created').length,1);
 });
+
+test('首次响应标注到每次接手的精确首次办理事件，同刻事件不混淆且读取不改历史',()=>{
+ const t=task(),{c}=boot([t]),at=h=>'2026-10-19T'+h+':00+08:00';
+ t.lifecycle192=[c.th192Event(t,'created','c',{at:at('08:00'),toOwner:'A'}),c.th192Event(t,'reminded','r',{at:at('08:30'),actor:'PM'}),c.th192Event(t,'edited','e',{at:at('09:00'),actor:'A'}),c.th192Event(t,'transferred','t',{at:at('09:00'),actor:'PM',fromOwner:'A',toOwner:'B'}),c.th192Event(t,'quote-created','q',{at:at('10:00'),actor:'B'}),c.th192Event(t,'quote-submitted','s',{at:at('10:00'),actor:'B'})];
+ const before=JSON.stringify(t),view=c.th192History(t,Date.parse(at('11:00')));
+ assert.equal(JSON.stringify(t),before);
+ const decorated=view.events.filter(e=>e.firstResponse);assert.deepEqual(Array.from(decorated,e=>e.evidence),['e','q']);assert.deepEqual(Array.from(decorated,e=>e.firstResponse.duration),['1小时','1小时']);assert.deepEqual(Array.from(decorated,e=>e.firstResponse.owner),['A','B']);assert.ok(!view.events.find(e=>e.kind==='reminded').firstResponse);
+});
+
+test('卡片待处理显示实时停留，处理或驳回后冻结本轮响应用时并显示实际时间',()=>{
+ const t=task(),{c}=boot([t]),now=Date.parse('2026-10-19T12:00:00+08:00');
+ let timing=c.th195CardTiming(t,now);assert.equal(timing.closed,false);assert.equal(timing.durationLabel,'停留时间');assert.equal(timing.duration,'4小时');
+ t.status='已驳回';t.approveTime='2026-10-19 10:00';timing=c.th195CardTiming(t,now);assert.equal(timing.handledLabel,'驳回时间');assert.equal(timing.handledAt,t.approveTime);assert.equal(timing.duration,'2小时');assert.equal(c.th195CardTiming(t,now+86400000).duration,timing.duration);
+ t.status='已处理';timing=c.th195CardTiming(t,now);assert.equal(timing.handledLabel,'处理时间');assert.equal(timing.durationLabel,'响应用时');assert.equal(timing.duration,'2小时');
+});
+
+test('卡片重提按本轮到达计时，不沿用上轮驳回耗时或历史总历时',()=>{
+ const t={...task(),status:'待处理',approveTime:'2026-10-19 09:00',v21ArrivedAt:'2026-10-19 10:00'}, {c}=boot([t]);c.v21Arrival=t=>t.v21ArrivedAt;
+ let timing=c.th195CardTiming(t,Date.parse('2026-10-19T12:00:00+08:00'));assert.equal(timing.closed,false);assert.equal(timing.handledAt,'');assert.equal(timing.duration,'2小时');
+ t.status='已处理';t.approveTime='2026-10-19 11:00';timing=c.th195CardTiming(t);assert.equal(timing.duration,'1小时');
+});
+
+test('卡片结束时间缺失不以当前时间代替，只使用相同待办项目的可靠归档事件',()=>{
+ const t={...task(),status:'已处理'}, {c,store}=boot([t]);let timing=c.th195CardTiming(t);assert.equal(timing.handledAt,'');assert.equal(timing.duration,'未记录');
+ const event=c.th192Event(t,'completed','done',{at:'2026-10-19 10:00',actor:'A'});
+ store.set('crm-task-history-v192',JSON.stringify({T1:{type:t.type,project:'OTHER',events:[event]}}));assert.equal(c.th195CardTiming(t).duration,'未记录');
+ store.set('crm-task-history-v192',JSON.stringify({T1:{type:t.type,project:t.project,events:[event]}}));timing=c.th195CardTiming(t);assert.equal(timing.handledAt,'2026-10-19 10:00');assert.equal(timing.duration,'2小时');
+ t.v21ArrivedAt='2026-10-19 11:00';c.v21Arrival=t=>t.v21ArrivedAt;assert.equal(c.th195CardTiming(t).duration,'未记录');
+});

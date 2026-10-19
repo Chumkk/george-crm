@@ -8,7 +8,7 @@ import {
 } from "../../components/ui";
 import { TASK_GROUPS, taskLabel, taskSubtitle, metricFilter, splitActions, taskRejectionReason, isCurrentTask } from "./model";
 import "./taskFollowup.css";
-import { TaskHistoryDrawer } from "./TaskHistoryDrawer";
+import { TaskHistoryDrawer, taskTimeStamp } from "./TaskHistoryDrawer";
 function TaskAction({ api, action, appearance = "secondary" }) {
   if (!action) return null;
   if (action.html) return <FragmentHtml html={action.html} />;
@@ -123,7 +123,8 @@ function TaskRow({ task, api, onHistory }) {
         )}
       </div>
       <div className="rx-task-timing">
-        <div><span>到达时间 · {task.arrival || "未记录"}</span><span>停留时间 · {(task.stayLabel || "未记录").replace(/^(已停留|处理用时|用时)\s*/, "")}</span></div>
+        <div><span>到达时间 · {task.arrival || "未记录"}</span>{!task.timing?.closed && <span>停留时间 · {task.timing?.duration || (task.stayLabel || "未记录").replace(/^(已停留|处理用时|用时)\s*/, "")}</span>}</div>
+        {task.timing?.closed && <div><span>{task.timing.handledLabel} · {taskTimeStamp(task.timing.handledAt)}</span><span>响应用时 · {task.timing.duration}</span></div>}
         {task.followup?.deadline && <div><span>期望完成时间 · {task.followup.deadline.date ? task.followup.deadline.date + " 23:59" : "未设置"}</span><span className={task.followup.deadline.overdue ? "rx-task-overdue-duration" : ""}>{task.followup.deadline.overdue ? "逾期时间 · " + task.followup.deadline.overdueLabel.replace(/^已逾期\s*/, "") : ""}</span></div>}
       </div>
       {task.status === "已驳回" && (

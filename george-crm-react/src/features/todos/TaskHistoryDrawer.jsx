@@ -1,12 +1,13 @@
 import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { Status } from "../../components/ui";
-function stamp(value) {
+export function taskTimeStamp(value) {
   if (!value) return "未记录";
   const raw = /^\d{4}-\d\d-\d\d \d\d:\d\d/.test(value) ? value.replace(" ", "T") + "+08:00" : value;
   const time = Date.parse(raw);
   return Number.isFinite(time) ? new Date(time + 8 * 3600000).toISOString().slice(0, 16).replace("T", " ") : "未记录";
 }
+const stamp = taskTimeStamp;
 export function TaskHistoryDrawer({ api, id, onClose }) {
   const root = useRef(null);
   const data = api.todoHistory(id);
@@ -36,19 +37,13 @@ export function TaskHistoryDrawer({ api, id, onClose }) {
           <ol className="rx-history-timeline">{data.events.map(event => <li key={event.id} className={`event-${event.kind}`}>
             <div className="rx-history-event-title"><strong>{event.title}</strong><time>{stamp(event.at)}</time></div>
             <p>操作人 · {event.actor || "未记录"}<span className="rx-history-source">{event.source}{event.legacy ? " · 历史记录" : ""}</span></p>
+            {event.firstResponse && <p className="rx-history-first-response" title={event.firstResponse.startedAt ? `从本次接手时间 ${stamp(event.firstResponse.startedAt)} 计算` : "历史接手时间未记录，无法计算首次响应用时"}>首次响应用时 · {event.firstResponse.duration}<small>{event.firstResponse.kind === "等待补充资料" ? "补充资料" : "本次负责人"} · {event.firstResponse.owner || "未记录"}</small></p>}
             {(event.fromOwner || event.toOwner) && <p>{event.kind === "transferred" ? `转派：${event.fromOwner || "未记录"} → ${event.toOwner || "未记录"}` : `交给：${event.toOwner || "未记录"}`}</p>}
             {(event.fromStatus || event.toStatus) && <p>状态：{[event.fromStatus, event.toStatus].filter(Boolean).join(" → ")}</p>}
             {event.detail && <p>{event.detail}</p>}{event.reason && <p className="rx-history-reason">原因 / 结果：{event.reason}</p>}
             {event.changes?.length > 0 && <details className="rx-history-changes"><summary>查看修改内容</summary>{event.changes.map((change, index) => <p key={index}><strong>{change.label}</strong><br/>{change.before} → {change.after}</p>)}</details>}
           </li>)}</ol>
           {!data.events.length && <p className="rx-history-partial">暂无可核实的处理记录。</p>}
-          <h3>各负责人处理情况</h3>
-          <div className="rx-history-owners">{data.segments.map((segment, index) => <article key={index}>
-            <header><strong>{segment.owner || "负责人未记录"}</strong><span>{segment.result}</span></header>
-            <p>{segment.kind}</p>
-            <dl>{[[segment.kind === "等待补充资料" ? "退回时间" : "接手时间", stamp(segment.start)], ["结束时间", segment.end ? stamp(segment.end) : segment.active ? "进行中" : "未记录"], [segment.partial ? "首个已记录办理" : "首次办理时间", segment.firstHandledAt ? stamp(segment.firstHandledAt) : segment.firstResponse], ["首次响应用时", segment.firstResponse], [segment.kind === "等待补充资料" ? "资料补充用时" : "本次处理用时", segment.duration]].map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>
-            {segment.firstHandledBy && segment.firstHandledBy !== segment.owner && <small>实际办理人 · {segment.firstHandledBy}</small>}
-          </article>)}</div>
         </>}
       </div><footer><button className="rx-btn secondary" onClick={onClose}>关闭</button></footer>
     </section>
