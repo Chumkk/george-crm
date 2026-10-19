@@ -31,7 +31,7 @@ export function TaskHistoryDrawer({ api, id, onClose }) {
         {!data ? <p role="alert">当前无权查看此待办，或记录已不可用。</p> : <>
           <div className="rx-history-subject"><strong>{data.subject}</strong><Status value={data.status} /><p>{[data.project, data.order].filter(Boolean).join(" · ")}</p><p>待办人 · {data.owner || "未记录"}　发起人 · {data.initiator || "未记录"}</p></div>
           <div className="rx-history-metrics">{[["总历时", data.summary.total], ["首次办理", data.summary.firstResponse], ["催办次数", data.summary.reminders], ["转派次数", data.summary.transfers]].map(([label, value]) => <div key={label}><span>{label}</span><strong>{value}</strong></div>)}</div>
-          {data.partial && <p className="rx-history-partial">历史记录不完整，缺失的操作与耗时显示“未记录”。</p>}
+          <p className="rx-history-partial">{data.summary.startedAt ? `计时起点 · ${stamp(data.summary.startedAt)}（${data.summary.basis}）` : "计时起点未记录"}{data.summary.firstHandledAt && `；${data.partial ? "首个已记录办理" : "首次办理"} · ${stamp(data.summary.firstHandledAt)}`}。{data.partial ? "历史操作可能不完整，缺失记录不补造。" : "完成后总历时固定；查看和催办不计为首次办理。"}</p>
           <h3>处理时间线 <small>{data.events.length} 条记录 · 北京时间</small></h3>
           <ol className="rx-history-timeline">{data.events.map(event => <li key={event.id} className={`event-${event.kind}`}>
             <div className="rx-history-event-title"><strong>{event.title}</strong><time>{stamp(event.at)}</time></div>

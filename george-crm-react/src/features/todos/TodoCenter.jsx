@@ -109,7 +109,7 @@ function TaskRow({ task, api, onHistory }) {
             {views.map((action, i) => (
               <TaskAction key={`view-${i}`} api={api} action={action} appearance="link" />
             ))}
-            <button className="rx-btn quiet" onClick={() => onHistory(task.id)}>处理记录</button>
+            <button className="rx-btn rx-task-action quiet" onClick={() => onHistory(task.id)}>处理记录</button>
           </div>
         )}
         {task.followup?.reminder?.visible && (

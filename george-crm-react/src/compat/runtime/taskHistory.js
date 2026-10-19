@@ -30,7 +30,7 @@ function th192Evidence(t){
  if(meta&&meta.project===t.project&&(!t.opp||typeof oqQuoteOpp!=='function'||oqQuoteOpp(code)?.[0]===t.opp))for(const v of meta.quoteVersions||[])add('quote-submitted','quote:'+code+':'+v.id,{at:v.submittedAt,actor:v.submittedBy,quotation:code,detail:'已提交关联报价，保留原提交历史'});
  return events;
 }
-function th192Tracked(t){return {id:t.id,type:t.type,project:t.project,owner:t.owner,initiator:t.initiator,status:t.status,draft:t.draft||'',expectedCompletionAt:t.expectedCompletionAt||'',editRevision:t.editRevision||0,note:t.note||'',title:t.title||'',evidence:th192Evidence(t)};}
+function th192Tracked(t){return {id:t.id,type:t.type,project:t.project,time:t.time||'',owner:t.owner,initiator:t.initiator,status:t.status,draft:t.draft||'',expectedCompletionAt:t.expectedCompletionAt||'',editRevision:t.editRevision||0,note:t.note||'',title:t.title||'',evidence:th192Evidence(t)};}
 function th192Snapshot(){return new Map(TODOS.map(t=>[t.id,th192Tracked(t)]));}
 function th192Merge(...groups){return [...new Map(groups.flat().filter(e=>e?.id&&e?.kind).map(e=>[e.evidence||e.id,e])).values()];}
 function th192Stored(){try{return JSON.parse(localStorage.getItem('crm-flow-v3')||'{}').todos||[];}catch{return [];}}
@@ -74,12 +74,22 @@ function th192History(t,now=Date.now()){
   if(th192Time(arrival)!==null)events.push(th192Event(t,'arrived','arrival:'+arrival,{at:arrival,legacy:true,source:'历史字段',detail:'当前记录的到达时间；发起操作及当时处理人未记录'}));
  }
  events.sort((a,b)=>(th192Time(a.at)??Infinity)-(th192Time(b.at)??Infinity));
- const actual=events.filter(e=>!e.legacy),start=actual.find(e=>e.kind==='created'),finish=[...actual].reverse().find(e=>e.kind==='completed');
- let first=null,owner=start?.toOwner;
- if(start)for(const e of actual.slice(actual.indexOf(start)+1)){if(['rejected','completed','delivery','drawing-confirm','drawing-reject','quote-created','quote-submitted'].includes(e.kind)||e.actor===owner&&['edited','transferred'].includes(e.kind)){first=e;break;}if(e.kind==='transferred')owner=e.toOwner;}
+ const start=events.find(e=>e.kind==='created'&&th192Time(e.at)!==null);
+ // Legacy tasks retain real arrival/handling fields even without a creation
+ // audit event. Use those timestamps without inventing an actor or event.
+ const saved=th192Archive()[t.id],archivedStart=saved?.type===t.type&&saved?.project===t.project?saved.startedAt:'';
+ const originalArrival=th192Time(archivedStart)!==null?archivedStart:th192Time(t.time)!==null?t.time:events.find(e=>e.kind==='arrived'&&th192Time(e.at)!==null)?.at;
+ const startedAt=start?.at||originalArrival||'',started=th192Time(startedAt);
+ const finish=t.status==='已处理'?[...events].reverse().find(e=>e.kind==='completed'&&th192Time(e.at)!==null):null;
+ let first=null,owner=start?.toOwner||t.owner;
+ for(const e of events){
+  const at=th192Time(e.at);if(at===null||started!==null&&at<started)continue;
+  if(['rejected','completed','delivery','drawing-confirm','drawing-reject','quote-created','quote-submitted'].includes(e.kind)||e.actor&&e.actor===owner&&['edited','transferred'].includes(e.kind)){first=e;break;}
+  if(e.kind==='transferred')owner=e.toOwner;
+ }
  const reminders=events.filter(e=>e.kind==='reminded');
  const responses=reminders.map(e=>{const at=th192Time(e.at),next=at!==null&&events.slice(events.indexOf(e)+1).find(r=>!r.legacy&&th192Time(r.at)>=at&&r.actor===e.toOwner&&['edited','transferred','rejected','completed','delivery','drawing-confirm','drawing-reject','quote-created','quote-submitted'].includes(r.kind));return {reminder:e.id,at:e.at,respondedAt:next?.at||'',duration:next?th192Duration(at,th192Time(next.at)):'尚无实际办理记录'};});
- return {id:t.id,title:typeof crmTaskCategory==='function'?crmTaskCategory(t):t.type,subject:typeof todoSubject==='function'?todoSubject(t):t.title||'',project:t.project||'',order:t.order||'',status:t.status,owner:t.owner||'',initiator:t.initiator||'',events,segments:th192Segments(t,events,now),responses,summary:{total:start?th192Duration(th192Time(start.at),finish?th192Time(finish.at):now):'未记录',firstResponse:first?th192Duration(th192Time(start.at),th192Time(first.at)):start?'尚无实际办理记录':'未记录',reminders:reminders.length,transfers:events.filter(e=>e.kind==='transferred').length},partial:events.some(e=>e.legacy)||!start};
+ return {id:t.id,title:typeof crmTaskCategory==='function'?crmTaskCategory(t):t.type,subject:typeof todoSubject==='function'?todoSubject(t):t.title||'',project:t.project||'',order:t.order||'',status:t.status,owner:t.owner||'',initiator:t.initiator||'',events,segments:th192Segments(t,events,now),responses,summary:{total:th192Duration(started,t.status==='已处理'?th192Time(finish?.at):now),firstResponse:first?th192Duration(started,th192Time(first.at)):started!==null?'尚无实际办理记录':'未记录',startedAt,firstHandledAt:first?.at||'',basis:start?'发起记录':'已保存到达时间',reminders:reminders.length,transfers:events.filter(e=>e.kind==='transferred').length},partial:events.some(e=>e.legacy)||!start};
 }
 TH192.baseline=th192Snapshot();
 const th192SaveBase=v3Save;
@@ -90,7 +100,7 @@ v3Save=function(...args){
  const restore=()=>{for(const b of backups){if(b.had)b.task.lifecycle192=b.log;else delete b.task.lifecycle192;}try{for(const [key,value] of [['crm-flow-v3',beforeStorage],['crm-task-history-v192',beforeArchive]])if(value!==undefined){if(value===null)localStorage.removeItem(key);else localStorage.setItem(key,value);}}catch{}};
  try{
   const now=new Date().toISOString(),actor=typeof GDS171!=='undefined'&&GDS171.receipt?.actor||(typeof v17Owner==='function'?v17Owner():'');
-  for(const t of TODOS){const previous=stored.find(s=>s.id===t.id&&s.type===t.type&&s.project===t.project);const log=th192Merge(t.lifecycle192||[],th192Delta(t,TH192.baseline.get(t.id),now,actor),previous?.lifecycle192||[],th192Archived(t,archive));if(log.length){t.lifecycle192=log;archive[t.id]={type:t.type,project:t.project,events:log};}}
+  for(const t of TODOS){const previous=stored.find(s=>s.id===t.id&&s.type===t.type&&s.project===t.project),baseline=TH192.baseline.get(t.id),saved=archive[t.id],same=saved?.type===t.type&&saved?.project===t.project;const log=th192Merge(t.lifecycle192||[],th192Delta(t,baseline,now,actor),previous?.lifecycle192||[],th192Archived(t,archive));const startedAt=[same&&saved.startedAt,baseline?.time,previous?.time,t.time].find(at=>th192Time(at)!==null)||'';if(log.length)t.lifecycle192=log;if(log.length||startedAt)archive[t.id]={type:t.type,project:t.project,startedAt,events:log};}
   const serialized=JSON.stringify(archive);if(serialized!==(beforeArchive||'{}'))try{localStorage.setItem('crm-task-history-v192',serialized);}catch{restore();return false;}
   const result=th192SaveBase(...args);if(!result){restore();return result;}TH192.baseline=th192Snapshot();return result;
  }catch(error){restore();throw error;}finally{TH192.busy=false;}

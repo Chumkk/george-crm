@@ -19,7 +19,7 @@
 .tf138-expected>small{font-size:11px;line-height:1.6;color:#738b9d}
 .v5-nav-links button small.rx-menu-todo-count{background:#f34e57;color:white;min-width:20px;padding:2px 5px;border-radius:10px;text-align:center;font-weight:600;}
 .rx-task-timing{grid-column:2/4;display:flex;flex-direction:column;gap:7px;font-size:11px;color:#8399aa;}
-.rx-task-timing>div{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;line-height:1.7;}
+.rx-task-timing>div{display:flex;justify-content:flex-start;align-items:baseline;gap:4px 18px;flex-wrap:wrap;line-height:1.7;}
 .rx-task-timing>div>span:last-child{white-space:nowrap;}
 .rx-task-overdue-duration{color:#ad4f28;background:#fff2e8;border-radius:4px;padding:1px 6px;}
 .rx-task-row>.rx-task-actions{grid-column:4;grid-row:1/3;}
@@ -39,6 +39,6 @@
 .rx-history-event-title{display:flex;justify-content:space-between;align-items:baseline;gap:12px;}.rx-history-event-title strong{font-size:13px;}.rx-history-event-title time{font-size:11px;color:#8297a7;white-space:nowrap;}.rx-history-timeline p{font-size:12px;line-height:1.8;margin:6px 0 0;color:#6f879b;overflow-wrap:anywhere;white-space:pre-wrap;}.rx-history-source{font-size:10px;padding:2px 6px;border-radius:4px;background:#f0f5f9;margin-left:10px;}.rx-history-timeline .rx-history-reason{background:#faf6f0;color:#936f4a;padding:8px 11px;border-radius:6px;}
 .rx-history-segments>div{display:grid;grid-template-columns:1fr 1.2fr auto;gap:10px;padding:12px 0;border-bottom:1px solid #eaf0f5;align-items:center;font-size:12px;}.rx-history-segments strong small{display:block;color:#8ba0ae;font-size:10px;font-weight:400;margin-top:5px;}.rx-history-segments span{line-height:1.8;color:#8195a5;}.rx-history-segments b{font-weight:500;color:#3e82ae;}.rx-history-responses>p{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-size:12px;padding:12px;background:#f8fafc;border-radius:6px;}.rx-history-responses small{display:block;margin-top:5px;color:#8ba0ae;}.rx-history-responses strong{font-size:11px;font-weight:500;color:#7c91a0;}
 @media(max-width:1000px){.rx-task-timing{grid-column:2/-1;}.rx-task-row>.rx-task-actions{grid-row:auto;grid-column:2/-1;}.rx-history-metrics{grid-template-columns:repeat(2,minmax(0,1fr));}}
-@media(max-width:600px){.rx-history-drawer{width:100vw;}.rx-history-body{padding:18px;}.rx-history-event-title{flex-wrap:wrap;gap:5px;}.rx-history-segments>div{grid-template-columns:1fr 1fr;}.rx-task-timing>div{align-items:flex-start;flex-direction:column;gap:2px;}}
+@media(max-width:600px){.rx-history-drawer{width:100vw;}.rx-history-body{padding:18px;}.rx-history-event-title{flex-wrap:wrap;gap:5px;}.rx-history-segments>div{grid-template-columns:1fr 1fr;}}
 @media(min-width:801px) and (max-width:1250px){.rx-task-row>.rx-task-actions{grid-column:3;grid-row:1/4;}.rx-task-timing{grid-column:2;grid-row:3;}}
 @media(max-width:800px){.rx-task-timing{grid-column:2;grid-row:3;}.rx-task-row>.rx-task-actions{grid-column:2;grid-row:4;}}
