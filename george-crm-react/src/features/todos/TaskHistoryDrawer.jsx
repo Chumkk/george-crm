@@ -35,9 +35,10 @@ export function TaskHistoryDrawer({ api, id, onClose }) {
           <p className="rx-history-partial">{data.summary.startedAt ? `计时起点 · ${stamp(data.summary.startedAt)}（${data.summary.basis}）` : "计时起点未记录"}。{data.partial ? "历史操作可能不完整，缺失记录不补造。" : "完成后总历时固定。"}</p>
           <h3>处理时间线 <small>{data.events.length} 条记录 · 北京时间</small></h3>
           <ol className="rx-history-timeline">{data.events.map(event => <li key={event.id} className={`event-${event.kind}`}>
-            <div className="rx-history-event-title"><strong>{event.title}</strong><time>{stamp(event.at)}</time></div>
-            <p>操作人 · {event.actor || "未记录"}<span className="rx-history-source">{event.source}{event.legacy ? " · 历史记录" : ""}</span></p>
-            {event.firstResponse && <p className="rx-history-first-response" title={event.firstResponse.startedAt ? `从本次接手时间 ${stamp(event.firstResponse.startedAt)} 计算` : "历史接手时间未记录，无法计算首次响应用时"}>首次响应用时 · {event.firstResponse.duration}<small>{event.firstResponse.kind === "等待补充资料" ? "补充资料" : "本次负责人"} · {event.firstResponse.owner || "未记录"}</small></p>}
+            <div className="rx-history-event-title">
+              <div><strong>{event.title}</strong><p>操作人 · {event.actor || "未记录"}<span className="rx-history-source">{event.source}{event.legacy ? " · 历史记录" : ""}</span></p></div>
+              <div className="rx-history-event-time"><time>{stamp(event.at)}</time>{event.firstResponse && <span className="rx-history-first-response" title={event.firstResponse.startedAt ? `从本次接手时间 ${stamp(event.firstResponse.startedAt)} 计算` : "历史接手时间未记录，无法计算首次响应用时"}>首次响应用时 · {event.firstResponse.duration}</span>}</div>
+            </div>
             {(event.fromOwner || event.toOwner) && <p>{event.kind === "transferred" ? `转派：${event.fromOwner || "未记录"} → ${event.toOwner || "未记录"}` : `交给：${event.toOwner || "未记录"}`}</p>}
             {(event.fromStatus || event.toStatus) && <p>状态：{[event.fromStatus, event.toStatus].filter(Boolean).join(" → ")}</p>}
             {event.detail && <p>{event.detail}</p>}{event.reason && <p className="rx-history-reason">原因 / 结果：{event.reason}</p>}
