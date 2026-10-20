@@ -5,7 +5,7 @@ import vm from 'node:vm';
 const source=fs.readFileSync(new URL('../src/compat/runtime/managementMonitoring.js',import.meta.url),'utf8');
 function boot(){
  const o=Array(21).fill('');Object.assign(o,{0:'O',1:'商机',2:'报价中',4:'P',13:'¥1,000',15:'¥600',16:'¥200'});
- const c={PROJECT_EXTRA:{},oqDesignType:v=>v||'暂无',PROJECTS:[['P','项目','','','','','','客户','','当前PM']],OPPS:[o],ORDERS:[],TODOS:[],actor:'SM',qNum:x=>Number(String(x||'').replace(/[^0-9.-]/g,''))||0,qMoney:x=>'¥'+x,esc:String,mgOppRows:()=>c.OPPS,visibleTodos:()=>c.TODOS,crmTodoEnabled:t=>!['订单待办','创建项目待办'].includes(t.type),MG135:{opportunityStates:['待接受','已拒绝','洽谈中','报价中','待下单','交付中','已完成','已输单']},mgOpportunityState:o=>o[2],mgProjectState:()=> '待成交',ptOpportunityTiming:o=>({overdue:!!o[20]?.overdue}),tfDeadline:t=>({overdue:!!t.overdue}),V68_APPROVALS:['跨区域商机审批待办','转介绍商机审批待办'],orderOppOf:o=>o[17],v17Owner:()=>c.actor,v72NotificationEvents:()=>[],v72Go:()=>{c.baseGo=true;},v73TextCard:()=>({}),V72:{messages:[]},v21FlowAllowed:()=>c.allowed!==false,v21CanOperate:()=>false,v75SearchTask:t=>{c.opened=t.id;},toast:m=>{c.toast=m;},document:{addEventListener(){},createElement:()=>({}),head:{appendChild(){}}}};
+ const c={PROJECT_EXTRA:{},oqDesignType:v=>v||'暂无',PROJECTS:[['P','项目','','','','','','客户','','当前PM']],OPPS:[o],ORDERS:[],TODOS:[],actor:'SM',qNum:x=>Number(String(x||'').replace(/[^0-9.-]/g,''))||0,qMoney:x=>'¥'+x,esc:String,mgOppRows:()=>c.OPPS,visibleTodos:()=>c.TODOS,crmTodoEnabled:t=>!['订单待办','创建项目待办'].includes(t.type),MG135:{opportunityStates:['待接受','已拒绝','洽谈中','报价中','待下定','待下单','交付中','已完成','已输单']},mgOpportunityState:o=>o[2],mgProjectState:()=> '待成交',ptOpportunityTiming:o=>({overdue:!!o[20]?.overdue}),tfDeadline:t=>({overdue:!!t.overdue}),V68_APPROVALS:['跨区域商机审批待办','转介绍商机审批待办'],orderOppOf:o=>o[17],v17Owner:()=>c.actor,v72NotificationEvents:()=>[],v72Go:()=>{c.baseGo=true;},v73TextCard:()=>({}),V72:{messages:[]},v21FlowAllowed:()=>c.allowed!==false,v21CanOperate:()=>false,v75SearchTask:t=>{c.opened=t.id;},toast:m=>{c.toast=m;},document:{addEventListener(){},createElement:()=>({}),head:{appendChild(){}}}};
  vm.createContext(c);vm.runInContext(source,c);return c;
 }
 test('过程卡片包含关联费用金额，当前范围筛选不修改原数据',()=>{
@@ -114,7 +114,7 @@ test('项目三种设计类型独立筛选，项目金额使用登记值并随�
 test('商机阶段分开统计和筛选，金额仅汇总当前结果而非所有商机',()=>{
  const c=boot();const second=Object.assign(Array(21).fill(''),{0:'BU002',4:'P',2:'洽谈中',13:'¥5,000',15:'¥2,000',16:'¥100'});c.OPPS.push(second);
  assert.equal(c.mmProgressMatches(c.OPPS[0],'quoting'),true);assert.equal(c.mmProgressMatches(second,'quoting'),false);assert.equal(c.mmProgressMatches(second,'negotiating'),true);second[2]='已完成';assert.equal(c.mmProgressMatches(second,'completed'),true);
- const html=c.mmOpportunityCards(c.OPPS,[c.OPPS[0]]);for(const title of ['待接收','洽谈中','报价中','待下单','交付中','已完成','待处理待办','停留超10天','商机金额','成单金额'])assert.match(html,new RegExp('data-mm-title>'+title));assert.match(html,/商机金额[\s\S]*?¥1000/);assert.doesNotMatch(html,/¥6000|¥2600/);assert.equal((html.match(/data-act="mmMetric"/g)||[]).length,10);
+ const html=c.mmOpportunityCards(c.OPPS,[c.OPPS[0]]);for(const title of ['待接收','洽谈中','报价中','待下定','待下单','交付中','已完成','待处理待办','停留超10天','商机金额','成单金额'])assert.match(html,new RegExp('data-mm-title>'+title));assert.match(html,/商机金额[\s\S]*?¥1000/);assert.doesNotMatch(html,/¥6000|¥2600/);assert.equal((html.match(/data-act="mmMetric"/g)||[]).length,11);
 });
 
 test('批量关联范围不再往快捷搜索栏拼编号，单条仍使用精确项目号或 BU 号',()=>{

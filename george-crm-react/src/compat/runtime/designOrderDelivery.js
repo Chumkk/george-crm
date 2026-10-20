@@ -162,6 +162,12 @@ gds171Receive=function(receipt){
  if(receipt.revision!==state.revision)throw Error('GDS 回执版本已过期，请刷新最新任务');
  return bs131Atomic(()=>{let next;GDS171.receipt={task:task.id,actor:receipt.actor};try{
   if(task.type==='设计待办'&&receipt.action==='submit')next=dr185Submit(task,receipt.contents||{});
+  else if(task.type==='设计待办'&&receipt.action==='payment-confirmed'){
+   const order=ORDERS.find(o=>o[0]===task.order&&o[15]===task.project&&orderOppOf(o)===task.opp&&(o[2]==='设计单'||o[18]?.kind==='design')&&o[18]?.erpRequestedRevision);
+   if(!order||!receipt.order||!receipt.opportunity||!receipt.project)throw Error('GDS 收款确认须关联已确认报价的精确项目、商机和设计单');
+   if(!['待处理','已处理'].includes(task.status))throw Error('当前设计任务不可确认收款');
+   task.gdsPaymentConfirmed||={eventId:receipt.eventId,time:todoStamp(),actor:receipt.actor,order:task.order,opportunity:task.opp,project:task.project};next=task;
+  }
   else if(task.type==='设计待办'&&receipt.action==='complete'){if(receipt.contents?.drawings?.length)dr185Submit(task,receipt.contents);next=dr187GdsComplete(task);}
   else if(task.type==='设计确认待办'&&receipt.action==='resubmit')next=dr185Resubmit(task,receipt.contents||{},receipt.editRevision);
   else if(task.type==='设计确认待办'&&['confirm-drawing','reject-drawing'].includes(receipt.action))next=dr185Review(task,receipt.drawingId,receipt.action==='confirm-drawing'?'confirm':'reject',receipt.drawingRevision,receipt.reason);

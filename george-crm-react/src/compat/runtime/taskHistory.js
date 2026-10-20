@@ -20,7 +20,7 @@ function th192Evidence(t){
   add(resubmit?'resubmitted':'edited','edit:'+JSON.stringify([r.revision,r.time,r.actor]),{at:r.time,actor:r.actor,fromStatus:r.fromStatus,toStatus:'待处理',toOwner:r.after?.owner||r.after?.sm||'',reason:r.decision?.reason||'',changes:th192Changes(r.before,r.after),detail:resubmit?'修改原待办后重新提交':'更新原待办资料'});
  }
  if(['已处理','已驳回'].includes(t.status)&&th192Time(t.approveTime)!==null)add(t.status==='已处理'?'completed':'rejected','status:'+JSON.stringify([t.status,t.approveTime,t.editRevision||0]),{at:t.approveTime,actor:th192Text(t.approver),fromStatus:'待处理',toStatus:t.status,reason:t.status==='已驳回'?t.rejectReason||t.approvalNote||'':t.completionReason||'',source:t.gdsCompleted?'GDS':'CRM'});
- for(const r of t.gds?.receipts||[])add('receipt','receipt:'+r.eventId,{at:r.time,actor:r.actor,source:'GDS',detail:({submit:'回传设计图纸',complete:'GDS 完成设计任务',resubmit:'重新提交图纸',synchronize:'图纸同步',reject:'驳回图纸','confirm-drawing':'确认图纸回执','reject-drawing':'驳回图纸回执'})[r.action]||r.action,eventId:r.eventId});
+ for(const r of t.gds?.receipts||[])add('receipt','receipt:'+r.eventId,{at:r.time,actor:r.actor,source:'GDS',detail:({submit:'回传设计图纸',complete:'GDS 完成设计任务','payment-confirmed':'GDS 确认设计单收款',resubmit:'重新提交图纸',synchronize:'图纸同步',reject:'驳回图纸','confirm-drawing':'确认图纸回执','reject-drawing':'驳回图纸回执'})[r.action]||r.action,eventId:r.eventId});
  for(const r of t.designSubmissions||[])add('delivery','delivery:'+JSON.stringify([r.revision,r.time,r.by]),{at:r.time,actor:r.by,source:'GDS',detail:'回传第 '+r.revision+' 批设计图纸'});
  for(const d of t.drawings||[])for(const [i,r] of (d.history||[]).entries()){
   const kind={'confirm':'drawing-confirm','reject':'drawing-reject','resubmit':'drawing-resubmit'}[r.action];if(!kind)continue;
