@@ -26,7 +26,6 @@ function TaskAction({ api, action, appearance = "secondary" }) {
 }
 function TaskRow({ task, api, onHistory }) {
   const isDesignDelivery = ["设计待办", "设计确认待办"].includes(task.type);
-  const expenseSource = task.type === "费用订单待办" ? task.expenseSource : null;
   const subtitle = taskSubtitle(task);
   const actions = splitActions(task.actions.filter((action) => action.act !== "viewDealFlow"));
   const rejectionReason = taskRejectionReason(task);
@@ -62,7 +61,6 @@ function TaskRow({ task, api, onHistory }) {
             {task.businessInfo.scope && <span className="rx-task-tag addon">{task.businessInfo.scope}</span>}
             {task.businessInfo.quoteStatus && <span className={`rx-task-tag ${task.businessInfo.quoteStatus === '已确认' ? 'confirmed' : 'quoted'}`} title={task.businessInfo.confirmedAt ? `客户确认时间：${task.businessInfo.confirmedAt}` : undefined}>{task.businessInfo.quoteStatus}</span>}
           </>}
-          {expenseSource && <span className={`rx-task-tag source ${expenseSource.kind}`}>{expenseSource.label}</span>}
           <Status value={task.status} />
         </div>
         {((subtitle.subject && subtitle.subject !== task.typeLabel) || subtitle.code) && (
@@ -71,10 +69,6 @@ function TaskRow({ task, api, onHistory }) {
             {subtitle.code && <span className="rx-task-reference">{subtitle.code}</span>}
           </p>
         )}
-        {expenseSource?.kind === "opportunity" && <p className="rx-task-origin">
-          <span>关联商机 · {expenseSource.opportunityName || "关联商机待核对"}</span>
-          <span className="rx-task-reference">{expenseSource.opportunityCode}</span>
-        </p>}
         <div className="rx-task-meta">
           {subtitle.showCustomer && <span>{task.customer}</span>}
           {task.customerMeta ? (

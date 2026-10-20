@@ -43,6 +43,6 @@ test('费用来源读取精确项目和商机关联；历史缺失不套用其�
  assert.equal(b.label,'商机费用');assert.equal(b.opportunityCode,'B');assert.equal(b.opportunityName,c.oqOpp('B')[1]);
  assert.equal(c.efTaskSource({...business,opp:'MISSING'}).opportunityName,'');
  assert.equal(c.efTaskSource({...business,project:'OTHER'}).opportunityName,'');
- const original=JSON.stringify(business);c.actor='SM';c.efOpenTask(business.id,'handle');assert.match(c.modal.body,/商机费用/);assert.match(c.modal.body,/B/);assert.equal(JSON.stringify(business),original);
- c.actor='PM';c.efOpenTask(project.id,'edit');assert.match(c.modal.body,/项目费用/);assert.doesNotMatch(c.modal.body,/关联商机 ·/);
+ const original=JSON.stringify(business);c.actor='SM';c.efOpenTask(business.id,'handle');assert.match(c.efTaskSourceHtml(business),new RegExp(b.opportunityName));assert.doesNotMatch(c.efTaskSourceHtml(business),/rx-task-tag/);assert.match(c.modal.body,/B/);assert.equal(JSON.stringify(business),original);
+ c.actor='PM';c.efOpenTask(project.id,'edit');assert.match(c.efTaskSourceHtml(project),/ef-task-context/);assert.doesNotMatch(c.efTaskSourceHtml(project),/rx-task-tag|关联商机 ·/);
 });

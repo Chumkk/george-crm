@@ -39,6 +39,14 @@ export function taskSubtitle(task) {
   const projectReference = ["项目待办", "确认商机", "确认商机待办", "费用订单待办"].includes(task.type);
   let subject = text(task.subject);
   if (projectReference) subject = project || subject;
+  if (task.type === "费用订单待办" && task.expenseSource?.kind === "opportunity") {
+    const source = task.expenseSource;
+    subject = text(source.opportunityName) || "关联商机待核对";
+    const code = text(source.opportunityCode);
+    return { subject, code: subject.includes(code) ? "" : code,
+      showProjectMeta: false, projectCode,
+      showCustomer: !!text(task.customer) && text(task.customer) !== subject };
+  }
   if (["转介绍商机审批待办", "报价待办"].includes(task.type)) subject = text(task.opportunityName) || project || subject;
   if (["邀请函审核", "邀请函审核待办", "公海跟进", "公海跟进待办"].includes(task.type)) subject = text(task.customer) || subject;
   const code = ["设计待办", "设计确认待办"].includes(task.type) ? text(task.order)
