@@ -1838,3 +1838,8 @@ html[data-entry=client] .app,html[data-entry=client] .cq-close{display:none!impo
 #clientQuoteView #v50Sidebar #v55SidebarSummary .cs212-summary .cs212-space-subtotal{padding:6px 10px;margin:3px 0}
 #clientQuoteView #v50Sidebar #v55SidebarSummary .cs212-summary .v30-confirmed-total{padding:4px 0!important}
 #clientQuoteView #v50Sidebar #v55SidebarSummary .cs212-summary .v28-space-stats>span{height:45px!important;min-height:45px!important;padding:4px 8px!important;gap:2px!important;line-height:1.3!important}
+
+#clientQuoteView #v50Sidebar #v55SidebarSummary .cs212-summary .cs212-amount-row{grid-row:3}
+#clientQuoteView #v50Sidebar #v55SidebarSummary .cs212-summary .cs212-space-subtotal{grid-row:4}
+#clientQuoteView #v50Sidebar #v55SidebarSummary .cs212-summary .v30-confirmed-total{grid-row:5!important}
+#clientQuoteView #v50Sidebar #v55SidebarSummary .cs212-summary .v28-space-stats{grid-row:6!important}
