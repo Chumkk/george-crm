@@ -1863,3 +1863,12 @@ html[data-entry=client] .app,html[data-entry=client] .cq-close{display:none!impo
 #clientQuoteView #v50Sidebar.cqu211-panel #skyConfirmButton.cqu213-confirm-button:disabled{border-color:#d8e5ec!important;background:#edf3f7!important;color:#6b8799!important;box-shadow:none!important;opacity:1!important}
 #clientQuoteView #v50Sidebar #skyConfirmButton.cqu213-confirm-button:disabled .cqu213-confirm-details small,#clientQuoteView #v50Sidebar #skyConfirmButton.cqu213-confirm-button:disabled .cqu213-confirm-details strong{color:#6b8799!important}
 #clientQuoteView #v50Sidebar .cqu213-category .cqu211-name-group{gap:6px}.cqu213-confirm-button:focus-visible{outline:3px solid #95c9e8!important;outline-offset:3px}
+
+/* One primary line joins the selected space, category and quoted amount. */
+#clientQuoteView #v50Sidebar #v55SidebarSummary .cs215-summary .cs215-primary{grid-row:1;display:flex!important;flex-wrap:nowrap!important;justify-content:space-between!important;align-items:center!important;gap:12px!important;padding:0 20px 0 0!important;min-width:0;margin:0 0 8px!important}
+#clientQuoteView #v50Sidebar #v55SidebarSummary .cs215-summary .cs215-primary h2{font-size:17px!important;line-height:1.4!important;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#clientQuoteView #v50Sidebar #v55SidebarSummary .cs215-summary .cs215-primary-amount{font:600 23px/1.35 Arial,'Microsoft YaHei',sans-serif;letter-spacing:-.4px;color:#25485f;white-space:nowrap;font-variant-numeric:tabular-nums;flex:none}
+#clientQuoteView #v50Sidebar #v55SidebarSummary .cs215-summary .cs212-space-subtotal{grid-row:2}
+#clientQuoteView #v50Sidebar #v55SidebarSummary .cs215-summary .v30-confirmed-total{grid-row:3!important}
+#clientQuoteView #v50Sidebar #v55SidebarSummary .cs215-summary .v28-space-stats{grid-row:4!important}
+#clientQuoteView #v50Sidebar.cqu211-panel .v50-category-list>button.cqu213-category{min-height:55px!important;padding:8px 12px!important;row-gap:3px!important}
