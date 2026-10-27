@@ -1843,3 +1843,23 @@ html[data-entry=client] .app,html[data-entry=client] .cq-close{display:none!impo
 #clientQuoteView #v50Sidebar #v55SidebarSummary .cs212-summary .cs212-space-subtotal{grid-row:4}
 #clientQuoteView #v50Sidebar #v55SidebarSummary .cs212-summary .v30-confirmed-total{grid-row:5!important}
 #clientQuoteView #v50Sidebar #v55SidebarSummary .cs212-summary .v28-space-stats{grid-row:6!important}
+
+/* Category prices always cover all spaces in the selected quotation batch. */
+#clientQuoteView #v50Sidebar.cqu211-panel .v50-category-list>button.cqu213-category{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;grid-template-rows:auto auto!important;gap:5px 14px!important;align-items:center!important;min-height:65px!important;padding:11px 12px!important;border:1px solid transparent;border-radius:7px;margin:3px 0!important}
+#clientQuoteView #v50Sidebar .cqu213-category>.cqu211-name-group{grid-column:1!important;grid-row:1!important;min-width:0}
+#clientQuoteView #v50Sidebar .cqu213-category>.cqu213-category-amount{grid-column:2!important;grid-row:1!important;justify-self:end;font:600 14px/1.4 Arial,'Microsoft YaHei',sans-serif;color:#294f68;font-variant-numeric:tabular-nums;white-space:nowrap}
+#clientQuoteView #v50Sidebar .cqu213-category>.cqu213-category-range{grid-column:1!important;grid-row:2!important;font-size:10px;line-height:1.4;color:#8b9fac}
+#clientQuoteView #v50Sidebar .cqu213-category>.v29-category-state{grid-column:2!important;grid-row:2!important;justify-self:end;position:static!important}
+#clientQuoteView #v50Sidebar .cqu213-category>.cqu211-state-spacer,#clientQuoteView #v50Sidebar .cqu213-category>.sky-icon{display:none!important}
+#clientQuoteView #v50Sidebar.cqu211-panel .v50-category-list>button.cqu213-category.on{border-color:#c7dfef!important;background:#edf6fc!important;box-shadow:inset 3px 0 #2c8ac3}
+#clientQuoteView #v50Sidebar .cqu213-category.on>.cqu213-category-amount{color:#176e9f}
+#clientQuoteView #v50Sidebar .cqu213-category .v50-category-name{font-size:12px!important;font-weight:500}
+#clientQuoteView #v50Sidebar.cqu211-panel #skyConfirmButton.cqu213-confirm-button{display:flex!important;flex-direction:column!important;align-items:stretch!important;justify-content:center!important;gap:5px!important;height:75px!important;min-height:75px!important;padding:10px 17px!important;border:1px solid #1678b4!important;border-radius:8px!important;background:linear-gradient(120deg,#258bc9,#1473ad)!important;color:#fff!important;text-align:left;box-shadow:0 5px 13px #1b7eb526!important}
+#clientQuoteView #v50Sidebar #skyConfirmButton.cqu213-confirm-button .cqu213-confirm-title{display:flex;align-items:center;justify-content:space-between;font:600 13px/1.4 Arial,'Microsoft YaHei',sans-serif;color:inherit!important}
+#clientQuoteView #v50Sidebar #skyConfirmButton.cqu213-confirm-button .cqu213-confirm-title i{font-size:20px;font-style:normal;line-height:1}
+#clientQuoteView #v50Sidebar #skyConfirmButton.cqu213-confirm-button .cqu213-confirm-details{display:flex;align-items:center;justify-content:space-between;gap:12px;color:inherit!important}
+#clientQuoteView #v50Sidebar #skyConfirmButton.cqu213-confirm-button .cqu213-confirm-details small{font-size:10px;line-height:1.4;color:#dceef9!important}
+#clientQuoteView #v50Sidebar #skyConfirmButton.cqu213-confirm-button .cqu213-confirm-details strong{font:600 23px/1.2 Arial,'Microsoft YaHei',sans-serif;letter-spacing:-.3px;color:#fff!important;font-variant-numeric:tabular-nums;white-space:nowrap}
+#clientQuoteView #v50Sidebar.cqu211-panel #skyConfirmButton.cqu213-confirm-button:disabled{border-color:#d8e5ec!important;background:#edf3f7!important;color:#6b8799!important;box-shadow:none!important;opacity:1!important}
+#clientQuoteView #v50Sidebar #skyConfirmButton.cqu213-confirm-button:disabled .cqu213-confirm-details small,#clientQuoteView #v50Sidebar #skyConfirmButton.cqu213-confirm-button:disabled .cqu213-confirm-details strong{color:#6b8799!important}
+#clientQuoteView #v50Sidebar .cqu213-category .cqu211-name-group{gap:6px}.cqu213-confirm-button:focus-visible{outline:3px solid #95c9e8!important;outline-offset:3px}
