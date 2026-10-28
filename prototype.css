@@ -1940,3 +1940,19 @@ html[data-entry=client] .app,html[data-entry=client] .cq-close{display:none!impo
 #clientQuoteView #v50Sidebar .cqu213-category.on .v50-category-name{font-weight:600;color:#1f6087}
 #clientQuoteView #v50Sidebar .cqu213-category.on>.cqu213-category-amount{font-weight:700;color:#205d81}
 @media(prefers-reduced-motion:reduce){#clientQuoteView #v50Sidebar.cqu211-panel .v50-category-list>button.cqu213-category{transition:none}}
+
+/* Shared selection language across customer quotation reading controls. */
+#clientQuoteView:has(.cxp-tabs) .v28-room-tab{transition:background .18s ease,border-color .18s ease,box-shadow .18s ease;border-radius:7px}
+#clientQuoteView:has(.cxp-tabs) .v28-room-tab:not(.on):hover{background:#f1f6fa;border-color:#dfE9f1;color:#426d89}
+#clientQuoteView:has(.cxp-tabs) .v28-room-tab.on{background:linear-gradient(105deg,#deedf8,#f0f7fc)!important;border-color:#8bb6d2!important;color:#205d81!important;box-shadow:inset 0 -2px #267cae,0 2px 5px rgba(38,90,124,.06)!important}
+#clientQuoteView:has(.cxp-tabs) .v28-room-tab.on b{font-weight:600;color:#205d81}
+#clientQuoteView:has(.cxp-tabs) .v28-room-tab.on small{color:#5d839e}
+#clientQuoteView:has(.cxp-tabs) .v41-picker-choice.on{background:linear-gradient(105deg,#deedf8,#f0f7fc)!important;border-color:#8bb6d2!important;color:#205d81!important;box-shadow:inset 3px 0 #267cae,0 2px 5px rgba(38,90,124,.06)!important}
+#clientQuoteView:has(.cxp-tabs) .v41-picker-choice.on>span:first-child{font-weight:600}
+#clientQuoteView:has(.cxp-tabs) .v41-picker-choice.on>i{color:#267cae;font-weight:700}
+.q125-history-dialog.cqu-history-drawer [data-version][aria-pressed="true"]{background:linear-gradient(105deg,#deedf8,#f0f7fc)!important;border-color:#8bb6d2!important;box-shadow:inset 3px 0 #267cae,0 2px 5px rgba(38,90,124,.06)!important}
+.q125-history-dialog.cqu-history-drawer [data-version][aria-pressed="true"] .cqu-card-title strong{color:#205d81}
+#clientQuoteView .cxp-price-options .cxp-path-selected{background:radial-gradient(ellipse at 0 0,rgba(255,255,255,.7),transparent 80%),linear-gradient(105deg,#deedf8,#edf5fb);border-color:#8bb6d2;border-left-color:#267cae;box-shadow:0 3px 10px rgba(38,90,124,.06)}
+#clientQuoteView .cxp-path-mark{background:#267cae;color:#fff;border-radius:4px}
+#clientQuoteView:has(.cxp-tabs) :is(.v28-room-tab,.v41-picker-choice,.cqu213-category):focus-visible,.q125-history-dialog.cqu-history-drawer [data-version]:focus-visible{outline:2px solid #6b9fbe!important;outline-offset:2px}
+@media(prefers-reduced-motion:reduce){#clientQuoteView:has(.cxp-tabs) .v28-room-tab{transition:none}}
