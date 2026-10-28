@@ -1884,5 +1884,8 @@ html[data-entry=client] .app,html[data-entry=client] .cq-close{display:none!impo
  #clientQuoteView #v50Sidebar.cqu211-panel .v50-category-list{height:180px;max-height:180px!important;min-height:112px!important;flex:none!important;overflow-y:auto;overscroll-behavior-y:contain}
  #clientQuoteView #v50Sidebar.cqu211-panel>footer.v31-approval-dock{display:block!important;position:static!important;flex:none;height:auto!important;margin:0!important}
  #clientQuoteView #v50Sidebar.cqu211-panel>footer.v31-approval-dock .v28-approval-title{display:flex!important}
+ #clientQuoteView #v50Sidebar.cqu211-panel #skyConfirmButton.cqu213-confirm-button{width:100%!important;max-width:none!important;box-sizing:border-box}
+ #clientQuoteView #v50Sidebar.cqu211-panel #skyConfirmButton.cqu213-confirm-button .cqu213-confirm-details small{white-space:nowrap}
+ #clientQuoteView #v50Sidebar.cqu211-panel .v50-category-list>button:first-child{position:static;box-shadow:none}
 }
 @media screen and (max-width:650px){#clientQuoteView.cxp209-quotation{--cs219-header:110px}}
