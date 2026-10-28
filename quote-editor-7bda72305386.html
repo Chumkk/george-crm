@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>草稿编辑-英国-Wilton-2271 - CRM3.0客户管理系统</title>
+<title>报价单编辑-英国-Wilton-2271 - CRM3.0客户管理系统</title>
 <style>
 :root,html[data-theme="green"]{
   --ink:#333;--muted:#666;--line:#e4e4e7;--primary:#86d920;--primary-2:#52c41a;--primary-ink:#389e0d;--primary-soft:#e6edde;
@@ -366,7 +366,7 @@ html.embed .body{grid-template-columns:1fr}
     <div class="tabs">
       <button class="tab">客户公海池 <span class="x">×</span></button>
       <button class="tab">项目-英国-Wilton-2271 <span class="x">×</span></button>
-      <button class="tab on">草稿编辑-Wilton客厅家具 <span class="x">×</span></button>
+      <button class="tab on">报价单编辑-Wilton客厅家具 <span class="x">×</span></button>
     </div>
     <div class="right">
       <button class="iconbtn">🔍</button>
@@ -520,13 +520,13 @@ html.embed .body{grid-template-columns:1fr}
 </div>
 <div class="mask" id="saveMask">
   <div class="modal warn-modal">
-    <div class="m-head"><h3>提交草稿</h3><button class="iconbtn" onclick="closeSaveForm()">×</button></div>
+    <div class="m-head"><h3>提交报价单</h3><button class="iconbtn" onclick="closeSaveForm()">×</button></div>
     <div class="m-body">
       <div class="form" style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-        <div><div class="k">草稿名称</div><input id="draftName" value="张三-客厅石材-V3" style="width:100%;height:30px;border:1px solid #d9d9d9;border-radius:4px;padding:0 8px;margin-top:4px"/></div>
+        <div><div class="k">报价单名称</div><input id="draftName" value="张三-客厅石材-V3" style="width:100%;height:30px;border:1px solid #d9d9d9;border-radius:4px;padding:0 8px;margin-top:4px"/></div>
         <div><div class="k">方案经理</div><select id="draftSm" style="width:100%;height:30px;border:1px solid #d9d9d9;border-radius:4px;padding:0 8px;margin-top:4px"><option>董文君</option><option>林晓</option></select></div>
       </div>
-      <p class="hint">提交后写入草稿列表，可再次打开编辑，或在绑定商机时选取。快速保存不走这一步。</p>
+      <p class="hint">提交后写入报价单列表，可再次打开编辑，或在绑定商机时选取。快速保存不走这一步。</p>
     </div>
     <div class="m-foot">
       <button class="btn" onclick="closeSaveForm()">取消</button>
@@ -1196,7 +1196,7 @@ function saveDraft(){
     return;
   }
   const name=document.getElementById('draftName');
-  if (name && INIT_CUSTOMER && /张三-客厅石材/.test(name.value)) name.value=INIT_CUSTOMER+'-草稿报价';
+  if (name && INIT_CUSTOMER && /张三-客厅石材/.test(name.value)) name.value=INIT_CUSTOMER+'-报价单';
   openSaveForm();
 }
 function searchSimilar(){
@@ -1260,7 +1260,7 @@ function confirmSaved(){
   if (window.parent && window.parent!==window){
     window.parent.postMessage(Object.assign({type:'pimsDraftSaved'}, payload), '*');
   }
-  toast('草稿已提交，已写入草稿列表');
+  toast('报价单已提交，已写入报价单列表');
 }
 function quickSave(){ toast('已快速保存，未做产品编码校验，不能绑定商机或导出 PI'); }
 function filledLikeEmpty(){
@@ -1647,7 +1647,7 @@ function fillDraftMeta(d){
   if(selTpl&&d.tpl && [...selTpl.options].some(o=>o.value===d.tpl||o.text===d.tpl)) selTpl.value=d.tpl;
   if(d.customer){
     document.getElementById('editorTitle').textContent='线上编辑模板 · '+d.customer;
-    document.title='草稿编辑-'+d.customer+' - CRM3.0客户管理系统';
+    document.title='报价单编辑-'+d.customer+' - CRM3.0客户管理系统';
   }
 }
 function loadDraft(d){
@@ -1672,7 +1672,7 @@ if (INIT_TPL){
 }
 if (INIT_CUSTOMER){
   document.getElementById('editorTitle').textContent='线上编辑模板 · '+INIT_CUSTOMER;
-  document.title='草稿编辑-'+INIT_CUSTOMER+' - CRM3.0客户管理系统';
+  document.title='报价单编辑-'+INIT_CUSTOMER+' - CRM3.0客户管理系统';
 }
 renumber();
 computeColWidths();
@@ -1727,11 +1727,11 @@ function edUpdateSummary(){const s=document.getElementById('edSummary');if(!s)re
 const edOldCat=catOfRow;catOfRow=function(r){return CATALOG[r.sku]?.cat||edOldCat(r);};
 collectDraft=function(){const groups=[],map=new Map();let heading='';for(const r of rows){if(r.kind==='space'){heading=r.type||r.space||'未确定空间';if(!map.has(heading)){const group={name:heading,products:[]};map.set(heading,group);groups.push(group);}continue;}if(!(r.sku||r.type||r.qty||r.price))continue;const name=heading||r.space||'未确定空间';if(!map.has(name)){const group={name,products:[]};map.set(name,group);groups.push(group);}const qty=edNumber(r.qty)||0,price=edNumber(r.price)||0;map.get(name).products.push({name:productNameOf(r),cat:catOfRow(r),sku:r.sku||'',qty,price,amt:Math.round(qty*price*100)/100,type:r.type||''});}
  return {todoId:edContext.todoId||PARAMS.get('todo')||'',project:document.getElementById('edProject')?.value||'',customer:edContext.customer||'',name:document.getElementById('draftName').value.trim(),sm:document.getElementById('draftSm').value,tpl:document.getElementById('tplSelect').value,draftCode:currentDraftCode||'',rows:rows.map(r=>({...r})),spaces:groups};};
-loadDraft=function(d){if(!d)return;edContext={...d};currentDraftCode=d.draftCode||'';const tpl=document.getElementById('tplSelect');if(d.tpl&&![...tpl.options].some(x=>x.value===d.tpl))tpl.add(new Option(d.tpl,d.tpl));fillDraftMeta(d);document.getElementById('draftName').value=d.name||'新建空间报价';document.getElementById('edProject').value=d.project||'';document.getElementById('editorTitle').textContent=d.customer?'报价编辑 · '+d.customer:'线上报价编辑';document.getElementById('editorTitle').title=d.customer||'线上报价编辑';rows=padTemplate(d.rows?.length?d.rows.map(r=>Object.assign(emptyRow(r.space),r)):buildSpaceRows((d.spaces||[]).map(s=>typeof s==='string'?s:s.name)));undoStack=[];redoStack=[];sel={r:2,c:1};range={r1:2,c1:1,r2:2,c2:1};renumber();edLoadedSignature=edSignature();edSavedAt=d.draftCode&&d.rows?.length?'已恢复草稿':'';edTargetSpace='';document.getElementById('edLegacyNote').hidden=!d.emptyLegacy;computeColWidths();renderGrid();};
+loadDraft=function(d){if(!d)return;edContext={...d};currentDraftCode=d.draftCode||'';const tpl=document.getElementById('tplSelect');if(d.tpl&&![...tpl.options].some(x=>x.value===d.tpl))tpl.add(new Option(d.tpl,d.tpl));fillDraftMeta(d);document.getElementById('draftName').value=d.name||'新建空间报价';document.getElementById('edProject').value=d.project||'';document.getElementById('editorTitle').textContent=d.customer?'报价编辑 · '+d.customer:'线上报价编辑';document.getElementById('editorTitle').title=d.customer||'线上报价编辑';rows=padTemplate(d.rows?.length?d.rows.map(r=>Object.assign(emptyRow(r.space),r)):buildSpaceRows((d.spaces||[]).map(s=>typeof s==='string'?s:s.name)));undoStack=[];redoStack=[];sel={r:2,c:1};range={r1:2,c1:1,r2:2,c2:1};renumber();edLoadedSignature=edSignature();edSavedAt=d.draftCode&&d.rows?.length?'已恢复报价单':'';edTargetSpace='';document.getElementById('edLegacyNote').hidden=!d.emptyLegacy;computeColWidths();renderGrid();};
 function edValidate(){const list=rows.filter(r=>r.kind!=='space'&&(r.sku||r.type||r.price||r.qty));if(!list.length){toast('请先从右侧选品或填写至少一项产品');return false;}const missing=list.find(r=>!r.sku);if(missing){toast('请补充产品编码，或从右侧选品');return false;}const bad=list.find(r=>!(edNumber(r.qty)>0)||!Number.isFinite(edNumber(r.qty))||r.price===''||r.price==null||!Number.isFinite(edNumber(r.price))||edNumber(r.price)<0);if(bad){toast('请检查数量和单价：数量需大于0，单价不能为负数或空值');return false;}return true;}
 const edOldSave=saveDraft;saveDraft=function(){if(editing)commitEdit();if(!edValidate())return;edOldSave();};
-quickSave=function(){if(editing)commitEdit();const payload=collectDraft();if(!payload.name){toast('请先填写草稿名称');openSaveForm();return;}edPendingSignature=edSignature();if(parent!==window){document.getElementById('edSaveStatus').textContent='正在保存…';parent.postMessage({type:'pimsQuickSaved',...payload},'*');}else{try{localStorage.setItem('crm-standalone-draft-v2',JSON.stringify(payload));edLoadedSignature=edPendingSignature;edSavedAt=new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});edUpdateSummary();toast('草稿已保存到当前浏览器');}catch(e){toast('浏览器未允许保存，请保持当前页面打开');}}};
-confirmSaved=function(){if(!edValidate())return;const payload=collectDraft();if(!payload.name){toast('请填写草稿名称');document.getElementById('draftName').focus();return;}if(!payload.project){toast('请选择关联项目');document.getElementById('edProject').focus();return;}edPendingSignature=edSignature();if(parent!==window){closeSaveForm();parent.postMessage({type:'pimsDraftSaved',...payload},'*');}else{quickSave();closeSaveForm();}};
+quickSave=function(){if(editing)commitEdit();const payload=collectDraft();if(!payload.name){toast('请先填写报价单名称');openSaveForm();return;}edPendingSignature=edSignature();if(parent!==window){document.getElementById('edSaveStatus').textContent='正在保存…';parent.postMessage({type:'pimsQuickSaved',...payload},'*');}else{try{localStorage.setItem('crm-standalone-draft-v2',JSON.stringify(payload));edLoadedSignature=edPendingSignature;edSavedAt=new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});edUpdateSummary();toast('报价单已保存到当前浏览器');}catch(e){toast('浏览器未允许保存，请保持当前页面打开');}}};
+confirmSaved=function(){if(!edValidate())return;const payload=collectDraft();if(!payload.name){toast('请填写报价单名称');document.getElementById('draftName').focus();return;}if(!payload.project){toast('请选择关联项目');document.getElementById('edProject').focus();return;}edPendingSignature=edSignature();if(parent!==window){closeSaveForm();parent.postMessage({type:'pimsDraftSaved',...payload},'*');}else{quickSave();closeSaveForm();}};
 toggleSide=function(){const wide=document.getElementById('editor').classList.toggle('wide');document.getElementById('edToggleSide').textContent=wide?'展开选品':'收起选品';requestAnimationFrame(()=>{computeColWidths();renderGrid();});};
 const edOldDetail=renderDetail;renderDetail=function(){if(!detail)return;const p=productOf(detail.sku);if(p?.brand==='空间产品库'){detail.brand=catOfRow({sku:detail.sku});detail.sizes.forEach(x=>{if(x.label==='-')x.label='尺寸待项目确认';});detail.mats=detail.mats.map(x=>x==='默认'?'材质待确认':x);}edOldDetail();document.querySelector('.pd-body').insertAdjacentHTML('beforeend','<div class="ed-price-note">产品图为概念示意。侧栏新增沿用模板默认9折，可在表格中调整折扣、数量与单价。</div>');};
 const edOldOpenDetail=openProductDetail;openProductDetail=function(sku){edOldOpenDetail(sku);if(detail){detail.space=edTargetSpace||detail.space;renderDetail();}};
@@ -1742,13 +1742,13 @@ function edPreview(){if(editing)commitEdit();const d=collectDraft();document.get
 const edBar=document.querySelector('.actionbar');
 document.getElementById('editorTitle').outerHTML='<div class="ed-heading"><span class="ed-eyebrow">QUOTATION STUDIO / 报价工作台</span><span class="title" id="editorTitle">线上报价编辑</span></div>';
 document.querySelector('[onclick="toggleSide()"]').id='edToggleSide';
-document.querySelector('[onclick="quickSave()"]').textContent='保存草稿 · Ctrl+S';
+document.querySelector('[onclick="quickSave()"]').textContent='保存报价单 · Ctrl+S';
 document.querySelector('.actionbar [title="预览"]').setAttribute('onclick','edPreview()');
 document.querySelector('.actionbar .btn.green').textContent='提交报价';
 document.querySelector('.actionbar .btn.green').insertAdjacentHTML('beforebegin','<span class="ed-save-status" id="edSaveStatus">尚未保存</span>');
 document.querySelector('.ribbon').innerHTML='<button class="btn" onclick="undoEdit()" title="撤销 Ctrl+Z">↶ 撤销</button><button class="btn" onclick="redoEdit()" title="重做 Ctrl+Y">↷ 重做</button><i class="ed-separator"></i><button class="btn" onclick="insertRows(\'below\')">+ 插入行</button><button class="btn" onclick="insertSpaceRow()">+ 空间行</button><button class="btn" onclick="deleteSelRows()">删除行</button><button class="btn" onclick="clearSel()">清除内容</button>';
 document.querySelector('.ribbon').insertAdjacentHTML('beforeend','<button class="btn" id="edColumns" onclick="edToggleColumns()" style="margin-left:auto;color:#2b8dcd">完整字段</button>');
-document.querySelector('.ribbon').insertAdjacentHTML('beforebegin','<div class="ed-sheet-head"><b>空间报价明细</b><span>双击编辑 · Enter 换行 · 支持表格粘贴</span></div><div class="ed-legacy-note" id="edLegacyNote" hidden>此示例草稿未附带产品明细，可从右侧选品继续编辑。</div>');
+document.querySelector('.ribbon').insertAdjacentHTML('beforebegin','<div class="ed-sheet-head"><b>空间报价明细</b><span>双击编辑 · Enter 换行 · 支持表格粘贴</span></div><div class="ed-legacy-note" id="edLegacyNote" hidden>此示例报价单未附带产品明细，可从右侧选品继续编辑。</div>');
 document.querySelector('.sfoot').innerHTML='<button class="stab on" onclick="document.getElementById(\'gridwrap\').scrollTo({top:0,left:0,behavior:\'smooth\'})">报价单</button><div class="ed-summary" id="edSummary"></div>';
 document.getElementById('plistView').insertAdjacentHTML('afterbegin','<div class="ed-side-head"><strong>发现适合的产品</strong><small>PRODUCT LIBRARY</small></div>');
 document.querySelector('.psearch .row:nth-child(2) button:first-child').remove();
@@ -1758,7 +1758,7 @@ document.getElementById('tabAll').textContent='全部产品';document.getElement
 document.querySelector('.ptabs').insertAdjacentHTML('beforeend','<span class="ed-result-count" id="edResultCount"></span>');
 document.getElementById('ppager').insertAdjacentHTML('afterend','<div class="ed-side-note">侧栏新增默认9折 · 可在表格中调整 · 图片为概念示意</div>');
 document.querySelector('#saveMask .form').insertAdjacentHTML('beforeend',`<div style="grid-column:1/-1"><div class="k">关联项目</div><select id="edProject" style="width:100%;margin-top:5px"><option value="">请选择关联项目</option>${(ED_SHARED.projects||[]).map(p=>`<option value="${esc(p.code)}">${esc(p.name)} · ${esc(p.code)}</option>`).join('')}</select></div>`);
-document.querySelector('#saveMask .hint').textContent='提交后同步到项目报价总览。保存草稿可保留编辑进度，稍后从草稿列表继续。';
+document.querySelector('#saveMask .hint').textContent='提交后同步到项目报价总览。保存报价单可保留编辑进度，稍后从报价单列表继续。';
 document.getElementById('q').addEventListener('input',()=>{prodPage=1;renderProducts();});
 document.getElementById('draftName').addEventListener('input',edUpdateSummary);
 document.getElementById('tplSelect').addEventListener('change',edUpdateSummary);
@@ -1766,7 +1766,7 @@ document.getElementById('edNewSpace').addEventListener('keydown',e=>{if(e.key===
 document.addEventListener('click',e=>{const add=e.target.closest('[data-ed-add]');if(add){e.preventDefault();e.stopPropagation();addProduct(productOf(add.dataset.edAdd),{mode:'space',space:edTargetSpace||spaceNames()[0]});return;}const c=e.target.closest('[data-ed-cat]');if(c){cat=c.dataset.edCat;prodPage=1;similarFilter=[];renderCats();renderProducts();}},true);
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){const preview=document.getElementById('edPreview');if(preview){preview.remove();return;}if(detail)closeDetail();closeSaveForm();closeModal();}const card=e.target.closest('.pcard');if(card&&e.target===card&&(e.key==='Enter'||e.key===' ')){e.preventDefault();e.stopImmediatePropagation();openProductDetail(card.dataset.sku);}},true);
 document.addEventListener('keydown',e=>{if(!edCompact||!e.target.closest('#gridwrap'))return;const inCell=e.target.id==='cellEdit';if(inCell&&e.key==='Tab'){e.preventDefault();e.stopImmediatePropagation();const old={...sel};commitEdit();setSel(old.r,edNextCol(old.c,e.shiftKey?-1:1));renderGrid();focusGrid();}else if(!inCell&&(e.key==='ArrowLeft'||e.key==='ArrowRight'||e.key==='Tab')){e.preventDefault();e.stopImmediatePropagation();setSel(sel.r,edNextCol(sel.c,e.key==='ArrowLeft'||e.key==='Tab'&&e.shiftKey?-1:1),e.key!=='Tab'&&e.shiftKey);paintSel();}},true);
-window.addEventListener('message',e=>{if(e.source!==parent||!e.data)return;if(e.data.type==='pimsSaveAck'){currentDraftCode=e.data.draftCode||currentDraftCode;edLoadedSignature=edPendingSignature;edSavedAt=new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});edUpdateSummary();toast(e.data.durable?'草稿已保存，可从草稿列表继续编辑':'已保留在当前页面；浏览器未允许持久保存');}if(e.data.type==='pimsFavoritesSync'){favSkus.clear();(e.data.skus||[]).forEach(s=>favSkus.add(s));renderProducts();}});
+window.addEventListener('message',e=>{if(e.source!==parent||!e.data)return;if(e.data.type==='pimsSaveAck'){currentDraftCode=e.data.draftCode||currentDraftCode;edLoadedSignature=edPendingSignature;edSavedAt=new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});edUpdateSummary();toast(e.data.durable?'报价单已保存，可从报价单列表继续编辑':'已保留在当前页面；浏览器未允许持久保存');}if(e.data.type==='pimsFavoritesSync'){favSkus.clear();(e.data.skus||[]).forEach(s=>favSkus.add(s));renderProducts();}});
 loadDraft(window.__CRM_INITIAL||{});renderCats();renderProducts();
 
 /* Category ownership is shared with the parent workspace. */
@@ -1775,7 +1775,7 @@ function edV3Categories(){return [...new Set(rows.filter(r=>r.kind!=='space'&&(r
 function edV3OwnerMarkup(){const cats=edV3Categories();const box=document.getElementById('edV3Owners');if(!box)return;box.innerHTML=`<div style="font-size:12px;color:#7192aa;margin-bottom:9px">方案经理 · 按品类分配</div>${cats.length?cats.map(c=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 11px;border:1px solid #deebf5;background:#f7fbff;border-radius:7px;margin:6px 0;font-size:11px;color:#7897ad"><span>${esc(c)}</span><b style="font-weight:500;color:#477ea5">${esc(edV3Owners[c]||c+'负责人')}</b></div>`).join(''):'<span style="font-size:11px;color:#a1b0bc">添加产品后，按品类显示负责人。</span>'}`;}
 document.getElementById('draftSm').parentElement.hidden=true;
 document.querySelector('#saveMask .form').insertAdjacentHTML('beforeend','<div id="edV3Owners" style="grid-column:1/-1"></div>');
-document.querySelector('#saveMask .hint').textContent='提交后保存到草稿列表并同步报价总览。已确认的报价重新提交后，原确认失效，客户需要再次确认；仅保存不影响原确认。客户确认对应品类后，才完成草稿报价待办并生成订单待办。';
+document.querySelector('#saveMask .hint').textContent='提交后保存到报价单列表并同步报价总览。已确认的报价重新提交后，原确认失效，客户需要再次确认；仅保存不影响原确认。客户确认对应品类后，才完成报价单待办并生成订单待办。';
 const edV3Collect=collectDraft;
 collectDraft=function(){const d=edV3Collect();d.categoryManagers=Object.fromEntries(edV3Categories().map(c=>[c,edV3Owners[c]||c+'负责人']));d.sm=Object.values(d.categoryManagers).join(' / ');return d;};
 const edV3OpenSave=openSaveForm;openSaveForm=function(){edV3OwnerMarkup();return edV3OpenSave();};
@@ -1800,7 +1800,7 @@ document.getElementById('ed15NewProduct').addEventListener('click',()=>{if(editi
 document.querySelector('.ed-sheet-head b').textContent='WPS 模板 · 空间报价明细';
 document.querySelector('.ed-sheet-head span').textContent='双击编辑 · 从侧栏选品带入资料';
 document.querySelector('.ed-side-note').textContent='库内产品沿用模板折扣；在线新增产品按填写的参考价带入，可在表格核对调整。';
-document.querySelector('#saveMask .hint').textContent='提交后保留同一份草稿并同步报价总览，可直接查看客户预览。已确认报价重新提交后需客户再次确认；仅保存不影响原确认。';
+document.querySelector('#saveMask .hint').textContent='提交后保留同一份报价单并同步报价总览，可直接查看客户预览。已确认报价重新提交后需客户再次确认；仅保存不影响原确认。';
 const ed15ProductsBase=renderProducts;renderProducts=function(){ed15ProductsBase();document.querySelectorAll('#plist .pcard').forEach(card=>{const p=ED_SHARED.catalog.find(x=>x.sku===card.dataset.sku);if(p?.temporary){card.querySelector('.meta')?.insertAdjacentHTML('beforeend',`<div class="ed15-tag">${p.status==='ready'?'资料已完善':'待完善产品'} · ${esc(p.spec||'')}</div>`);}});};
 window.addEventListener('message',e=>{if(e.source!==parent||!e.data)return;if(e.data.type==='v15Catalog'){for(const p of e.data.products||[])ed15Register(p);renderCats();renderProducts();}if(e.data.type==='v15ProductCreated'){ed15Register(e.data.product);renderCats();renderProducts();addProduct(productOf(e.data.product.sku),{mode:'space',space:edTargetSpace||spaceNames()[0]});}});
 ed15RestoreRows();edLoadedSignature=edSignature();renderGrid();renderProducts();
@@ -1878,7 +1878,7 @@ edValidate=function(){e46Calculate();const list=rows.filter(e46Active);if(!list.
 const e46OldLoad=loadDraft;
 loadDraft=function(d){E46.template=PIMS46.find(d.templateId||d.tpl);E46.materials=e46Clone(d.materials||{material1:[],material2:[]});e46Columns();e46OldLoad(d);rows.forEach((r,i)=>{if(e46Active(r))e46Init(r,i+2,!r._pims);});renderGrid();edLoadedSignature=edSignature();edUpdateSummary();};
 const e46SignatureBase=edSignature;edSignature=function(){return e46SignatureBase()+JSON.stringify(E46.materials);};
-edPreview=function(){if(editing)commitEdit();const d=collectDraft(),titles=['空间','品类','产品名称','图片','产品编码','规格说明','单位','数量','报价单价（CNY）','小计（CNY）','报价状态','备注'],box=document.createElement('section');document.getElementById('edPreview')?.remove();box.id='edPreview';box.className='ed-preview';box.setAttribute('role','dialog');box.setAttribute('aria-modal','true');box.innerHTML=`<div class="ed-preview-head"><b>统一客户清单</b><div><button class="btn" onclick="window.print()">打印 / 保存 PDF</button><button class="btn" onclick="document.getElementById('edPreview').remove()">返回编辑</button></div></div><div class="e46-public-preview"><h1>${esc(d.name)}</h1><table><thead><tr>${titles.map(t=>'<th>'+t+'</th>').join('')}</tr></thead><tbody>${d.spaces.flatMap(s=>s.products.map(p=>{const u=p.publicQuote,quoted=u.amount!=null&&u.unitPrice!=null;return '<tr>'+[esc(s.name),esc(p.cat),esc(u.name),quoted?'<span class="e46-preview-art">'+prodArt({sku:p.sku,name:p.name})+'</span>':'—',quoted?esc(u.sku):'—',esc(u.specs.map(s=>s.label+': '+s.value).join(' · ')||'—'),esc(u.unit||'—'),esc(u.quantity??'—'),quoted?edMoney(u.unitPrice):'未报价',quoted?edMoney(u.amount):'未报价',quoted?'草稿待提交':'未报价',esc(u.remark||'—')].map(v=>'<td>'+v+'</td>').join('')+'</tr>';})).join('')}</tbody></table></div>`;document.body.appendChild(box);};
+edPreview=function(){if(editing)commitEdit();const d=collectDraft(),titles=['空间','品类','产品名称','图片','产品编码','规格说明','单位','数量','报价单价（CNY）','小计（CNY）','报价状态','备注'],box=document.createElement('section');document.getElementById('edPreview')?.remove();box.id='edPreview';box.className='ed-preview';box.setAttribute('role','dialog');box.setAttribute('aria-modal','true');box.innerHTML=`<div class="ed-preview-head"><b>统一客户清单</b><div><button class="btn" onclick="window.print()">打印 / 保存 PDF</button><button class="btn" onclick="document.getElementById('edPreview').remove()">返回编辑</button></div></div><div class="e46-public-preview"><h1>${esc(d.name)}</h1><table><thead><tr>${titles.map(t=>'<th>'+t+'</th>').join('')}</tr></thead><tbody>${d.spaces.flatMap(s=>s.products.map(p=>{const u=p.publicQuote,quoted=u.amount!=null&&u.unitPrice!=null;return '<tr>'+[esc(s.name),esc(p.cat),esc(u.name),quoted?'<span class="e46-preview-art">'+prodArt({sku:p.sku,name:p.name})+'</span>':'—',quoted?esc(u.sku):'—',esc(u.specs.map(s=>s.label+': '+s.value).join(' · ')||'—'),esc(u.unit||'—'),esc(u.quantity??'—'),quoted?edMoney(u.unitPrice):'未报价',quoted?edMoney(u.amount):'未报价',quoted?'报价单待提交':'未报价',esc(u.remark||'—')].map(v=>'<td>'+v+'</td>').join('')+'</tr>';})).join('')}</tbody></table></div>`;document.body.appendChild(box);};
 function e46Dialog(title,body,save){document.getElementById('e46Dialog')?.remove();const el=document.createElement('div');el.id='e46Dialog';el.className='e46-mask';el.innerHTML='<section role="dialog" aria-modal="true"><header><b>'+title+'</b><button class="btn" data-close>关闭</button></header>'+body+'<footer><button class="btn blue" data-save>保存</button></footer></section>';document.body.appendChild(el);el.addEventListener('click',e=>{if(e.target===el||e.target.closest('[data-close]'))el.remove();if(e.target.closest('[data-save]')&&save(el)!==false){el.remove();renderGrid();}});}
 function e46Materials(){e46Dialog('材料辅助表','<p>原文件汇总未附材料明细。填写名称、价格、单位后，模板按原 VLOOKUP 规则查价。</p>'+['material1','material2'].map((s,i)=>'<label>'+(i?'柜体材料':'柜门材料')+' · '+s+'</label><textarea data-sheet="'+s+'" placeholder="材料名称&#9;价格&#9;单位">'+esc((E46.materials[s]||[]).map(r=>r.join('\t')).join('\n'))+'</textarea>').join(''),el=>{const next={};for(const input of el.querySelectorAll('textarea')){const records=input.value.trim()?input.value.trim().split('\n').map(s=>s.split('\t')):[];if(records.some(r=>r.length!==3||!r[0]||PIMS46.numeric(r[1])==null||Number(r[1])<0||!r[2]))return toast('每行需填写名称、价格、单位，以制表符分隔'),false;if(new Set(records.map(r=>r[0].toLowerCase())).size!==records.length)return toast('材料名称不能重复'),false;next[input.dataset.sheet]=records.map(r=>[r[0],Number(r[1]),r[2]]);}pushHist();E46.materials=next;});}
 function e46Public(){e46Calculate();e46Dialog('对客金额','<p>电器空调原表没有金额列。请核定包含室内、室外机的本行对客金额；源表公式保持不变。</p>'+rows.map((r,i)=>e46Active(r)?'<label>'+esc(r.type||r.sku)+' · '+esc(r.space)+'</label><input type="number" min="0" step="0.01" data-amount="'+i+'" value="'+esc(r._pims.publicAmount??'')+'">':'').join(''),el=>{for(const inp of el.querySelectorAll('[data-amount]'))if(inp.value!==''&&(PIMS46.numeric(inp.value)==null||+inp.value<0))return toast('请输入有效金额'),false;pushHist();for(const inp of el.querySelectorAll('[data-amount]'))rows[+inp.dataset.amount]._pims.publicAmount=inp.value===''?'':Number(inp.value);});}
@@ -1930,7 +1930,7 @@ function e47Status(){const r=dataOf(sel.r),c=COLS[sel.c],el=document.getElementB
 const e47PaintBase=paintSel;paintSel=function(){e47PaintBase();e47Status();};
 const e47SummaryBase=edUpdateSummary;edUpdateSummary=function(){e47SummaryBase();const pending=rows.filter(r=>e46Active(r)&&r._pims?.pending?.length),sum=document.getElementById('edSummary');if(!sum||!pending.length)return;const r=pending[0],next=r._pims.pending[0];sum.insertAdjacentHTML('afterbegin',`<button class="e47-fix-link" onclick="e47GoMissing()">${pending.length} 行待计算 · 补充${esc(next.label)}</button>`);const label=sum.querySelector('em');if(label)label.textContent='已计算合计 CNY';}
 function e47GoMissing(){const r=rows.find(r=>e46Active(r)&&r._pims?.pending?.length);if(!r)return;const next=r._pims.pending[0];if(next.field==='publicAmount')return e46Public();const row=rows.indexOf(r)+2,col=COLS.findIndex(c=>c.field===next.field);if(col<0)return;setSel(row,col);renderGrid();document.querySelector(`#grid td[data-r="${row}"][data-c="${col}"]`)?.scrollIntoView({block:'nearest',inline:'center'});startEdit(row,col);}
-const e47ValidateBase=edValidate;edValidate=function(){e46Calculate();if(rows.some(r=>e46Active(r)&&r._pims?.pending?.length)){e47GoMissing();toast('请补齐计价参数后提交，草稿可先保存');return false;}return e47ValidateBase();};
+const e47ValidateBase=edValidate;edValidate=function(){e46Calculate();if(rows.some(r=>e46Active(r)&&r._pims?.pending?.length)){e47GoMissing();toast('请补齐计价参数后提交，报价单可先保存');return false;}return e47ValidateBase();};
 const e47LoadBase=loadDraft;loadDraft=function(d){editing=null;return e47LoadBase(d);};
 document.querySelector('.fx').insertAdjacentHTML('beforeend','<span class="e47-cell-state" id="e47CellState" role="status"></span>');
 renderGrid();edLoadedSignature=edSignature();edUpdateSummary();
@@ -2164,7 +2164,7 @@ function e63RichText(text){return esc(String(text||''));}
 function e63PreviewMedia(items,key,field){if(!items?.length)return '—';return `<button class="q63-picture" data-e63-gallery="${key}" data-field="${esc(field)}"><span class="q64-image-stage">${Q63_MEDIA.art(items[0],e63Art)}</span><small>${items.length} 张</small></button>`;}
 edPreview=function(){if(editing)commitEdit();const d=collectDraft(),box=document.createElement('section');document.getElementById('edPreview')?.remove();box.id='edPreview';box.className='ed-preview';box.setAttribute('role','dialog');box.setAttribute('aria-modal','true');box.setAttribute('aria-label','统一客户清单');E63_PREVIEW.clear();
  const list=d.spaces.flatMap(s=>s.products.map(p=>({...QUOTE63.imageContent(p.publicQuote),space:s.name,category:p.cat})));
- box.innerHTML=`<div class="ed-preview-head"><b>统一客户清单</b><div><button class="btn" data-e63-print>打印 / 保存 PDF</button><button class="btn" data-e63-return>返回编辑</button></div></div><div class="e46-public-preview"><h1>${esc(d.name)}</h1><table class="q63-table"><thead><tr>${QUOTE63.columns.map(c=>`<th data-col="${c[0]}">${c[2]}${['unitPrice','amount'].includes(c[0])?' (CNY)':''}</th>`).join('')}</tr></thead><tbody>${list.map((p,i)=>{E63_PREVIEW.set(String(i),p);const quoted=p.unitPrice!=null&&p.amount!=null,values=[i+1,esc(p.space),esc(p.category),esc(p.sku),esc(p.name),e63PreviewMedia(p.images,i,'mainImg'),p.specifications.map(s=>`<span><small>${esc(s.label)}</small> ${esc(s.value)}</span>`).join('')||'—',`<div class="q63-description"><p>${e63RichText(p.description)}</p><dl>${p.details.map(s=>'<div><dt>'+esc(s.label)+'</dt><dd>'+esc(s.value)+'</dd></div>').join('')}</dl>${p.attachments.map(a=>`<section class="q63-attachment"><strong>${esc(a.label)}</strong>${a.images?.length?e63PreviewMedia(a.images,i,a.field):''}</section>`).join('')}</div>`,esc(p.unit||'—'),esc(p.quantity??'—'),p.unitPrice==null?'未报价':edMoney(p.unitPrice),p.amount==null?'未报价':edMoney(p.amount),esc(p.cbm??'—'),esc(p.weight??'—'),quoted?'草稿待提交':'未报价',esc(p.remark||'—')];return '<tr>'+QUOTE63.columns.map((c,n)=>`<td class="q63-cell-${c[0]}" data-col="${c[0]}">${values[n]}</td>`).join('')+'</tr>';}).join('')}</tbody></table></div>`;
+ box.innerHTML=`<div class="ed-preview-head"><b>统一客户清单</b><div><button class="btn" data-e63-print>打印 / 保存 PDF</button><button class="btn" data-e63-return>返回编辑</button></div></div><div class="e46-public-preview"><h1>${esc(d.name)}</h1><table class="q63-table"><thead><tr>${QUOTE63.columns.map(c=>`<th data-col="${c[0]}">${c[2]}${['unitPrice','amount'].includes(c[0])?' (CNY)':''}</th>`).join('')}</tr></thead><tbody>${list.map((p,i)=>{E63_PREVIEW.set(String(i),p);const quoted=p.unitPrice!=null&&p.amount!=null,values=[i+1,esc(p.space),esc(p.category),esc(p.sku),esc(p.name),e63PreviewMedia(p.images,i,'mainImg'),p.specifications.map(s=>`<span><small>${esc(s.label)}</small> ${esc(s.value)}</span>`).join('')||'—',`<div class="q63-description"><p>${e63RichText(p.description)}</p><dl>${p.details.map(s=>'<div><dt>'+esc(s.label)+'</dt><dd>'+esc(s.value)+'</dd></div>').join('')}</dl>${p.attachments.map(a=>`<section class="q63-attachment"><strong>${esc(a.label)}</strong>${a.images?.length?e63PreviewMedia(a.images,i,a.field):''}</section>`).join('')}</div>`,esc(p.unit||'—'),esc(p.quantity??'—'),p.unitPrice==null?'未报价':edMoney(p.unitPrice),p.amount==null?'未报价':edMoney(p.amount),esc(p.cbm??'—'),esc(p.weight??'—'),quoted?'报价单待提交':'未报价',esc(p.remark||'—')];return '<tr>'+QUOTE63.columns.map((c,n)=>`<td class="q63-cell-${c[0]}" data-col="${c[0]}">${values[n]}</td>`).join('')+'</tr>';}).join('')}</tbody></table></div>`;
  box.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.hasAttribute('data-e63-return'))box.remove();if(b.hasAttribute('data-e63-print'))window.print();if(b.dataset.e63Gallery!=null){const p=E63_PREVIEW.get(b.dataset.e63Gallery),images=b.dataset.field==='mainImg'?p.images:p.attachments.find(a=>a.field===b.dataset.field)?.images;Q63_MEDIA.open(images,{title:p.name,lang:'zh',catalog:e63Art});}});document.body.appendChild(box);
 };
 renderGrid();edLoadedSignature=edSignature();edUpdateSummary();
