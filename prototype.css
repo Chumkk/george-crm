@@ -1872,3 +1872,17 @@ html[data-entry=client] .app,html[data-entry=client] .cq-close{display:none!impo
 #clientQuoteView #v50Sidebar #v55SidebarSummary .cs215-summary .v30-confirmed-total{grid-row:3!important}
 #clientQuoteView #v50Sidebar #v55SidebarSummary .cs215-summary .v28-space-stats{grid-row:4!important}
 #clientQuoteView #v50Sidebar.cqu211-panel .v50-category-list>button.cqu213-category{min-height:55px!important;padding:8px 12px!important;row-gap:3px!important}
+
+/* Keep the current quotation controls usable on phones after the sidebar merge. */
+@media screen and (max-width:850px){
+ #clientQuoteView.cxp209-quotation{--cs219-header:124px}
+ #clientQuoteView.cxp209-quotation .v50-workspace.cql128-workspace{height:calc(100dvh - var(--cs219-header))!important;overflow-x:hidden!important;overflow-y:auto!important;align-items:stretch;overscroll-behavior-y:contain}
+ #clientQuoteView.cxp209-quotation .v50-workspace>.v28-client-layout{flex:0 0 auto!important;height:70dvh!important;min-height:420px!important;width:100%;box-sizing:border-box;overflow:hidden}
+ #clientQuoteView #v50Sidebar.cqu211-panel{flex:none;min-height:0;overflow:hidden}
+ #clientQuoteView #v50Sidebar.cqu211-panel .v58-mobile-filter{display:none!important}
+ #clientQuoteView #v50Sidebar.cqu211-panel #v55SidebarSummary{min-height:0;max-height:none;flex:none}
+ #clientQuoteView #v50Sidebar.cqu211-panel .v50-category-list{height:180px;max-height:180px!important;min-height:112px!important;flex:none!important;overflow-y:auto;overscroll-behavior-y:contain}
+ #clientQuoteView #v50Sidebar.cqu211-panel>footer.v31-approval-dock{display:block!important;position:static!important;flex:none;height:auto!important;margin:0!important}
+ #clientQuoteView #v50Sidebar.cqu211-panel>footer.v31-approval-dock .v28-approval-title{display:flex!important}
+}
+@media screen and (max-width:650px){#clientQuoteView.cxp209-quotation{--cs219-header:110px}}
