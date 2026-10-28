@@ -1924,3 +1924,19 @@ html[data-entry=client] .app,html[data-entry=client] .cq-close{display:none!impo
 .pw222-drag:hover,.pw222-drag:focus-visible{background:#eaf3fa;color:#2479a9;outline:2px solid #b6d7eb;outline-offset:1px}
 .pw173-space.pw222-dragging{background:#edf6fc;outline:1px solid #bddcee;border-radius:6px}.pw222-dragging .pw222-drag{cursor:grabbing}
 @media(max-width:650px){#clientQuoteView .v28-client-bar .cxp-tabs{gap:30px}#clientQuoteView .v28-client-bar .cxp-tabs button{min-width:0;padding:9px 2px}#pw173Spaces .pw173-space{grid-template-columns:28px minmax(0,1fr) auto;gap:8px}#pw173Spaces .pw173-space>span{display:none}}
+
+/* A continuous, softly lit blue-grey surface with a clear category selection. */
+#clientQuoteView #v50Sidebar.cqu211-panel{background:radial-gradient(ellipse at 0 0,rgba(255,255,255,.78),transparent 70%),linear-gradient(115deg,#e4edf4 0%,#edf4f8 48%,#dce9f2 100%)!important}
+#clientQuoteView #v50Sidebar.cqu211-panel>.q66-sidebar-tools,
+#clientQuoteView #v50Sidebar.cqu211-panel>.bs131-batch,
+#clientQuoteView #v50Sidebar.cqu211-panel #v55SidebarSummary{background:transparent!important}
+#clientQuoteView #v50Sidebar.cqu211-panel>#v66CategoryHeader,
+#clientQuoteView #v50Sidebar.cqu211-panel>.v50-category-list,
+#clientQuoteView #v50Sidebar.cqu211-panel>.v31-approval-dock{background:#fff!important}
+#clientQuoteView #v50Sidebar.cqu211-panel #v55SidebarSummary{box-shadow:inset 0 -1px rgba(122,158,183,.13)}
+#clientQuoteView #v50Sidebar.cqu211-panel .v50-category-list>button.cqu213-category{transition:background .18s ease,border-color .18s ease,box-shadow .18s ease}
+#clientQuoteView #v50Sidebar.cqu211-panel .v50-category-list>button.cqu213-category:not(.on):hover{background:#f4f8fb!important;border-color:#e2ebf1!important}
+#clientQuoteView #v50Sidebar.cqu211-panel .v50-category-list>button.cqu213-category.on{background:linear-gradient(105deg,#deedf8,#f0f7fc)!important;border-color:#8bb6d2!important;border-radius:8px;box-shadow:inset 3px 0 #267cae,0 2px 6px rgba(38,90,124,.08)!important}
+#clientQuoteView #v50Sidebar .cqu213-category.on .v50-category-name{font-weight:600;color:#1f6087}
+#clientQuoteView #v50Sidebar .cqu213-category.on>.cqu213-category-amount{font-weight:700;color:#205d81}
+@media(prefers-reduced-motion:reduce){#clientQuoteView #v50Sidebar.cqu211-panel .v50-category-list>button.cqu213-category{transition:none}}
