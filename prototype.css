@@ -2021,3 +2021,20 @@ html[data-entry=client] .app,html[data-entry=client] .cq-close{display:none!impo
 #clientQuoteView #v50Sidebar.cqu211-panel .qd225-filter-grid .v50-category-list,#clientQuoteView #v50Sidebar.cqu211-panel .qd225-filter-grid .qd225-space-list{flex:1 1 0!important;height:auto!important;min-height:0!important;max-height:none!important}
 #clientQuoteView #v50Sidebar.cqu211-panel .qd225-filter-grid .v50-category-list>button[hidden]{display:none!important}
 #clientQuoteView #v50Sidebar.cqu211-panel .qd227-heading-scope{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px;color:#6d8ba2}#clientQuoteView #v50Sidebar.cqu211-panel .qd227-heading-scope:empty{display:none}
+
+/* Distinct selectable cards and readable collapsed selection headings. */
+#clientQuoteView #v50Sidebar.cqu211-panel .qd225-filter-grid nav{background:#edf3f8;padding:5px 8px 8px!important}
+#clientQuoteView #v50Sidebar.cqu211-panel .qd225-filter-grid .v50-category-list>button.cqu213-category,
+#clientQuoteView #v50Sidebar.cqu211-panel .qd225-filter-grid .qd225-space-list>button{margin:0 0 5px!important;border:1px solid #e2eaf1!important;background:#fff!important;box-shadow:0 1px 2px #214b6b04!important;border-radius:6px!important;transition:background .15s,border-color .15s}
+#clientQuoteView #v50Sidebar.cqu211-panel .qd225-filter-grid .v50-category-list>button.cqu213-category:hover,
+#clientQuoteView #v50Sidebar.cqu211-panel .qd225-filter-grid .qd225-space-list>button:hover{background:#f7fbff!important;border-color:#bfd5e6!important}
+#clientQuoteView #v50Sidebar.cqu211-panel .qd225-filter-grid .v50-category-list>button.cqu213-category.on,
+#clientQuoteView #v50Sidebar.cqu211-panel .qd225-filter-grid .qd225-space-list>button.on{background:#eaf4fe!important;border-color:#8ebde1!important;box-shadow:inset 3px 0 #2d83bd!important}
+#clientQuoteView #v50Sidebar.cqu211-panel .qd225-filter-grid button:focus-visible{outline:2px solid #398bc1;outline-offset:-2px}
+#clientQuoteView #v50Sidebar.cqu211-panel .qd227-heading b{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#clientQuoteView #v50Sidebar.cqu211-panel .qd226-collapsed{flex-basis:40px!important}
+#clientQuoteView #v50Sidebar.cqu211-panel .qd226-collapsed .qd227-heading-count{display:none}
+#clientQuoteView #v50Sidebar.cqu211-panel .qd226-collapsed .qd227-heading b{font-weight:600;color:#245978}
+#clientQuoteView #v50Sidebar.cqu211-panel .qd226-collapsed .qd226-column-title{visibility:hidden}
+#clientQuoteView #v50Sidebar.cqu211-panel .qd225-filter-grid .qd226-collapsed nav[hidden]{display:none!important}
+@media(prefers-reduced-motion:reduce){#clientQuoteView #v50Sidebar.cqu211-panel .qd225-filter-grid nav>button{transition:none}}
