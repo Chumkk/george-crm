@@ -2055,3 +2055,9 @@ html[data-entry=client] .app,html[data-entry=client] .cq-close{display:none!impo
 
 /* Manual fallback only when direct quotation-link copying is denied. */
 .qd230-manual-copy{box-sizing:border-box;width:100%;height:220px;padding:14px;resize:vertical;border:1px solid #d7e4ef;border-radius:7px;font:12px/1.8 inherit;color:#365873;overflow-wrap:anywhere}
+
+/* Collapse the complete quotation sidebar, including the newer option groups. */
+#clientQuoteView .v50-workspace.cql128-workspace.q66-sidebar-collapsed #v50Sidebar.cqu211-panel>:not(.q66-sidebar-tools){display:none!important}
+#clientQuoteView .v50-workspace.cql128-workspace.q66-sidebar-collapsed #v50Sidebar.cqu211-panel{align-self:start;justify-self:end;width:44px!important;min-width:44px!important;max-width:44px!important;height:44px!important;min-height:44px!important;max-height:44px!important;overflow:hidden;border-radius:8px}
+#clientQuoteView .v50-workspace.cql128-workspace.q66-sidebar-collapsed #v50Sidebar.cqu211-panel>.q66-sidebar-tools{display:flex!important;height:42px;min-height:42px;justify-content:center;padding:6px!important}
+@media(min-width:851px){#clientQuoteView.cxp209-quotation>.v50-workspace.cql128-workspace{column-gap:12px!important}#clientQuoteView.cxp209-quotation>.v50-workspace.cql143-quote-only>.v28-client-layout{scrollbar-gutter:auto}}
