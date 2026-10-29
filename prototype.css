@@ -2038,3 +2038,17 @@ html[data-entry=client] .app,html[data-entry=client] .cq-close{display:none!impo
 #clientQuoteView #v50Sidebar.cqu211-panel .qd226-collapsed .qd226-column-title{visibility:hidden}
 #clientQuoteView #v50Sidebar.cqu211-panel .qd225-filter-grid .qd226-collapsed nav[hidden]{display:none!important}
 @media(prefers-reduced-motion:reduce){#clientQuoteView #v50Sidebar.cqu211-panel .qd225-filter-grid nav>button{transition:none}}
+
+/* Quotation link actions and copy-friendly sharing card. */
+.qd229-link-actions{display:inline-flex;align-items:center;gap:8px;padding-left:14px;margin-left:4px;border-left:1px solid #dce6ee}
+.qd229-share-card{max-width:560px;margin:8px auto;background:#fff;border:1px solid #dfE8f0;border-radius:12px;padding:26px 28px;box-shadow:0 5px 22px #163e6107}
+.qd229-share-type{display:block;font-size:10px;letter-spacing:1.8px;color:#7591a7;font-weight:600}
+.qd229-share-card h3{margin:12px 0 8px!important;font-size:20px!important;line-height:1.5;color:#234a67}
+.qd229-share-card p{font-size:12px;line-height:1.8;color:#728698;margin:0 0 20px}
+.qd229-share-open{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border:1px solid #cfe0ed;border-radius:7px;background:#f1f7fc;font-size:14px;font-weight:600;color:#24618f;text-decoration:none}
+.qd229-share-password{display:flex!important;align-items:center;justify-content:space-between;gap:16px;padding:18px 0;font-size:12px;color:#71879a}
+.qd229-share-password input{width:190px!important;max-width:65%;letter-spacing:1.5px;font-size:14px;font-weight:600;text-align:center;background:#fafcfe!important;border-color:#dce6ef!important}
+.qd229-share-card details{margin-top:20px;border-top:1px solid #edf1f5;padding-top:13px}
+.qd229-share-card summary{font-size:11px;color:#8296a5;cursor:pointer}
+.qd229-share-card textarea{display:block;width:100%;box-sizing:border-box;height:92px;margin-top:12px;padding:10px;font:11px/1.6 monospace;color:#5f7687;border:1px solid #dce6ee;border-radius:6px;resize:vertical;overflow-wrap:anywhere}
+@media(max-width:700px){.qd229-link-actions{padding-left:0;margin-left:0;border:0;flex-wrap:wrap}.qd229-share-card{padding:20px 18px}.qd229-share-card h3{font-size:17px!important}}
