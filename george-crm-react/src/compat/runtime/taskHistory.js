@@ -14,6 +14,7 @@ function th192Evidence(t){
  const events=[],add=(kind,key,data)=>events.push(th192Event(t,kind,key,{legacy:true,...data}));
  for(const r of t.reminders||[])add('reminded','reminder:'+(r.messageId||r.at+':'+r.by),{at:r.at,actor:r.by,toOwner:r.to,detail:'催办当前负责人；通知结果与业务处理结果分别记录'});
  for(const r of t.ownerHistory||[])add('transferred','owner:'+JSON.stringify([r.time,r.from,r.to,r.actor]),{at:r.time,actor:r.actor,fromOwner:r.from,toOwner:r.to,reason:r.reason||''});
+ for(const r of t.quoteAssistHistory||[])add('quote-assistant','quote-assistant:'+r.revision,{at:r.time,actor:r.actor,title:r.to?'安排报价助理':'取消报价助理',toOwner:r.to,changes:[{label:'报价助理',before:r.from||'未安排',after:r.to||'未安排'}]});
  for(const r of t.initiatorHistory||[])add('initiator','initiator:'+JSON.stringify([r.time,r.from,r.to,r.by]),{at:r.time,actor:r.by,detail:(r.from||'未记录')+' → '+(r.to||'未记录'),reason:r.reason||''});
  for(const r of t.editHistory||[]){
   const resubmit=r.fromStatus==='已驳回';

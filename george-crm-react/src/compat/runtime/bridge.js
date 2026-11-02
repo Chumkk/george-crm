@@ -31,7 +31,7 @@
     }
     const visible = visibleTodos();
     if (taskRelation.value === "responsible")
-      return visible.filter((t) => t.owner === owner || t.type === "设计确认待办" && t.coordination?.mode === "pm" && t.coordination.person === owner);
+      return visible.filter((t) => t.owner === owner || (typeof qaAssistant === "function" && qaAssistant(t)) || t.type === "设计确认待办" && t.coordination?.mode === "pm" && t.coordination.person === owner);
     if (taskRelation.value === "initiated")
       return visible.filter((t) => t.initiator === owner);
     const scoped = v21Rows();

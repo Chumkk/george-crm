@@ -54872,7 +54872,7 @@ openPage('projects');
 // The customer preview opens once, after all layout and locale modules are ready.
 
 /* Shared catalogue and connected workspaces. No external editor dependency. */
-const WK_EDITOR_URL='./quote-editor-0486413717de.html';
+const WK_EDITOR_URL='./quote-editor-ff4bb732e032.html';
 let wkEditorTemplatePromise;
 function wkLoadEditorTemplate(){
  if(wkEditorTemplatePromise)return wkEditorTemplatePromise;
@@ -56639,7 +56639,7 @@ const v29Jump=skyJump;
 skyJump=function(id){if(id==='skyQuoteDetails'){V29_CLIENT.list=true;skyRenderStage();v28RefreshPanel();return;}if(id==='skyProducts'&&V29_CLIENT.list){document.getElementById('skyConfirmButton')?.focus({preventScroll:true});return;}return v29Jump(id);};
 function v29SetView(view){V29_CLIENT.list=view==='list';if(!V29_CLIENT.list)SKY.mode=view;const tools=document.querySelector('#skyStudio .sky-stage-tools');if(tools)tools.className='sky-stage-tools v10-plan-controls';if(V29_CLIENT.list)document.querySelector('#skyStudio')?.classList.remove('sky-focus-stage');skyRenderStage();v28RefreshPanel();}
 document.addEventListener('keydown',e=>{const tab=e.target.closest?.('.v32-view-tabs [role="tab"]');if(!tab||!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const tabs=[...tab.parentElement.querySelectorAll('[role="tab"]')],index=tabs.indexOf(tab),next=e.key==='Home'?0:e.key==='End'?tabs.length-1:(index+(e.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;v29SetView(tabs[next].dataset.v32View);tabs[next].focus({preventScroll:true});});
-window.addEventListener('click',e=>{const button=e.target.closest?.('[data-sky="mode"]');if(button&&document.querySelector('#clientQuoteView.on')){e.preventDefault();e.stopImmediatePropagation();v29SetView(button.dataset.mode);return;}const action=e.target.closest?.('[data-v29]');if(action?.dataset.v29==='list'){e.preventDefault();e.stopImmediatePropagation();v29SetView('list');return;}const cat=e.target.closest?.('[data-v29-category]');if(cat){e.preventDefault();e.stopImmediatePropagation();v29ChooseCategory(cat.dataset.v29Category);}if(action?.dataset.v29==='clear'){v39ClearPlanFeedback();V36_SPACE.room='all';QUOTE_UI.clientSpace='all';QUOTE_UI.clientCat='全部品类';SKY.search='';v28RefreshPanel();v28SyncSpace();}if(action?.dataset.v29==='clearSearch'){SKY.search='';const input=document.getElementById('skyProductSearch');if(input){input.value='';input.focus();}skyFilterProducts();}},true);
+window.addEventListener('click',e=>{const button=e.target.closest?.('[data-sky="mode"]');if(button&&document.querySelector('#clientQuoteView.on')){e.preventDefault();e.stopImmediatePropagation();v29SetView(button.dataset.mode);return;}const action=e.target.closest?.('[data-v29]');if(action?.dataset.v29==='list'){e.preventDefault();e.stopImmediatePropagation();v29SetView('list');return;}const cat=e.target.closest?.('[data-v29-category]');if(cat){e.preventDefault();e.stopImmediatePropagation();v29ChooseCategory(cat.closest('.qd225-filter-grid')&&cat.dataset.v29Category===QUOTE_UI.clientCat?'全部品类':cat.dataset.v29Category);}if(action?.dataset.v29==='clear'){v39ClearPlanFeedback();V36_SPACE.room='all';QUOTE_UI.clientSpace='all';QUOTE_UI.clientCat='全部品类';SKY.search='';v28RefreshPanel();v28SyncSpace();}if(action?.dataset.v29==='clearSearch'){SKY.search='';const input=document.getElementById('skyProductSearch');if(input){input.value='';input.focus();}skyFilterProducts();}},true);
 if(V3.client&&clientQuoteOpen()){V29_CLIENT.project=archiveProject;V29_CLIENT.list=location.hash==='#quote';openClientQuoteView();}
 
 /* Customer requirements can enter project creation without a design task. */
@@ -57474,7 +57474,8 @@ document.addEventListener('change',e=>{if(e.target.id!=='v49Language'||!V49_LANG
 if(clientQuoteOpen())openClientQuoteView();
 
 /* Desktop preview: persistent categories, spacious visual stage, then quotation. */
-const v55SidebarSummaryHtml=v29Summary;
+const v55SidebarBaseSummary=v29Summary;
+function v55SidebarSummaryHtml(d){return typeof cs212Summary==='function'&&cxp208Enabled()?cs212Summary(d):v55SidebarBaseSummary(d);}
 v29Summary=function(){return '';};
 v29CategoryBar=function(){
  const d=v29Data(),cats=v29CategoryNames(d.quotes);

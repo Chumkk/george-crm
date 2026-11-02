@@ -78,6 +78,7 @@ function TaskRow({ task, api, onHistory }) {
       </div>
       <div className="rx-task-owner">
         <strong>待办人 · {task.owner || "未记录"}</strong>
+        {task.businessInfo?.workflow?.assistant && <span>报价助理 · {task.businessInfo.workflow.assistant}</span>}
         {task.type === "设计确认待办" && task.coordination?.mode !== "self" && (task.coordination?.person || task.coordination?.gdsPerson || task.coordination?.mode === "designer") && <span>协调员 · {task.coordination.person || task.coordination.gdsPerson || "GDS 安排"}</span>}
         <span>发起人 · {task.meta.initiator || task.initiator || "—"}</span>
       </div>
@@ -123,6 +124,7 @@ function TaskRow({ task, api, onHistory }) {
         )}
       </div>
       <div className="rx-task-timing">
+        {task.businessInfo?.workflow && <div className="rx-quote-workflow"><span>ERP状态 · {task.businessInfo.workflow.erpStatus}{task.businessInfo.workflow.erpRequest && task.businessInfo.workflow.erpRequest !== task.businessInfo.workflow.erpStatus ? ` · ${task.businessInfo.workflow.erpRequest}` : ""}</span><span>{task.businessInfo.workflow.lockReason || (task.businessInfo.workflow.workingSaved && task.businessInfo.workflow.publishedRevision ? `有未提交修改 · 上次发布第 ${task.businessInfo.workflow.publishedRevision} 版 · 客户${task.businessInfo.workflow.customerStatus}` : "")}</span></div>}
         <div><span>到达时间 · {task.arrival || "未记录"}</span>{!task.timing?.closed && <span>停留时间 · {task.timing?.duration || (task.stayLabel || "未记录").replace(/^(已停留|处理用时|用时)\s*/, "")}</span>}</div>
         {task.timing?.closed && <div><span>{task.timing.handledLabel} · {taskTimeStamp(task.timing.handledAt)}</span><span>响应用时 · {task.timing.duration}</span></div>}
         {task.followup?.deadline && <div><span>期望完成时间 · {task.followup.deadline.date ? task.followup.deadline.date + " 23:59" : "未设置"}</span><span className={task.followup.deadline.overdue ? "rx-task-overdue-duration" : ""}>{task.followup.deadline.overdue ? "逾期时间 · " + task.followup.deadline.overdueLabel.replace(/^已逾期\s*/, "") : ""}</span></div>}

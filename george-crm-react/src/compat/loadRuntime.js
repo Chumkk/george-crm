@@ -5,6 +5,7 @@ export function loadRuntime() {
   if (pending) return pending;
   pending = (async () => {
     window.__CRM_REACT_BOOTING__ = true;
+    window.__CRM_SHARE_ENTRY__ = location.href;
     const host = document.createElement("div");
     host.id = "crm-runtime-host";
     host.innerHTML = scaffold;
@@ -24,8 +25,9 @@ export function loadRuntime() {
         status.replaceChildren(message, button);
       },
     });
-    await loadOrderedScripts(document, ["startup", "policy", "crm", "workflows", "quoteRevision", "projectQuoteList", "customerQuoteLayout", "orderRevision", "customerHub", "todoDemoFill", "allocationBatch", "projectFormProgress", "customerIntake", "businessSync", "designWorkflow", "opportunityQuotes", "managementWorkflow", "progressTracking", "taskFollowup", "taskMonitoringDemo", "todoDrawers", "designQuotation", "expenseWorkflow", "managementMonitoring", "designGds", "procurementWorkflow", "unifiedAllocation", "designOrderDelivery", "designScenario", "acceptanceEditing", "taskHistory", "bridge"]
+    await loadOrderedScripts(document, ["startup", "policy", "crm", "workflows", "quoteRevision", "projectQuoteList", "customerQuoteLayout", "orderRevision", "customerHub", "todoDemoFill", "allocationBatch", "projectFormProgress", "customerIntake", "businessSync", "designWorkflow", "opportunityQuotes", "managementWorkflow", "progressTracking", "taskFollowup", "taskMonitoringDemo", "todoDrawers", "designQuotation", "expenseWorkflow", "managementMonitoring", "designGds", "procurementWorkflow", "unifiedAllocation", "designOrderDelivery", "designScenario", "acceptanceEditing", "taskHistory", "clientProposalData", "clientProposal", "clientPreviewCalendar", "clientQuoteDemoHistory", "clientQuoteUpdates", "clientShare", "quotationDelivery", "quoteAssistance", "departmentQuotes", "bridge"]
       .map((name) => `${import.meta.env.BASE_URL}${__CRM_ENGINE_ASSETS__[name]}`));
+    if (window.cs212Initialize) await window.cs212Initialize();
     if (!window.GeorgeRuntime) throw Error("业务模块未能启动");
     return window.GeorgeRuntime;
   })();

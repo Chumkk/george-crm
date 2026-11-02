@@ -1481,3 +1481,5 @@ html[data-frontend="react"] .m-body select:focus {
 .rx-task-nav button small.rx-task-count.has-count{background:#f34e57;color:#fff;font-weight:600;}
 .rx-task-nav button span:not(.rx-icon){white-space:nowrap;}
 @media(min-width:1000px){.rx-todo-layout{grid-template-columns:208px minmax(0,1fr);}.rx-task-nav{max-height:calc(100vh - 326px);}}
+/* The editor helper is a compact row inside a column layout. */
+.wk-editor-loader > .todo-demo-fill { flex: 0 0 auto; width: 100%; }

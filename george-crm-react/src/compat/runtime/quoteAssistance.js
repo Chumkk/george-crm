@@ -1,0 +1,88 @@
+/* Quotation assistance uses the original task and quotation identities. */
+function qaProductTask(task) {
+ const opp=task&&oqOpp(task.opp);
+ return !!task&&task.type==='报价待办'&&!!opp&&opp[20]?.kind!=='design'&&task.project===opp[4]&&task.owner===opp[7]&&!['已取消','已驳回'].includes(task.status)&&crmTodoEnabled(task);
+}
+function qaTask(opp,code='') {
+ return opp&&TODOS.find(t=>qaProductTask(t)&&t.opp===opp[0]&&(!code||t.draft===code||t.drafts?.includes(code)));
+}
+function qaAssistant(task,actor=v17Owner()) {
+ return qaProductTask(task)&&task.quoteAssistant===actor&&task.quoteAssistantOwner===task.owner;
+}
+const qaOperateBase=v21CanOperate;
+v21CanOperate=function(task){return qaOperateBase(task)||qaAssistant(task);};
+const qaQuoteBase=oqCanQuote;
+oqCanQuote=function(opp){return qaQuoteBase(opp)||!!opp&&mgOpportunityState(opp)!=='已输单'&&qaAssistant(qaTask(opp));};
+const qaRowsBase=v21Rows;
+v21Rows=function(){const rows=qaRowsBase();if(V21.view==='team'||V21.view===v17Owner())for(const t of visibleTodos())if(qaAssistant(t)&&!rows.some(row=>row.id===t.id))rows.push(t);return rows;};
+const qaFlowBase=v21FlowAllowed;
+v21FlowAllowed=function(task){return qaFlowBase(task)||qaAssistant(task);};
+function qaPeople(){
+ return [...new Set([...(typeof V68_SMS!=='undefined'?V68_SMS.map(p=>p.name):[]),...(typeof PMS!=='undefined'?PMS:[]),...(typeof DESIGNERS!=='undefined'?DESIGNERS:[]),...TODOS.map(t=>t.owner),'助理A','助理B'].filter(Boolean))].sort((a,b)=>a.localeCompare(b,'zh-CN'));
+}
+function qaCanAssign(task){return qaProductTask(task)&&task.status==='待处理'&&qaOperateBase({owner:task.owner})&&mgOpportunityState(oqOpp(task.opp))!=='已输单';}
+function qaAssertFresh(code){
+ const opp=oqQuoteOpp(code),task=qaTask(opp,code);
+ qaAssertTaskFresh(task);
+}
+function qaAssertTaskFresh(task){
+ if(!task||typeof tfStoredTasks!=='function')return;
+ const stored=tfStoredTasks(true).find(t=>t.id===task.id&&t.project===task.project&&t.opp===task.opp);
+ if(stored&&((stored.quoteAssistRevision||0)!==(task.quoteAssistRevision||0)||stored.owner!==task.owner||(stored.quoteAssistant||'')!==(task.quoteAssistant||'')||(stored.quoteAssistantOwner||'')!==(task.quoteAssistantOwner||'')))throw Error('报价助理授权或负责人已更新，请刷新后重新办理；当前输入仍保留在编辑页');
+}
+function qaSetAssistant(id,person,revision){
+ const task=TODOS.find(t=>t.id===id);
+ if(!qaCanAssign(task))throw Error('请由当前 SM 在待处理的产品报价待办上安排助理');
+ if((task.quoteAssistRevision||0)!==revision)throw Error('助理安排已更新，请重新打开');
+ if(person&&(person===task.owner||!qaPeople().includes(person)))throw Error('请选择其他有效人员协助报价');
+ if(task.quoteAssistant===person&&(!person||task.quoteAssistantOwner===task.owner))return task;
+ qaAssertTaskFresh(task);
+ return bs131Atomic(()=>{
+  const before=task.quoteAssistant||'',at=new Date().toISOString(),actor=v17Owner();
+  task.quoteAssistant=person;task.quoteAssistantOwner=person?task.owner:'';task.quoteAssistRevision=(task.quoteAssistRevision||0)+1;
+  task.quoteAssistHistory=[...(task.quoteAssistHistory||[]),{revision:task.quoteAssistRevision,from:before,to:person,owner:task.owner,actor,time:at}];
+  return task;
+ });
+}
+function qaOpenAssistant(id){
+ const t=TODOS.find(t=>t.id===id);if(!qaCanAssign(t))return toast('当前待办不能安排报价助理');
+ v68Modal('助理报价',`<div class="v68-project-head"><strong>${esc(findProject(t.project)?.[1]||t.project)}</strong><span>${esc(t.cat||t.smDept||'')}</span></div><p>商机负责人：${esc(t.owner)}</p><label class="v68-field">报价助理<input id="qaPerson" list="qaPeople" value="${esc(t.quoteAssistantOwner===t.owner?t.quoteAssistant||'':'')}" placeholder="搜索并选择人员" autocomplete="off"><datalist id="qaPeople">${qaPeople().filter(p=>p!==t.owner).map(p=>`<option value="${esc(p)}"></option>`).join('')}</datalist></label><p>助理可编辑、保存和提交本待办的报价。提交会发布报价、记录 ERP 请求并完成同一待办；负责人仍为 SM，操作记录保留实际办理人。清空人员并保存可取消协助。</p>`,`<button class="btn default" data-act="closeModal">取消</button><button class="btn" data-act="qaSaveAssistant" data-id="${esc(id)}" data-revision="${t.quoteAssistRevision||0}">保存</button>`);
+}
+function qaQuoteInfo(task){
+ if(task?.type!=='报价待办')return null;
+ const opp=oqOpp(task.opp),codes=[task.draft,...(task.drafts||[])].filter(Boolean);
+ const code=codes.find(c=>oqQuoteOpp(c)?.[0]===task.opp&&oqOrder(c)?.[15]===task.project&&!oqOrder(c)?.[18]?.legacyQuoteArchive)||Object.keys(DRAFT_DATA).find(c=>oqQuoteOpp(c)?.[0]===task.opp&&oqOrder(c)?.[15]===task.project&&!oqOrder(c)?.[18]?.legacyQuoteArchive)||'';
+ const order=code&&oqOrder(code),m=code&&V3.meta[code];
+ return {code,status:code?oqStatus(code):'待报价',erpStatus:order?order[3]||'未记录':'尚未创建订单',erpRequest:order?.[18]?.erpState||'',lockReason:code?oqLockReason(code):'',assistant:qaProductTask(task)&&task.quoteAssistantOwner===task.owner?task.quoteAssistant||'':'',workingSaved:!!m?.workingSaved,publishedRevision:m?.revision||0,customerStatus:m?.submitted?m.needsSpaceUpdate?'待更新，需重新确认':m.categories?.length&&m.categories.every(c=>m.confirmedCats?.includes(c))?'已确认':'未确认':'尚未发布'};
+}
+const qaBusinessInfoBase=mgTaskBusinessInfo;
+mgTaskBusinessInfo=function(task){const info=qaBusinessInfoBase(task),workflow=qaQuoteInfo(task);return workflow?{...info,quoteStatus:workflow.status,workflow}:info;};
+const qaActsBase=todoActs;
+todoActs=function(task){const acts=qaActsBase(task);if(qaCanAssign(task))acts.push({t:task.quoteAssistantOwner===task.owner&&task.quoteAssistant?'管理报价助理':'助理报价',act:'qaAssistant',extra:`data-id="${esc(task.id)}"`});const info=qaQuoteInfo(task);return info?.lockReason?acts.filter(a=>!['oqEdit','oqDesignEdit','dw132Fee'].includes(a.act)):acts;};
+const qaInputBase=oqValidateInput;
+oqValidateInput=function(input){qaAssertFresh(input.draftCode);return qaInputBase(input);};
+const qaCreateBase=oqCreateQuote;
+oqCreateQuote=function(id){qaAssertTaskFresh(qaTask(oqOpp(id)));return qaCreateBase(id);};
+const qaBindBase=bindPimsFrame;
+bindPimsFrame=function(){if(draftEditorCtx?.draftCode){const opp=oqQuoteOpp(draftEditorCtx.draftCode),task=qaTask(opp,draftEditorCtx.draftCode);draftEditorCtx={...draftEditorCtx,quotationWorkflow:task?qaQuoteInfo(task):null};}return qaBindBase();};
+const qaHandleBase=handleAct;
+handleAct=function(button){const a=button?.dataset?.act;if(a==='qaAssistant')return qaOpenAssistant(button.dataset.id);if(a==='qaSaveAssistant'){try{qaSetAssistant(button.dataset.id,document.getElementById('qaPerson').value.trim(),Number(button.dataset.revision));v3CloseDialog();markPagesDirty();openPage(page);toast('报价助理安排已保存');}catch(error){toast(error.message);}return;}return qaHandleBase(button);};
+
+/* Source records are committed snapshots, never the later working copy. */
+function qaCanReadSource(code){const opp=oqQuoteOpp(code);return !!opp&&(oqCanQuote(opp)||bs131CanMaintain(opp[4])||v21AllowedOwners().includes(opp[7]));}
+function qaReuseSources(targetCode){
+ const target=oqQuoteOpp(targetCode);if(!oqCanQuote(target)||oqLockReason(targetCode))throw Error('当前报价不可编辑');qaAssertFresh(targetCode);
+ return Object.entries(V3.meta).filter(([code,m])=>m.submitted&&qaCanReadSource(code)&&oqQuoteOpp(code)?.[20]?.kind!=='design'&&(typeof dbDepartment==='function'&&dbDepartment(target)||oqQuoteOpp(code)?.[3]===target[3])).map(([code,m])=>({code,name:m.submitted.name||code,project:findProject(m.project)?.[1]||m.project,version:m.currentQuoteVersion||code+':'+m.revision,revision:m.revision||0,time:m.submittedAt||'未记录',author:m.submittedBy||'未记录',amount:v3DraftAmount(m.submitted),template:m.submitted.templateId||m.submitted.tpl||'',spaces:(m.submitted.spaces||[]).map(s=>({name:s.name,count:s.products?.length||0}))})).sort((a,b)=>b.time.localeCompare(a.time));
+}
+function qaReuseSnapshot(targetCode,sourceCode,version){
+ const source=qaReuseSources(targetCode).find(s=>s.code===sourceCode);if(!source)throw Error('来源报价不存在、未提交或无权查看');
+ if(source.version!==version)throw Error('来源报价已有新的提交，请重新选择最近提交版本');
+ const d=V3.meta[sourceCode].submitted;
+ if(!d.rows?.length)throw Error('该历史提交未保留可编辑明细，无法安全复用');
+ return {source,rows:v3Copy(d.rows),spaces:v3Copy(d.spaces||[]),templateId:d.templateId||'',tpl:d.tpl||'',materials:v3Copy(d.materials||{material1:[],material2:[]})};
+}
+window.addEventListener('message',event=>{
+ const frame=document.getElementById('pimsFrame'),msg=event.data;if(!frame||event.source!==frame.contentWindow||!['qaReuseList','qaReuseSource'].includes(msg?.type))return;
+ try{const target=draftEditorCtx?.draftCode;if(!target||msg.target!==target)throw Error('报价编辑上下文已变化，请重新打开');const payload=msg.type==='qaReuseList'?qaReuseSources(target):qaReuseSnapshot(target,msg.code,msg.version);event.source.postMessage({type:'qaReuseResult',request:msg.request,payload},'*');}
+ catch(error){event.source.postMessage({type:'qaReuseResult',request:msg.request,error:error.message},'*');}
+});
