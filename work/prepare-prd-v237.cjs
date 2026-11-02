@@ -1,0 +1,13 @@
+const fs=require('fs'),path=require('path'),root=path.resolve(__dirname,'..'),d=JSON.parse(fs.readFileSync(path.join(__dirname,'space-prd-v236-content.json'),'utf8'));
+const oldTime=d.updatedAt,time=new Date(Date.now()+8*3600000).toISOString().slice(0,16).replace('T',' ');d.version='V1.97';d.date='2026-11-03';d.updatedAt=time;
+const items=d.modules.flatMap(m=>m.items),project=items.find(x=>x.anchor==='item-1-1'),quote=items.find(x=>x.anchor==='item-5-1'),reuse=items.find(x=>x.anchor==='quotation-reuse');
+project.table.rows.find(r=>r[0].startsWith('项目编号'))[2]='项目编码沿用PJ加7位数字的既有格式，例如PJ0072456；编号唯一。评分与设计状态按各自保存来源计算，不能由表单直接指定。';
+quote.bullets[0]+='产品订单号沿用“项目编码-7位数字序号”的既有格式，例如PJ0072456-3434872；设计单及费用单保留各自既有编号规则。';
+quote.bullets[1]=quote.bullets[1].replace('带入项目当前全部空间','仅带入项目当前实际命名的全部空间，不提供“未确定空间”占位选项');
+reuse.bullets[1]+='产品预览展示提交快照中的图片，并分别列明数量、单价和总价；图片支持放大，无图片时明确提示，不以当前工作稿图片替换历史图片。在预览列表逐项移除本次不需要的产品，可恢复已移除项；移除仅影响本次复用，不删除来源报价或其历史。显示各空间及本次保留产品数量，全部移除时不能追加。';
+reuse.bullets[2]=reuse.bullets[2].replace('追加产品前','只追加本次保留的产品；追加产品前');
+reuse.entry='产品报价编辑页上方按钮区 → 复用已提交报价';
+d.revisions.rows.unshift({time,roles:'SM、报价助理',module:'「复用已提交报价」',changes:['复用预览支持逐项移除不需要的产品并恢复，仅将保留产品追加到当前工作稿；来源提交快照不变。']});
+fs.writeFileSync(path.join(__dirname,'space-prd-v237-content.json'),JSON.stringify(d,null,2));
+let renderer=fs.readFileSync(path.join(__dirname,'render-prd-v236.py'),'utf8').replaceAll('space-prd-v236-content.json','space-prd-v237-content.json').replaceAll('V1.96','V1.97').replaceAll(oldTime,time);fs.writeFileSync(path.join(__dirname,'render-prd-v237.py'),renderer);
+const stamp=path.join(root,'george-crm-react/src/features/prd/document-updates.json'),updates=JSON.parse(fs.readFileSync(stamp,'utf8'));updates['space-quote']=time;fs.writeFileSync(stamp,JSON.stringify(updates,null,2)+'\n');console.log(JSON.stringify({version:d.version,time}));

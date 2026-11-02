@@ -406,7 +406,7 @@ function pageOpps(){
     <td>${r[11]==='-'?'-':tag(r[11])}</td>
     <td>${qMoney(mmOpportunityMoney(r).amount)}</td><td>${r[14]}</td><td>${qMoney(mmOpportunityMoney(r).won)}</td><td>${qMoney(mmOpportunityMoney(r).paid)}</td>
     <td>${r[17]==='-'?'-':r[17]}</td><td>${r[18]}</td>
-    ${ops(mgOppActions(r))}
+    ${ops(mgOppActions(r).filter(action=>action.act!=='viewDealFlow'))}
   </tr>`).join('');
   return `${toolbar(
     `<button class="btn" data-act="modal:batchOppOwner">批量修改负责人</button>
@@ -3046,7 +3046,9 @@ function nextOrderNo(project,kind='product'){
     const tail=parseInt(String(r[0]).split('-').pop(),10);
     return Math.max(m, isFinite(tail)?tail:0);
   },71200);
-  return (project||'SO')+'-'+(n+1);
+  if(!/^PJ\d{7}$/.test(project||'')&&!PROJECTS.some(p=>p[0]===project))throw Error('请关联有效项目后创建订单');
+  if(n>=9999999)throw Error('订单编号已超出7位编号范围，请联系管理员');
+  return project+'-'+String(n+1).padStart(7,'0');
 }
 function confirmBindDraft(item){
   const draftCode=($('#bindDraftSel')?.value||'').trim();
