@@ -9,9 +9,9 @@ if(!V68_SMS.some(p=>p.cat==='SinoChina')){const person={name:'SinoChina 报价�
 const dbValidateBase=oqValidateInput;
 oqValidateInput=function(input){const result=dbValidateBase(input);if(dbDepartment(result.opp)){result.data.quoteBusiness={kind:'department',name:result.opp[3],customerName:result.opp[20]?.customerQuoteName||dbFallbackName(result.data),departmentId:result.opp[20]?.departmentId||''};result.data.tpl=input.tpl||result.data.tpl;result.data.categoryManagers={[result.opp[3]]:result.opp[7]};}return result;};
 function dbFallbackName(data){const cats=[...new Set((data?.spaces||[]).flatMap(s=>(s.products||[]).map(p=>p.cat)).filter(c=>c&&!['Sourcing','SinoChina'].includes(c)))];return cats.length?cats.join('与')+'采购方案':'产品采购方案';}
-function dbCustomerName(group,project){const submitted=Object.values(V3.meta).find(m=>m.project===project&&m.submitted&&m.active!==false&&!m.needsSpaceUpdate&&m.categories?.includes(group))?.submitted;return submitted?.quoteBusiness?.customerName||dbFallbackName(submitted);}
+function dbCustomerName(group,project){const submitted=Object.values(V3.meta).find(m=>m.project===project&&m.submitted&&m.active!==false&&!m.needsSpaceUpdate&&m.categories?.includes(group))?.submitted;return submitted?.quoteBusiness?.customerName||OPPS.find(o=>o[4]===project&&o[3]===group&&!o[20]?.isAddon)?.[20]?.customerQuoteName||group;}
 const dbSkyCatBase=skyCat;
-skyCat=function(value){if(!['Sourcing','SinoChina'].includes(value))return dbSkyCatBase(value);const internalBoard=!DB_CLIENT_RENDER&&typeof page!=='undefined'&&(typeof pageKind==='function'?pageKind(page)==='board':page==='board')&&!V3.client,project=internalBoard?archiveProject:SKY.project||archiveProject,name=dbCustomerName(value,project);return internalBoard?name+' · '+value:name;};
+skyCat=function(value){if(!['Sourcing','SinoChina'].includes(value))return dbSkyCatBase(value);const internalBoard=!DB_CLIENT_RENDER&&typeof page!=='undefined'&&(typeof pageKind==='function'?pageKind(page)==='board':page==='board')&&!V3.client,project=internalBoard?archiveProject:SKY.project||archiveProject;return dbCustomerName(value,project);};
 const dbRebuildBase=v3RebuildDraftQuotes;
 v3RebuildDraftQuotes=function(code){
  const opp=oqQuoteOpp(code);if(!dbDepartment(opp))return dbRebuildBase(code);
@@ -29,9 +29,8 @@ const dbBindBase=bindPimsFrame;
 bindPimsFrame=function(){const opp=draftEditorCtx?.draftCode&&oqQuoteOpp(draftEditorCtx.draftCode);if(dbDepartment(opp))draftEditorCtx={...draftEditorCtx,quoteBusiness:{kind:'department',name:opp[3]}};return dbBindBase();};
 const dbCellsBase=v46Cells;
 v46Cells=function(x,...args){const html=dbCellsBase(x,...args),actual=x[6]?.productCategory||x[6]?.publicQuote?.productCategory;return actual&&actual!==x[1]?html.replace(/(<td[^>]*data-col="category"[^>]*>)[\s\S]*?(<\/td>)/,(_,a,b)=>a+esc(skyCat(x[1]))+'<small style="display:block;color:#708397">'+esc(skyCat(actual))+ '</small>'+b):html;};
-if(typeof qd228HeadingLabel==='function'){const base=qd228HeadingLabel;qd228HeadingLabel=function(kind,...args){return base(kind,...args).replace(/^品类/,'报价业务');};}
 const dbLabelBase=q63Label;
-q63Label=function(key){return key==='category'?skyT('报价业务 / 产品品类','Quotation business / Product category'):dbLabelBase(key);};
+q63Label=function(key){return key==='category'?skyT('品类','Category'):dbLabelBase(key);};
 // Rebuild only explicit department records, using their last submitted snapshots.
 for(const [code,m] of Object.entries(V3.meta))if(m.submitted&&m.active!==false&&!m.needsSpaceUpdate&&dbDepartment(oqQuoteOpp(code)))v3RebuildDraftQuotes(code);
 
@@ -40,7 +39,7 @@ function dbRefreshNames(){
  const form=document.getElementById('ua176Form');if(!form||V68.allocation.mode==='design')return;
  const prior={...(UA176.drafts[V68.allocation.mode]?.customerQuoteNames||{}),...dbReadNames()},selected=[...document.querySelectorAll('[data-ua-person]:checked')].map(input=>input.dataset.cat).filter(cat=>['Sourcing','SinoChina'].includes(cat));
  let box=document.getElementById('dbQuoteNames');if(!box){box=document.createElement('div');box.id='dbQuoteNames';box.className='full planned-form';document.getElementById('ua176People').insertAdjacentElement('afterend',box);}
- box.innerHTML=selected.map(cat=>`<label>${esc(cat)} · 客户报价名称 <b>*</b><input data-db-name="${esc(cat)}" aria-label="${esc(cat)}客户报价名称" maxlength="80" value="${esc(prior[cat]||'')}" placeholder="例如：家具与灯饰采购方案"><small>客户看到此名称，内部仍记录 ${esc(cat)}。实际产品品类保留在明细中，此名称不限制选品。</small></label>`).join('');
+ box.innerHTML=selected.map(cat=>`<label>${esc(cat)} · 品类名称 <b>*</b><input data-db-name="${esc(cat)}" aria-label="${esc(cat)}品类名称" maxlength="80" value="${esc(prior[cat]??cat)}" placeholder="用于项目、客户报价总览的品类展示"><small>项目与客户报价总览统一显示此品类名称，不限制报价内容；同一项目内名称不能重复。</small></label>`).join('');
  UA176.drafts[V68.allocation.mode]||={};UA176.drafts[V68.allocation.mode].customerQuoteNames=prior;
 }
 const dbPickerBase=ua176RefreshPicker;
@@ -48,13 +47,26 @@ ua176RefreshPicker=function(){const result=dbPickerBase();dbRefreshNames();retur
 const dbCaptureBase=ua176CaptureAllocation;
 ua176CaptureAllocation=function(){const hasForm=!!document.getElementById('ua176Form'),names=dbReadNames(),result=dbCaptureBase();if(hasForm&&V68.allocation?.mode&&UA176.drafts[V68.allocation.mode])UA176.drafts[V68.allocation.mode].customerQuoteNames=names;return result;};
 const dbBatchBase=allocationBatchInputs;
-allocationBatchInputs=function(state,names,details={}){const inputs=dbBatchBase(state,names,details);for(const input of inputs)if(['Sourcing','SinoChina'].includes(input.cat)){const name=String(details.customerQuoteNames?.[input.cat]||'').trim();if(!name||name.length>80)throw Error('请填写 '+input.cat+' 的客户报价名称（最多80字）');input.customerQuoteName=name;}return inputs;};
+function dbNameKey(name){return String(name||'').normalize('NFKC').trim().replace(/\s+/g,' ').toLocaleLowerCase();}
+function dbProjectNames(project){
+ const names=[];
+ for(const o of OPPS)if(o[4]===project&&o[20]?.kind!=='design'&&!o[20]?.isAddon&&!o[20]?.preliminaryTask)names.push({group:o[3],name:['Sourcing','SinoChina'].includes(o[3])?o[20]?.customerQuoteName||dbCustomerName(o[3],project):o[3]});
+ for(const t of TODOS)if(t.project===project&&t.status==='待处理'&&!t.designOpportunity&&!t.isAddon&&t.allocation?.cat)names.push({group:t.allocation.cat,name:t.allocation.customerQuoteName||t.allocation.cat});
+ for(const m of Object.values(V3.meta))if(m.project===project&&m.submitted&&m.active!==false&&!m.needsSpaceUpdate)for(const group of m.categories||[])if(group!=='设计服务')names.push({group,name:m.submitted.quoteBusiness?.customerName||group});
+ return names;
+}
+function dbValidateNames(project,inputs){
+ const occupied=dbProjectNames(project),chosen=new Map();
+ for(const input of inputs){const name=input.customerQuoteName||input.cat,key=dbNameKey(name);if(chosen.has(key)&&chosen.get(key)!==input.cat)throw Error('品类名称“'+name+'”在本次分配中重复，请修改');if(occupied.some(x=>x.group!==input.cat&&dbNameKey(x.name)===key))throw Error('品类名称“'+name+'”在本项目中已存在，请修改');chosen.set(key,input.cat);}
+ return inputs;
+}
+allocationBatchInputs=function(state,names,details={}){const inputs=dbBatchBase(state,names,details);for(const input of inputs)if(['Sourcing','SinoChina'].includes(input.cat)){const name=String(details.customerQuoteNames?.[input.cat]??input.cat).trim();if(!name||name.length>80)throw Error('请填写 '+input.cat+' 的品类名称（最多80字）');input.customerQuoteName=name;}return dbValidateNames(state.project,inputs);};
 const dbOpportunityBase=v68CreateOpportunity;
-v68CreateOpportunity=function(task){return bs131Atomic(()=>{const id=dbOpportunityBase(task),opp=oqOpp(id);if(dbDepartment(opp)&&task.allocation?.customerQuoteName){opp[20]||={};opp[20].customerQuoteName=task.allocation.customerQuoteName;}return id;});};
+v68CreateOpportunity=function(task){return bs131Atomic(()=>{if(task.allocation?.customerQuoteName)dbValidateNames(task.project,[{cat:task.allocation.cat,customerQuoteName:task.allocation.customerQuoteName}]);const id=dbOpportunityBase(task),opp=oqOpp(id);if(dbDepartment(opp)&&task.allocation?.customerQuoteName){opp[20]||={};opp[20].customerQuoteName=task.allocation.customerQuoteName;}return id;});};
 const dbCreateBase=oqCreateQuote;
 oqCreateQuote=function(id){return bs131Atomic(()=>{const code=dbCreateBase(id),opp=oqOpp(id);if(dbDepartment(opp)&&opp[20]?.customerQuoteName){const d=DRAFT_DATA[code];d.name=opp[20].customerQuoteName;const row=DRAFTS.find(r=>r[0]===code);if(row)row[1]=d.name;const order=oqOrder(code);if(order)order[6]=d.name;}return code;});};
 const dbBoardBase=pageBoard;
-pageBoard=function(...args){const box=document.createElement('div');box.innerHTML=dbBoardBase(...args);for(const button of box.querySelectorAll('[data-act="quoteCatNav"][data-cat]')){const group=button.dataset.cat;if(!['Sourcing','SinoChina'].includes(group))continue;const name=dbCustomerName(group,archiveProject)+' · '+group,label=button.querySelector('.v37-mix-name');if(label){for(const child of [...label.childNodes])if(child.nodeType===3&&child.textContent.trim()===group)child.textContent=name;}if(button.getAttribute('aria-label')?.startsWith(group))button.setAttribute('aria-label',button.getAttribute('aria-label').replace(group,name));}return box.innerHTML;};RENDER.board=pageBoard;
+pageBoard=function(...args){const box=document.createElement('div');box.innerHTML=dbBoardBase(...args);for(const button of box.querySelectorAll('[data-act="quoteCatNav"][data-cat]')){const group=button.dataset.cat;if(!['Sourcing','SinoChina'].includes(group))continue;const name=dbCustomerName(group,archiveProject),label=button.querySelector('.v37-mix-name');if(label){for(const child of [...label.childNodes])if(child.nodeType===3&&child.textContent.trim()===group)child.textContent=name;}if(button.getAttribute('aria-label')?.startsWith(group))button.setAttribute('aria-label',button.getAttribute('aria-label').replace(group,name));}return box.innerHTML;};RENDER.board=pageBoard;
 const dbClientHtmlBase=clientQuoteHtml;
 clientQuoteHtml=function(...args){const prior=DB_CLIENT_RENDER;try{DB_CLIENT_RENDER=true;return dbClientHtmlBase(...args);}finally{DB_CLIENT_RENDER=prior;}};
 if(typeof cxp208Summary==='function'){const base=cxp208Summary;cxp208Summary=function(project,...args){const box=document.createElement('div');box.innerHTML=base(project,...args);for(const row of box.querySelectorAll('.cxp-summary-table tbody tr')){const cell=row.children[2],group=cell?.textContent.trim();if(['Sourcing','SinoChina'].includes(group))cell.textContent=dbCustomerName(group,project);}return box.innerHTML;};}
