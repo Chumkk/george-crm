@@ -1,0 +1,12 @@
+const fs=require('fs'),path=require('path'),crypto=require('crypto'),root=path.resolve(__dirname,'..'),pub=path.join(root,'george-crm-react/public');
+let script=fs.readFileSync(path.join(__dirname,'editor-v238.js'),'utf8');
+const start=script.indexOf('function ed238Submission('),end=script.indexOf('\nfunction ed235List',start);
+if(start<0||end<0)throw Error('Submission metadata helper missing');
+script=script.slice(0,start)+`function ed238Submission(source){return '<span class="ed238-submission"><span>方案经理：'+esc(source.schemeManager||'未记录')+' · 报价助理：'+esc(source.quoteAssistant||'未记录')+' · 提交人：'+esc(source.author||'未记录')+' · 金额：'+edMoney(source.amount)+'</span><span class="ed239-time">提交时间：'+esc(source.time||'未记录')+'</span></span>';}`+script.slice(end);
+script=script.replace("+ed238Roles(s)+ed238Submission(s)","+ed238Submission(s)").replace("+ed238Roles(payload.source)+'<p>'","+'<p>'");
+fs.writeFileSync(path.join(__dirname,'editor-v239.js'),script);
+const css='.ed238-roles{display:inline;grid-template-columns:none;gap:0;width:auto;margin:0;padding:0;border:0;border-radius:0;background:none;color:inherit;font:inherit}.ed238-roles>span{display:inline;margin-right:14px}.ed238-roles b,.ed238-roles em{color:inherit;font:inherit}.ed238-roles b:after{content:"："}.ed238-submission{display:block;color:#71889b;font-size:12px;line-height:1.8;font-weight:400;overflow-wrap:anywhere}.ed238-submission .ed239-time{display:block}.ed235-workflow .ed238-roles{display:inline;margin-left:16px;font-size:inherit}.ed235-workflow .ed238-roles>span{display:inline}.ed235-source .ed238-submission{margin-top:3px}';
+fs.writeFileSync(path.join(__dirname,'editor-v239.css'),css+'\n');
+let html=fs.readFileSync(path.join(pub,'quote-editor-c52ba792c9cf.html'),'utf8').replace('<script>'+fs.readFileSync(path.join(__dirname,'editor-v238.js'),'utf8')+'</script>','<script>'+script+'</script>').replace('</head>','<style>'+css+'</style></head>');
+const name='quote-editor-'+crypto.createHash('sha256').update(html).digest('hex').slice(0,12)+'.html';fs.writeFileSync(path.join(pub,name),html);
+const engine=path.join(root,'george-crm-react/src/compat/runtime/workflows.js');fs.writeFileSync(engine,fs.readFileSync(engine,'utf8').replace(/const WK_EDITOR_URL\s*=\s*['"][^'"]+['"]/,"const WK_EDITOR_URL='./"+name+"'"));fs.writeFileSync(path.join(__dirname,'v239-editor-build.json'),JSON.stringify({name},null,2));console.log(name);
