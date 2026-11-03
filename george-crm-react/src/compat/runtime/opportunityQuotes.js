@@ -79,7 +79,11 @@ function oqApplyTaskCompletionRepair(task,evidence){
  task.quoteCompletionLegacy244||={status:task.status,approver:task.approver||'',approveTime:task.approveTime||'',completionReason:task.completionReason||''};
  Object.assign(task,{status:'已处理',approver:evidence.actor,approveTime:evidence.time,completionReason:'已提交报价',order:evidence.order,quoteRevision:evidence.revision,quoteCompletionRepair244:{versionId:evidence.versionId,correctedAt:new Date().toISOString(),source:'原报价提交记录'}});
 }
-function oqWithTaskRepair(ids,change){const previous=OQ244_REPAIR.tasks;OQ244_REPAIR.tasks=new Set(ids);try{return bs131Atomic(change);}finally{OQ244_REPAIR.tasks=previous;}}
+function oqWithTaskRepair(ids,change){
+ const previous=OQ244_REPAIR.tasks,notifications=typeof v72NotificationEvents==='function'?v72NotificationEvents:null;OQ244_REPAIR.tasks=new Set([...previous,...ids]);
+ if(notifications)v72NotificationEvents=function(...args){return notifications(...args).filter(event=>!OQ244_REPAIR.tasks.has(event.task));};
+ try{return bs131Atomic(change);}finally{OQ244_REPAIR.tasks=previous;if(notifications)v72NotificationEvents=notifications;}
+}
 function oqReconcileSubmittedTasks(ids=null){
  const plans=TODOS.filter(t=>!ids||ids.includes(t.id)).map(task=>({task,evidence:oqQuoteTaskCompletion(task)})).filter(x=>x.evidence);
  if(!plans.length)return 0;

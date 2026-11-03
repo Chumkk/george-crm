@@ -36,6 +36,12 @@ test('历史任务校正保存失败整体回滚，重新尝试一次成功且�
  assert.throws(()=>c.oqReconcileSubmittedTasks(),/保存失败/);assert.equal(JSON.stringify(c.TODOS),before);
  c.fail=false;assert.equal(c.oqReconcileSubmittedTasks(),1);assert.equal(c.TODOS[0].status,'已处理');assert.equal(c.oqReconcileSubmittedTasks(),0);
 });
+test('首次加载早期的历史校正也不重复发通知，事务结束恢复正常通知入口',()=>{
+ const {c}=submitted(),t=c.TODOS[0];t.status='待处理';
+ const original=()=>[{task:t.id,event:'todo-result'},{task:'OTHER',event:'todo-result'}];c.v72NotificationEvents=original;const atomic=c.bs131Atomic;
+ c.bs131Atomic=fn=>atomic(()=>{const value=fn();c.events=c.v72NotificationEvents({},{});return value;});
+ assert.equal(c.oqReconcileSubmittedTasks(),1);assert.deepEqual(copy(c.events),[{task:'OTHER',event:'todo-result'}]);assert.equal(c.v72NotificationEvents,original);assert.equal(c.v72NotificationEvents().length,2);
+});
 test('提交不能利用旧通知样例参数跳过ERP请求和完成任务',()=>{
  const c=setup(),project='PJ-NOTICE-NEW';c.OPPS[0][4]=project;c.PROJECTS[0][0]=project;c.PROJECT_EXTRA[project]=c.PROJECT_EXTRA.P;
  const {code,data}=quote(c);c.actor='SM';assert.equal(c.applyDraftSaved({...data,notificationSample:true,submissionRequestId:'notification-confirmation:NEW'}),code);

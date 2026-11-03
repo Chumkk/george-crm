@@ -90,8 +90,4 @@ window.addEventListener('message',event=>{
 });
 // Repair only proven historical task results. Do not dispatch ERP or generate
 // new submission/result notifications while reconciling an existing record.
-if(typeof v72NotificationEvents==='function'){
- const qaNotificationBase=v72NotificationEvents;
- v72NotificationEvents=function(...args){return qaNotificationBase(...args).filter(event=>!OQ244_REPAIR.tasks.has(event.task));};
-}
 if(typeof document==='undefined'||document.documentElement?.dataset?.entry!=='client')try{oqReconcileSubmittedTasks();}catch(error){toast('报价待办状态未能同步，请刷新重试：'+error.message);}
