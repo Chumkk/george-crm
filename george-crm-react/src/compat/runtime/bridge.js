@@ -323,6 +323,7 @@
           timing: typeof th195CardTiming === "function" ? th195CardTiming(t) : null,
           followup: typeof tfTaskMeta === "function" ? tfTaskMeta(t) : null,
           businessInfo: typeof mgTaskBusinessInfo === "function" ? mgTaskBusinessInfo(t) : null,
+          guidance: typeof tg254TaskGuidance === "function" ? tg254TaskGuidance(t) : null,
           expenseSource: t.type === "费用订单待办" && typeof efTaskSource === "function" ? efTaskSource(t) : null,
           opportunityName: ["转介绍商机审批待办", "报价待办"].includes(t.type) ? (typeof OPPS !== "undefined" && OPPS.find(o => o[0] === t.opp || o[0] === t.createdOppId)?.[1]) || (typeof mgInvitationName === "function" ? mgInvitationName(t) : "") : "",
           orderNumber: quotationOrderNumber(t),

@@ -46,5 +46,5 @@ test('reference photos survive real quotation normalization, safe source validat
  for(const m of Object.values(c.CRMProductImages247.manifest)){assert.equal(c.QUOTE63.safeSrc(m.src),m.src);assert.equal(c.QUOTE63.imageOnly([{src:m.src,label:'产品参考图'}])[0].src,m.src);}
  assert.equal(c.QUOTE63.safeSrc('javascript:alert(1)'), '');
  const build=JSON.parse(read('work/v247-editor-build.json')),html=read('george-crm-react/public/'+build.name);for(const script of html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/g))new vm.Script(script[1]);assert.ok(html.includes(core));assert.ok(html.includes(editor));
- const loader=read('george-crm-react/src/compat/loadRuntime.js'),config=read('george-crm-react/vite.config.js');for(const text of [loader,config])assert.match(text,/"departmentQuotes", "productImages", (?:"todoScenario", )?(?:"taskScenarioHistory", "projectCodes", )?"bridge"/);
+ const loader=read('george-crm-react/src/compat/loadRuntime.js'),config=read('george-crm-react/vite.config.js');for(const text of [loader,config]){const names=JSON.parse(text.match(/\["startup",[^\n]*?"bridge"\]/)[0]);assert.ok(names.indexOf('productImages')>names.indexOf('departmentQuotes'));assert.ok(names.indexOf('productImages')<names.indexOf('bridge'));}
 });

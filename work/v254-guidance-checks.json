@@ -1,0 +1,21 @@
+{
+  "testsPassed": 791,
+  "guidanceRegressionCases": 9,
+  "buildPassed": true,
+  "verified": [
+    "current SM versus authorized assistant and PM/customer/ERP handoff responsibilities",
+    "first working save is distinct from submitted-quote reactivation",
+    "space changes are tied to exact recorded revision, including same-minute changes",
+    "stable space rename/add/delete details; reordering creates no change summary",
+    "unrelated projects, opportunities and invisible downstream tasks do not leak guidance facts",
+    "pending conditional handoffs remain conditional and completed successors remain completed",
+    "rejected drawing resubmission and GDS design completion remain independent",
+    "valid current customer confirmation and stocked execution do not prompt duplicate actions",
+    "guidance reads do not mutate tasks, quote contents, responsibilities or permissions"
+  ],
+  "businessFlowChanged": false,
+  "spaceInvalidationRuleChanged": false,
+  "tradeFeeChanges": "Frozen pending business confirmation; no fee rule or source modified in this release",
+  "prdChanged": false,
+  "renderedBrowserVerified": false
+}

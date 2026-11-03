@@ -112,10 +112,11 @@ function v125RecordConfirmations(){
 function v125ApplySpaceImpact(project,before,after){
  const impact=v125SpaceImpact(project,before,after),stamp=v3Stamp();if(!impact.affected.length)return impact;
  const extra=PROJECT_EXTRA[project]||(PROJECT_EXTRA[project]={});extra.spaceRevision=(extra.spaceRevision||0)+1;
- extra.spaceChangeHistory=[...(extra.spaceChangeHistory||[]),{time:stamp,actor:v17Owner(),before:v3Copy(before),after:v3Copy(after),categories:impact.affected.slice()}];
+ extra.spaceChangeHistory=[...(extra.spaceChangeHistory||[]),{revision:extra.spaceRevision,time:stamp,actor:v17Owner(),before:v3Copy(before),after:v3Copy(after),categories:impact.affected.slice()}];
  for(const code of impact.editable){
   const m=v3Meta(code);v125EnsureBaseline(code,m);m.confirmationHistory=[...(m.confirmationHistory||[]),{revision:m.revision,confirmedCats:(m.confirmedCats||[]).slice(),confirmedAt:m.confirmedAt||'',reason:'项目空间已修改',time:stamp}];
   m.needsSpaceUpdate=true;m.active=false;m.status='已暂存';m.confirmedCats=[];m.spaceRevision=extra.spaceRevision;m.spaceChangeAt=stamp;
+  m.pendingCause254={kind:'space-change',at:stamp,actor:v17Owner(),spaceRevision:extra.spaceRevision};
  }
  for(const t of TODOS){
   const cat=t.cat||t.smDept;if(t.project!==project||!impact.affected.includes(cat)||!['报价待办','订单待办'].includes(t.type))continue;
@@ -160,6 +161,7 @@ function v137ApplyCategoryImpact(project,before,after){
   const meta=v3Meta(code);v125EnsureBaseline(code,meta);
   meta.confirmationHistory=[...(meta.confirmationHistory||[]),{revision:meta.revision,confirmedCats:[...(meta.confirmedCats||[])],confirmedAt:meta.confirmedAt||'',reason:'项目采购品类已修改',time:stamp}];
   Object.assign(meta,{needsSpaceUpdate:true,active:false,status:'已暂存',confirmedCats:[],categoryChangeAt:stamp});
+  meta.pendingCause254={kind:'category-change',at:stamp,actor:v17Owner()};
  }
  for(const task of TODOS){
   if(task.project!==project||task.type!=='报价待办'||!impact.affected.includes(task.cat||task.smDept))continue;
