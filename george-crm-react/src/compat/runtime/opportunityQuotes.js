@@ -222,10 +222,10 @@ function oqSavedAmount(order){
  if(!data||order[18].legacyQuoteArchive||!data.savedAt&&!meta?.submitted)return null;
  const amount=Number(v3DraftAmount(data));return Number.isFinite(amount)&&amount>=0?amount:null;
 }
-function oqSavedAmountCell(order){const value=oqSavedAmount(order);return `<td class="oq-saved-amount" title="最近一次保存的报价金额；未提交的修改不更新订单金额">${value===null?'—':esc(qMoney(value))}</td>`;}
+function oqSavedAmountCell(order){const value=oqSavedAmount(order);return `<td class="oq-saved-amount" title="最近一次暂存的报价金额；未提交的修改不更新订单金额">${value===null?'—':esc(qMoney(value))}</td>`;}
 function oqSavedAmountHeading(row){
  const amount=[...row.children].find(th=>/订单金额/.test(th.textContent));
- if(amount&&!row.querySelector('[data-oq-saved-amount]')){const th=document.createElement('th');th.textContent='保存金额';th.dataset.oqSavedAmount='';th.title='最近一次保存的报价金额；订单金额来自最近一次提交';row.insertBefore(th,amount);amount.title='最近一次提交的订单金额；仅保存修改不会更新';}
+ if(amount&&!row.querySelector('[data-oq-saved-amount]')){const th=document.createElement('th');th.textContent='暂存金额';th.dataset.oqSavedAmount='';th.title='最近一次暂存的报价金额；订单金额来自最近一次提交';row.insertBefore(th,amount);amount.title='最近一次提交的订单金额；仅保存修改不会更新';}
 }
 function oqOrderListVisible(order){
  const info=order[18]||{},code=info.quoteCode,m=code&&V3.meta[code];
@@ -457,7 +457,7 @@ bs131CreateAddon=function(...args){return bs131Atomic(()=>{const opp=oqAddonBase
 bs131AddonOrder=function(opp){return v126OpportunityOrders(opp).find(order=>{const info=order[18]||{};return info.stockStartedAt||order.stockStartedAt||[info.stockStatus,order.stockStatus,order[3]].some(state=>/^(备货中|已备货|生产中|已生产|已发货|发货中|已交付|已完成|完成)$/.test(String(state||'')))||TODOS.some(t=>t.order===order[0]&&t.type==='备货待办'&&!['已取消','已驳回'].includes(t.status));});};
 
 const oqOppsBase=pageOpps;
-pageOpps=function(...args){const box=document.createElement('div');box.innerHTML=oqOppsBase(...args);box.querySelectorAll('[data-act="modal:bindDraft"]').forEach(button=>{button.dataset.act='oqOpenOpp';button.textContent='查看报价单';});box.querySelectorAll('p,.note').forEach(p=>{if(p.textContent.includes('产品商机绑定'))p.textContent='报价单直接在商机中创建；提交后传输 ERP 并完成报价待办。保存金额、已提交订单金额和客户确认分别记录。';});return box.innerHTML;};RENDER.opps=pageOpps;
+pageOpps=function(...args){const box=document.createElement('div');box.innerHTML=oqOppsBase(...args);box.querySelectorAll('[data-act="modal:bindDraft"]').forEach(button=>{button.dataset.act='oqOpenOpp';button.textContent='查看报价单';});box.querySelectorAll('p,.note').forEach(p=>{if(p.textContent.includes('产品商机绑定'))p.textContent='报价单直接在商机中创建；提交后传输 ERP 并完成报价待办。暂存金额、已提交订单金额和客户确认分别记录。';});return box.innerHTML;};RENDER.opps=pageOpps;
 const oqWaitingBase=v16QuoteWaiting;
 v16QuoteWaiting=function(task){return task.type==='报价待办'&&task.opp?false:oqWaitingBase(task);};
 

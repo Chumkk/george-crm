@@ -110,7 +110,7 @@ test('所有设计类型均保留品类校验，报价流程不再豁免独立�
  row[3]='等待ERP回执';const executing=[...copy(row)],fee=[...copy(row)],unsent=[...copy(row)];executing[3]='执行中';fee[18]={kind:'fee'};unsent[18].erpRequestedRevision=0;c.ORDERS.push(executing,fee,unsent);const requests=JSON.stringify(row[18].erpRequests);c.oqNormalizeExecutionStates();c.oqNormalizeExecutionStates();assert.equal(row[3],'未执行');assert.equal(executing[3],'执行中');assert.equal(fee[3],'等待ERP回执');assert.equal(unsent[3],'未执行');assert.equal(JSON.stringify(row[18].erpRequests),requests);
  });
 
-test('保存金额跟随工作稿，订单/ERP/客户金额只在成功提交时更新',()=>{
+test('暂存金额跟随工作稿，订单/ERP/客户金额只在成功提交时更新',()=>{
  const c=setup(),{code,data}=quote(c);assert.equal(c.oqSavedAmount(c.ORDERS[0]),null);
  c.v3QuickSave(data);assert.equal(c.oqSavedAmount(c.ORDERS[0]),100);assert.equal(c.ORDERS[0][10],'¥0');
  c.applyDraftSaved({...data,submissionRequestId:'ONE'});assert.equal(c.TODOS[0].completionReason,'已提交报价');
