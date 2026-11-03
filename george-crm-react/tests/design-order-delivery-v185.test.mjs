@@ -11,11 +11,12 @@ function fixture(){
  c.V3.meta.Q={revision:1,currentQuoteVersion:'V1',submitted:{designFields:{attachments:[{id:'REF',name:'参考作品.pdf'}],gdsRemark:'全屋设计'}}};
  c.TODOS.push({id:'QT',type:'报价待办',opp:'BU1',project:'P',draft:'Q',status:'待处理',owner:'设计甲',initiator:'PM'});
  vm.runInContext(slice(read('opportunityQuotes.js'),'function oqQueueERP(','function oqNormalizeExecutionStates(')+slice(read('opportunityQuotes.js'),'function oqConfirmQuote(','function oqReviewConfirm('),c);
- vm.runInContext(read('designOrderDelivery.js'),c);return c;
+ vm.runInContext(read('designOrderDelivery.js'),c);c.submitDesign=()=>c.bs131Atomic(()=>c.oqFinalizePublished('Q'));return c;
 }
-function deliver(c){c.actor='设计甲';c.oqConfirmQuote('Q',1);const t=c.TODOS.find(t=>t.type==='设计待办');return c.dr185Submit(t,{drawings:[{id:'A',type:'平面设计图',file:{name:'平面.pdf'}},{id:'B',type:'全屋3D图',file:{name:'三维.jpg'}}]});}
+function deliver(c){c.actor='设计甲';c.submitDesign();const t=c.TODOS.find(t=>t.type==='设计待办');return c.dr185Submit(t,{drawings:[{id:'A',type:'平面设计图',file:{name:'平面.pdf'}},{id:'B',type:'全屋3D图',file:{name:'三维.jpg'}}]});}
 test('GDS精确收款确认推进交付，ERP全款和定稿同步不完成设计商机，GDS完成才结束',()=>{
- const c=fixture();c.actor='设计甲';c.oqConfirmQuote('Q',1);let t=c.TODOS.find(t=>t.type==='设计待办'),o=c.OPPS[0];c.ORDERS[0][13]='¥1000';
+ const c=fixture();c.actor='设计甲';c.submitDesign();let t=c.TODOS.find(t=>t.type==='设计待办'),o=c.OPPS[0];
+ assert.equal(c.mgOpportunityState(o),'待下定');c.ORDERS[0][13]='¥199.99';assert.equal(c.mgOpportunityState(o),'待下定');c.ORDERS[0][13]='¥200';assert.equal(c.mgOpportunityState(o),'待下单');c.ORDERS[0][13]='¥1000';
  assert.equal(c.mgOpportunityState(o),'待下单');
  const receipt={system:'GDS',eventId:'PAY1',task:t.id,actor:'设计甲',revision:t.gds.revision,action:'payment-confirmed',project:'P',order:t.order,opportunity:o[0]};
  assert.throws(()=>c.gds171Receive({...receipt,order:'OTHER'}),/关联/);assert.throws(()=>c.gds171Receive({...receipt,project:undefined}),/精确/);assert.throws(()=>c.gds171Receive({...receipt,actor:'别人'}),/处理人/);assert.equal(t.gdsPaymentConfirmed,undefined);
@@ -25,14 +26,14 @@ test('GDS精确收款确认推进交付，ERP全款和定稿同步不完成设�
  c.gds171Receive({...receipt,eventId:'DONE',revision:t.gds.revision,action:'complete'});assert.equal(c.mgOpportunityState(o),'已完成');assert.equal(t.gdsCompleted,true);
 });
 test('确认商机不生成设计任务；确认设计报价生成一次，携带单号费用而不带名称版本',()=>{
- const c=fixture();assert.equal(c.ua176EnsureDesign(c.OPPS[0]),null);assert.equal(c.TODOS.length,1);c.actor='设计甲';c.oqConfirmQuote('Q',1);
+ const c=fixture();assert.equal(c.ua176EnsureDesign(c.OPPS[0]),null);assert.equal(c.TODOS.length,1);c.actor='设计甲';c.submitDesign();
  const task=c.TODOS.find(t=>t.type==='设计待办');assert.equal(c.TODOS.find(t=>t.id==='QT').status,'已处理');assert.equal(task.order,'XF00000001');assert.equal(task.needInfo.designOrder.amount,'¥1000');assert.equal(task.needInfo.designOrder.note,'全屋设计');assert.equal(task.expectedCompletionAt,'');assert.equal(task.needInfo.designOrder.quoteRevision,undefined);assert.equal(task.needInfo.designOrder.name,undefined);assert.equal(task.needInfo.projectType,undefined);
  assert.equal(task.gds.requests[0].payload.order,'XF00000001');assert.equal(task.gds.requests[0].payload.expectedCompletionAt,'');
  c.v68Modal=(title,html)=>{c.form=html;};c.dr185Open(task);assert.match(c.form,/设计单信息/);assert.doesNotMatch(c.form,/data-dr-row|项目类型|项目规模|报价版本|设计单名称|type="file"/);
- c.oqConfirmQuote('Q',1);assert.equal(c.TODOS.filter(t=>t.type==='设计待办').length,1);
+ c.submitDesign();assert.equal(c.TODOS.filter(t=>t.type==='设计待办').length,1);
 });
 test('确认报价保存失败同时回滚 ERP 请求、报价任务及设计待办',()=>{
- const c=fixture();c.actor='设计甲';const before=copy({orders:c.ORDERS,todos:c.TODOS});c.failSave=true;assert.throws(()=>c.oqConfirmQuote('Q',1),/未保存/);assert.deepEqual(copy({orders:c.ORDERS,todos:c.TODOS}),before);
+ const c=fixture();c.actor='设计甲';const before=copy({orders:c.ORDERS,todos:c.TODOS});c.failSave=true;assert.throws(()=>c.submitDesign(),/未保存/);assert.deepEqual(copy({orders:c.ORDERS,todos:c.TODOS}),before);
 });
 test('图纸逐张驳回和重提，已确认图纸不变；全确认后须手动同步完成审核',()=>{
  const c=fixture(),review=deliver(c);c.actor='PM';c.dr185Review(review,'A','confirm',1);assert.equal(review.status,'待处理');c.dr185Review(review,'B','reject',1,'尺寸需调整');assert.equal(review.status,'待处理');
@@ -47,7 +48,7 @@ test('逐图保存失败不留下半条确认、归档或 GDS 请求',()=>{
  const c=fixture(),r=deliver(c);c.actor='PM';const before=copy({todos:c.TODOS,files:c.PROJECT_FILES});c.failSave=true;assert.throws(()=>c.dr185Review(r,'A','confirm',1),/未保存/);assert.deepEqual(copy({todos:c.TODOS,files:c.PROJECT_FILES}),before);
 });
 test('GDS 回执去重，拒绝陈旧版本和不匹配订单，重提通知只对应原任务',()=>{
- const c=fixture();c.actor='设计甲';c.oqConfirmQuote('Q',1);const task=c.TODOS.find(t=>t.type==='设计待办'),receipt={system:'GDS',task:task.id,eventId:'EVENT1',actor:'设计甲',revision:task.gds.revision,action:'submit',contents:{drawings:[{id:'A',type:'其他图',file:{name:'说明.pdf'}}]}};
+ const c=fixture();c.actor='设计甲';c.submitDesign();const task=c.TODOS.find(t=>t.type==='设计待办'),receipt={system:'GDS',task:task.id,eventId:'EVENT1',actor:'设计甲',revision:task.gds.revision,action:'submit',contents:{drawings:[{id:'A',type:'其他图',file:{name:'说明.pdf'}}]}};
  const result=c.gds171Receive(receipt);assert.deepEqual(copy(c.gds171Receive(receipt)),copy(result));const review=c.TODOS.find(t=>t.id===result.nextTask);assert.equal(c.TODOS.filter(t=>t.type==='设计确认待办').length,1);
  assert.throws(()=>c.gds171Receive({...receipt,eventId:'EVENT2'}),/过期/);c.actor='PM';const before={todos:{[review.id]:copy(review)}};c.dr185Review(review,'A','reject',1,'重新出图');const after={todos:{[review.id]:copy(review)}},events=c.v72NotificationEvents(before,after);assert.equal(events.length,1);assert.equal(events[0].recipient,'设计甲');assert.equal(events[0].task,review.id);
 });
@@ -79,7 +80,7 @@ test('旧附件归入其他图并保留原文件，重复迁移不重复；四�
 
 test('分配校验时间、协调员，承接后生成设计单时把两项传至 GDS',()=>{
  const c=fixture();assert.throws(()=>c.dw132CreateOpportunities('P',['设计甲']),/期望完成/);assert.throws(()=>c.dw132CreateOpportunities('P',['设计甲'],'','',{expectedCompletionAt:'2026-10-25'}),/协调员/);assert.throws(()=>c.dr187Coordination({mode:'pm',person:'不存在'}),/协调员/);
- c.OPPS[0][20].expectedCompletionAt=c.tfExpected('2026-10-25');c.OPPS[0][20].coordination={mode:'pm',person:'PM'};c.actor='设计甲';c.oqConfirmQuote('Q',1);const t=c.TODOS.find(t=>t.type==='设计待办');assert.equal(t.expectedCompletionAt,c.tfExpected('2026-10-25'));assert.equal(t.coordination.person,'PM');assert.equal(t.gds.requests[0].payload.coordination.person,'PM');
+ c.OPPS[0][20].expectedCompletionAt=c.tfExpected('2026-10-25');c.OPPS[0][20].coordination={mode:'pm',person:'PM'};c.actor='设计甲';c.submitDesign();const t=c.TODOS.find(t=>t.type==='设计待办');assert.equal(t.expectedCompletionAt,c.tfExpected('2026-10-25'));assert.equal(t.coordination.person,'PM');assert.equal(t.gds.requests[0].payload.coordination.person,'PM');
 });
 test('设计回传不结束设计待办，多次回传追加图纸；同步审核和 GDS 完成独立',()=>{
  const c=fixture(),r=deliver(c),d=c.TODOS.find(t=>t.type==='设计待办');assert.equal(d.status,'待处理');c.actor='设计甲';const again=c.dr185Submit(d,{drawings:[{id:'C',type:'3D意向图',file:{id:'FC',name:'意向.jpg'}}]});assert.equal(again.id,r.id);assert.equal(r.drawings.length,3);
@@ -90,14 +91,14 @@ test('PM 指定协调员可以办理审核，其他人无权；催办永远是�
  const c=fixture(),r=deliver(c);r.coordination={mode:'pm',person:'设计乙'};c.actor='设计乙';assert.equal(c.v21CanOperate(r),true);c.dr185Review(r,'A','confirm',1);c.actor='其他人';assert.throws(()=>c.dr185Review(r,'B','confirm',1),/不可办理/);c.actor='PM';c.todoActs(r);const actions=c.todoActs(r);assert.equal(actions[0].primary,true);assert.equal(actions[0].act,'plannedTodoDo');
 });
 test('设计师安排协调员在 GDS 确认，PM 只需同步；GDS 完成不结束审核',()=>{
- const c=fixture();c.OPPS[0][20].coordination={mode:'designer'};c.actor='设计甲';c.oqConfirmQuote('Q',1);const t=c.TODOS.find(t=>t.type==='设计待办');const receipt={system:'GDS',task:t.id,eventId:'REMOTE',actor:'设计甲',revision:t.gds.revision,action:'submit',contents:{coordinator:'远端协调员',coordinatorConfirmed:true,drawings:[{id:'A',type:'平面设计图',file:{name:'平面.jpg'}}]}};const response=c.gds171Receive(receipt),r=c.TODOS.find(t=>t.id===response.nextTask);assert.equal(r.drawings[0].status,'已确认');assert.equal(r.coordination.gdsPerson,'远端协调员');assert.equal(r.status,'待处理');c.gds171Receive({system:'GDS',task:t.id,eventId:'DONE',actor:'设计甲',revision:t.gds.revision,action:'complete'});assert.equal(r.status,'待处理');c.actor='PM';c.dr187Sync(r,r.editRevision);assert.equal(r.status,'已处理');
+ const c=fixture();c.OPPS[0][20].coordination={mode:'designer'};c.actor='设计甲';c.submitDesign();const t=c.TODOS.find(t=>t.type==='设计待办');const receipt={system:'GDS',task:t.id,eventId:'REMOTE',actor:'设计甲',revision:t.gds.revision,action:'submit',contents:{coordinator:'远端协调员',coordinatorConfirmed:true,drawings:[{id:'A',type:'平面设计图',file:{name:'平面.jpg'}}]}};const response=c.gds171Receive(receipt),r=c.TODOS.find(t=>t.id===response.nextTask);assert.equal(r.drawings[0].status,'已确认');assert.equal(r.coordination.gdsPerson,'远端协调员');assert.equal(r.status,'待处理');c.gds171Receive({system:'GDS',task:t.id,eventId:'DONE',actor:'设计甲',revision:t.gds.revision,action:'complete'});assert.equal(r.status,'待处理');c.actor='PM';c.dr187Sync(r,r.editRevision);assert.equal(r.status,'已处理');
 });
 test('前批同步后可创建下一审核批次，原审核结果与附件不变',()=>{
  const c=fixture(),r=deliver(c),d=c.TODOS.find(t=>t.type==='设计待办');c.actor='PM';for(const f of r.drawings)c.dr185Review(r,f.id,'confirm',1);c.dr187Sync(r,r.editRevision);const first=copy(r),files=copy(c.PROJECT_FILES.P);
  c.actor='设计甲';const next=c.dr185Submit(d,{drawings:[{id:'NEXT',type:'其他图',file:{id:'NEXTFILE',name:'补充图.jpg'}}]});assert.notEqual(next.id,r.id);assert.deepEqual(copy(r),first);assert.deepEqual(copy(c.PROJECT_FILES.P),files);assert.equal(d.status,'待处理');c.actor='PM';c.dr185Review(next,'NEXT','confirm',1);c.dr187Sync(next,next.editRevision);assert.equal(c.PROJECT_FILES.P.designFile.length,3);assert.deepEqual(copy(r),first);
 });
 test('设计催办模拟 GDS 回传，失败不消耗催办次数或留下半条审核',()=>{
- const c=fixture();c.actor='设计甲';c.oqConfirmQuote('Q',1);const id=c.TODOS.find(t=>t.type==='设计待办').id;
+ const c=fixture();c.actor='设计甲';c.submitDesign();const id=c.TODOS.find(t=>t.type==='设计待办').id;
  c.V72={messages:[]};c.tfRemind=(taskId)=>{const t=c.TODOS.find(t=>t.id===taskId);if(t.reminders?.length)throw Error('24小时');t.reminders=[{at:'now'}];c.V72.messages.push({task:taskId});return t.reminders[0];};
  vm.runInContext(read('designScenario.js'),c);c.actor='PM';const before=copy({todos:c.TODOS,messages:c.V72.messages});c.failSave=true;assert.throws(()=>c.tfRemind(id),/未保存/);assert.deepEqual(copy({todos:c.TODOS,messages:c.V72.messages}),before);c.failSave=false;c.tfRemind(id);const task=c.TODOS.find(t=>t.id===id);assert.equal(task.status,'待处理');assert.equal(c.TODOS.filter(t=>t.type==='设计确认待办').length,1);assert.throws(()=>c.tfRemind(id),/24小时/);assert.equal(task.reminders.length,1);
 });

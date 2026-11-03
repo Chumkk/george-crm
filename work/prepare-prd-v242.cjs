@@ -1,0 +1,18 @@
+const fs=require('fs'),path=require('path');
+const root=path.resolve(__dirname,'..'),stamp='2026-11-03 11:14';
+let raw=fs.readFileSync(path.join(__dirname,'space-prd-v237-content.json'),'utf8');
+const replace=(from,to)=>{if(!raw.includes(from))throw Error('Missing PRD text: '+from);raw=raw.replace(from,to);};
+replace('产品报价待办直接展示报价状态、精确关联订单的ERP执行状态及传输状态，并标明报价助理。未创建订单、未传输、等待回执、实际执行分别显示，不借用其他品类、部门或加单订单的状态。','产品报价待办直接展示报价状态、精确关联订单的ERP执行状态及独立的ERP请求信息，并标明报价助理。ERP执行状态沿用关联订单的业务状态，初始为未执行；未传输、等待回执等本地传输信息不得作为ERP执行状态。尚未提交且无ERP记录时，ERP状态显示为空，不借用其他品类、部门或加单订单的状态。');
+replace('ERP 请求初始执行状态为未执行，分别记录发送、接收、实收和执行。','ERP单据初始执行状态沿用未执行，与传输请求状态分别记录；未执行不表示未发起传输。提交成功须已持久化本版ERP请求，不再经过内部确认报价。重新提交保留已有实际执行状态，分别记录发送、接收、实收和执行。');
+replace('不在打开页面时自动传输历史未传输版本。历史待处理报价由当前负责人打开核对并重新提交，按本次成功提交完成关联任务。','不在打开页面或通过旧确认入口自动补传缺少ERP请求的历史版本，也不补造历史请求或任务完成结果。历史待处理报价由当前负责人打开核对并重新提交，按本次成功提交记录请求并完成关联任务。');
+const d=JSON.parse(raw);d.version='V1.98';d.date='2026-11-03';d.updatedAt=stamp;
+const visit=value=>typeof value==='string'?value.replaceAll('已保存：工作稿已保存；已报价：','已暂存：工作稿已保存；已提交：').replaceAll('内部显示已保存','内部显示已暂存').replaceAll('报价转已保存','报价转已暂存').replaceAll('已保存工作稿与最近发布版本','已暂存工作稿与最近发布版本'):Array.isArray(value)?value.map(visit):value&&typeof value==='object'?Object.fromEntries(Object.entries(value).map(([k,v])=>[k,visit(v)])):value;
+Object.assign(d,visit(d));
+const reuse=d.modules.flatMap(m=>m.items).find(i=>i.anchor==='quotation-reuse');
+for(const k of Object.keys(reuse))if(k!=='title'&&typeof reuse[k]==='string')reuse[k]=reuse[k].replaceAll('复用已提交报价','复用报价');
+const rev=d.revisions.rows.find(r=>r.module.includes('助理报价'));
+rev.changes[0]='产品报价待办支持SM安排助理；助理与SM同等编辑、保存、提交，保留实际操作人并遵守ERP限制。报价提交成功即发布两端、记录本版ERP请求并完成原待办。报价单状态统一为待报价、已暂存、已提交、已确认。ERP执行状态与传输请求独立展示，历史缺少请求的版本核对后重新提交，不自动补传。';
+fs.writeFileSync(path.join(__dirname,'space-prd-v242-content.json'),JSON.stringify(d,null,2)+'\n');
+let renderer=fs.readFileSync(path.join(__dirname,'render-prd-v237.py'),'utf8').replaceAll('space-prd-v237-content.json','space-prd-v242-content.json').replaceAll('V1.97','V1.98').replaceAll('2026-11-03 00:16',stamp);
+fs.writeFileSync(path.join(__dirname,'render-prd-v242.py'),renderer);
+const updates=path.join(root,'george-crm-react/src/features/prd/document-updates.json'),u=JSON.parse(fs.readFileSync(updates,'utf8'));u['space-quote']=stamp;fs.writeFileSync(updates,JSON.stringify(u,null,2)+'\n');

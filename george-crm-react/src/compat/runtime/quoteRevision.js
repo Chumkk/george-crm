@@ -115,7 +115,7 @@ function v125ApplySpaceImpact(project,before,after){
  extra.spaceChangeHistory=[...(extra.spaceChangeHistory||[]),{time:stamp,actor:v17Owner(),before:v3Copy(before),after:v3Copy(after),categories:impact.affected.slice()}];
  for(const code of impact.editable){
   const m=v3Meta(code);v125EnsureBaseline(code,m);m.confirmationHistory=[...(m.confirmationHistory||[]),{revision:m.revision,confirmedCats:(m.confirmedCats||[]).slice(),confirmedAt:m.confirmedAt||'',reason:'项目空间已修改',time:stamp}];
-  m.needsSpaceUpdate=true;m.active=false;m.status='已保存';m.confirmedCats=[];m.spaceRevision=extra.spaceRevision;m.spaceChangeAt=stamp;
+  m.needsSpaceUpdate=true;m.active=false;m.status='已暂存';m.confirmedCats=[];m.spaceRevision=extra.spaceRevision;m.spaceChangeAt=stamp;
  }
  for(const t of TODOS){
   const cat=t.cat||t.smDept;if(t.project!==project||!impact.affected.includes(cat)||!['报价待办','订单待办'].includes(t.type))continue;
@@ -132,7 +132,7 @@ function v125ApplySpaceImpact(project,before,after){
   const q=v3Copy(old.find(row=>row.space===s.name)||{space:s.name,floor:'-',products:[],confirmedCats:[],coverage:0});
   q.space=s.name;q.products=(q.products||[]).filter(p=>{const code=p[6]?.draftCode;return code?!impact.editable.includes(code)&&(s.cats.includes(p[1])||impact.protected.includes(code)):s.cats.includes(p[1])&&!impact.affected.includes(p[1]);});
   const retainedCats=q.products.filter(p=>V3.meta[p[6]?.draftCode]?.confirmedCats?.includes(p[1])).map(p=>p[1]);
-  q.confirmedCats=(q.confirmedCats||[]).filter(c=>retainedCats.includes(c)||s.cats.includes(c)&&!impact.affected.includes(c));q.dept=[...new Set([...s.cats,...retainedCats])].join(' / ');q.amount=q.products.reduce((sum,p)=>sum+qNum(p[2]),0);q.missing=s.cats.filter(c=>!q.products.some(p=>p[1]===c));q.spaceUpdateCats=s.cats.filter(c=>impact.editable.some(code=>v3Meta(code).categories.includes(c)));q.status=q.spaceUpdateCats.length?'待更新':q.products.length?'已报价':'未报价';q.confirmed=!q.spaceUpdateCats.length&&!!q.products.length&&q.products.every(p=>q.confirmedCats.includes(p[1]));return q;
+  q.confirmedCats=(q.confirmedCats||[]).filter(c=>retainedCats.includes(c)||s.cats.includes(c)&&!impact.affected.includes(c));q.dept=[...new Set([...s.cats,...retainedCats])].join(' / ');q.amount=q.products.reduce((sum,p)=>sum+qNum(p[2]),0);q.missing=s.cats.filter(c=>!q.products.some(p=>p[1]===c));q.spaceUpdateCats=s.cats.filter(c=>impact.editable.some(code=>v3Meta(code).categories.includes(c)));q.status=q.spaceUpdateCats.length?'待更新':q.products.length?'已提交':'未报价';q.confirmed=!q.spaceUpdateCats.length&&!!q.products.length&&q.products.every(p=>q.confirmedCats.includes(p[1]));return q;
  });
  for(const previous of old){
   if(after.some(s=>s.name===previous.space))continue;
@@ -159,7 +159,7 @@ function v137ApplyCategoryImpact(project,before,after){
  for(const code of impact.editable){
   const meta=v3Meta(code);v125EnsureBaseline(code,meta);
   meta.confirmationHistory=[...(meta.confirmationHistory||[]),{revision:meta.revision,confirmedCats:[...(meta.confirmedCats||[])],confirmedAt:meta.confirmedAt||'',reason:'项目采购品类已修改',time:stamp}];
-  Object.assign(meta,{needsSpaceUpdate:true,active:false,status:'已保存',confirmedCats:[],categoryChangeAt:stamp});
+  Object.assign(meta,{needsSpaceUpdate:true,active:false,status:'已暂存',confirmedCats:[],categoryChangeAt:stamp});
  }
  for(const task of TODOS){
   if(task.project!==project||task.type!=='报价待办'||!impact.affected.includes(task.cat||task.smDept))continue;
@@ -177,7 +177,7 @@ function v137ApplyCategoryImpact(project,before,after){
   const cats=[...new Set(next.products.map(product=>product[1]))];
   next.confirmedCats=(next.confirmedCats||[]).filter(cat=>!impact.affected.includes(cat)||next.products.some(product=>product[1]===cat&&impact.protected.includes(product[6]?.draftCode)));
   next.amount=next.products.reduce((sum,product)=>sum+qNum(product[2]),0);next.dept=cats.join(' / ');next.missing=after.filter(cat=>!next.products.some(product=>product[1]===cat));
-  next.spaceUpdateCats=after.filter(cat=>impact.editable.some(code=>v3Meta(code).categories.includes(cat)));next.status=next.spaceUpdateCats.length?'待更新':next.products.length?'已报价':'未报价';
+  next.spaceUpdateCats=after.filter(cat=>impact.editable.some(code=>v3Meta(code).categories.includes(cat)));next.status=next.spaceUpdateCats.length?'待更新':next.products.length?'已提交':'未报价';
   next.confirmed=!!next.products.length&&next.products.every(product=>next.confirmedCats.includes(product[1]));return next;
  });
  QUOTE_UI.clientSelected={};return impact;
@@ -188,7 +188,7 @@ function v125Restore(saved){
  for(const [target,key] of [[V3.meta,'meta'],[DRAFT_DATA,'data'],[PROJECT_QUOTES,'quotes'],[PROJECT_DRAFT_CATS,'draftCats'],[PROJECT_EXTRA,'extra']]){for(const id of Object.keys(target))delete target[id];Object.assign(target,saved[key]);}
 }
 const v125OldStatus=v3Status;
-v3Status=function(m){return m.needsSpaceUpdate?'已保存':v125OldStatus(m);};
+v3Status=function(m){return m.needsSpaceUpdate?'已暂存':v125OldStatus(m);};
 const v125ProjectRecordBase=projectRecordToWizard;
 projectRecordToWizard=function(p){return v125HydrateProjectForm(p[0],v125ProjectRecordBase(p));};
 const v125FooterHintBase=setFooterHint;
@@ -215,7 +215,7 @@ applyDraftSaved=function(input){
   m.submitted=v3Copy(DRAFT_DATA[code]);m.submittedAt=v3Stamp();m.submittedBy=v17Owner();m.quoteFx=v3Copy(QUOTE_UI.fx||{ccy:'CNY',rate:1});m.status=v3Status(m);
   const version=v125Snapshot(code,m);m.quoteVersions=[...(m.quoteVersions||[]),version];m.currentQuoteVersion=version.id;
   archiveProject=d.project;v3RebuildDraftQuotes(code);
-  for(const q of PROJECT_QUOTES[d.project]||[]){q.spaceUpdateCats=(q.spaceUpdateCats||[]).filter(c=>!m.categories.includes(c));q.missing=(v125ProjectSpaces(d.project).find(s=>s.name===q.space)?.cats||[]).filter(c=>!q.products.some(p=>p[1]===c));if(!q.spaceUpdateCats.length)q.status=q.products.length?'已报价':'未报价';}
+  for(const q of PROJECT_QUOTES[d.project]||[]){q.spaceUpdateCats=(q.spaceUpdateCats||[]).filter(c=>!m.categories.includes(c));q.missing=(v125ProjectSpaces(d.project).find(s=>s.name===q.space)?.cats||[]).filter(c=>!q.products.some(p=>p[1]===c));if(!q.spaceUpdateCats.length)q.status=q.products.length?'已提交':'未报价';}
   const source=TODOS.find(t=>t.id===(DRAFT_DATA[code].todoId||d.todoId));
   for(const cat of m.categories){
    let t=source?.type==='报价待办'&&source.project===d.project&&(!source.cat||source.cat===cat)?source:TODOS.find(t=>t.project===d.project&&t.type==='报价待办'&&t.cat===cat&&t.status!=='已取消'&&(t.draft===code||(t.drafts||[]).includes(code)));

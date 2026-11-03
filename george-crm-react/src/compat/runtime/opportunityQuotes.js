@@ -53,11 +53,11 @@ function oqLockReason(code) {
 }
 function oqStatus(code) {
  const m=V3.meta[code]; if(!m) return '待报价';
- if(m.needsSpaceUpdate||m.workingSaved) return '已保存';
- if(!m.submitted) return DRAFT_DATA[code]?.savedAt?'已保存':'待报价';
- return m.categories?.length&&m.categories.every(c=>m.confirmedCats?.includes(c))?'已确认':'已报价';
+ if(m.needsSpaceUpdate||m.workingSaved) return '已暂存';
+ if(!m.submitted) return DRAFT_DATA[code]?.savedAt||['已暂存','已保存'].includes(m.status)?'已暂存':'待报价';
+ return m.categories?.length&&m.categories.every(c=>m.confirmedCats?.includes(c))?'已确认':'已提交';
 }
-v3Status = m => { const code=Object.keys(V3.meta).find(k=>V3.meta[k]===m); return code?oqStatus(code):m.needsSpaceUpdate||m.workingSaved?'已保存':m.submitted?(m.categories?.every(c=>m.confirmedCats?.includes(c))?'已确认':'已报价'):'待报价'; };
+v3Status = m => { const code=Object.keys(V3.meta).find(k=>V3.meta[k]===m); return code?oqStatus(code):m.needsSpaceUpdate||m.workingSaved?'已暂存':m.submitted?(m.categories?.every(c=>m.confirmedCats?.includes(c))?'已确认':'已提交'):'待报价'; };
 v125DraftLocked = m => { const code=Object.keys(V3.meta).find(k=>V3.meta[k]===m); return code?!!oqLockReason(code):false; };
 v126CanEditDraft = code => !oqLockReason(code) && oqCanQuote(oqQuoteOpp(code));
 function oqEnsureTodo(opp, source='') {
@@ -65,9 +65,11 @@ function oqEnsureTodo(opp, source='') {
  if(!task) task=addChainTodo({type:'报价待办',title:'请完成'+opp[3]+'报价并提交',project:opp[4],customer:opp[6],region:opp[5],cat:opp[3],smDept:opp[3],owner:opp[7],initiator:PROJECTS.find(p=>p[0]===opp[4])?.[9]||opp[10]||'',opp:opp[0],sourceTodoId:source,assignmentManaged:true,designOpportunity:opp[20]?.kind==='design',isAddon:!!opp[20]?.isAddon,sourceOrderId:opp[20]?.sourceOrderId||''});
  return task;
 }
+function oqERPStatus(order){const value=String(order?.[18]?.erpExecutionStatus||order?.[3]||'');return !value||['未传输','等待ERP回执','等待ERP对接','传输中','传输失败','已传输'].includes(value)?'未执行':value;}
+function oqERPRequestInfo(order,meta){const info=order?.[18]||{},requests=info.erpRequests||[],current=meta?.revision>0&&(requests.some(r=>r.versionId===meta.currentQuoteVersion||!r.versionId&&r.revision===meta.revision)||info.erpRequestedRevision===meta.revision);return {current:!!current,state:current?(info.erpState&&info.erpState!=='未传输'?info.erpState:'ERP请求已记录'):'',notice:meta?.submitted&&!current?'历史提交缺少本版ERP请求记录，请核对后重新提交':''};}
 function oqNewOrder(opp, code, kind='product') {
  const p=findProject(opp[4]);
- const order=[nextOrderNo(p[0],kind),v17Owner(),kind==='design'?'设计单':'报价单','未传输',opp[3],p[8],DRAFT_DATA[code]?.name||opp[1],'-','-','-','¥0','-','-','-',todoStamp(),p[0],kind==='design'?'设计费':'',opp[0],{quoteCode:code,kind,createdBy:v17Owner(),stockStatus:'未备货',erpState:'未传输',sourceOrderId:opp[20]?.sourceOrderId||'',isAddon:!!opp[20]?.isAddon}];
+ const order=[nextOrderNo(p[0],kind),v17Owner(),kind==='design'?'设计单':'报价单','未执行',opp[3],p[8],DRAFT_DATA[code]?.name||opp[1],'-','-','-','¥0','-','-','-',todoStamp(),p[0],kind==='design'?'设计费':'',opp[0],{quoteCode:code,kind,createdBy:v17Owner(),stockStatus:'未备货',erpState:'',sourceOrderId:opp[20]?.sourceOrderId||'',isAddon:!!opp[20]?.isAddon}];
  ORDERS.unshift(order); return order;
 }
 function oqCreateQuote(oppId) {
@@ -95,7 +97,7 @@ function oqValidateInput(input) {
 }
 v3QuickSave = function(input,source) {
  try { const {data}=oqValidateInput(input);bs131Atomic(()=>{
-   upsertDraftFromPims({...data,savedAt:v3Stamp()});const m=v3Meta(data.draftCode);m.workingSaved=true;m.status='已保存';
+   upsertDraftFromPims({...data,savedAt:v3Stamp()});const m=v3Meta(data.draftCode);m.workingSaved=true;m.status='已暂存';
   });draftEditorCtx={...DRAFT_DATA[data.draftCode],spaces:DRAFT_DATA[data.draftCode].spaces.map(s=>s.name)};
   source?.postMessage({type:'pimsSaveAck',draftCode:data.draftCode,durable:true},'*');markPagesDirty();
  }catch(error){source?.postMessage({type:'v3SaveError',message:error.message},'*');toast(error.message);}
@@ -103,7 +105,7 @@ v3QuickSave = function(input,source) {
 function oqCommitPublished(code, data, opp, requestId='') {
  const m=v3Meta(code),order=oqOrder(code);v125EnsureBaseline(code,m);
  upsertDraftFromPims(data);m.project=opp[4];m.categories=[opp[3]];m.active=true;m.workingSaved=false;m.needsSpaceUpdate=false;
- m.revision=(m.revision||0)+1;m.confirmedCats=[];m.submitted=v3Copy(DRAFT_DATA[code]);m.submittedAt=v3Stamp();m.submittedBy=v17Owner();m.submissionRequestId=requestId;m.quoteFx=v3Copy(typeof pql144ProjectFx==='function'?pql144ProjectFx(opp[4]):QUOTE_UI.fx||{ccy:'CNY',rate:1});m.priceVersion=m.quoteFx.version||1;m.submitted.quoteFx=v3Copy(m.quoteFx);m.status='已报价';
+ m.revision=(m.revision||0)+1;m.confirmedCats=[];m.submitted=v3Copy(DRAFT_DATA[code]);m.submittedAt=v3Stamp();m.submittedBy=v17Owner();m.submissionRequestId=requestId;m.quoteFx=v3Copy(typeof pql144ProjectFx==='function'?pql144ProjectFx(opp[4]):QUOTE_UI.fx||{ccy:'CNY',rate:1});m.priceVersion=m.quoteFx.version||1;m.submitted.quoteFx=v3Copy(m.quoteFx);m.status='已提交';
  const version=v125Snapshot(code,m);m.quoteVersions=[...(m.quoteVersions||[]),version];m.currentQuoteVersion=version.id;
  archiveProject=opp[4];v3RebuildDraftQuotes(code);
  for(const row of PROJECT_QUOTES[opp[4]]||[]){row.confirmedCats=(row.confirmedCats||[]).filter(c=>c!==opp[3]);row.spaceUpdateCats=(row.spaceUpdateCats||[]).filter(c=>c!==opp[3]);}
@@ -120,7 +122,7 @@ applyDraftSaved = function(input) {
  const source=document.getElementById('pimsFrame')?.contentWindow,requestId=String(input.submissionRequestId||'');
  try {
   const {data,opp}=oqValidateInput(input),m=v3Meta(data.draftCode);
-  if(requestId&&m.quoteVersions?.some(v=>v.requestId===requestId)){source?.postMessage({type:'pimsSaveAck',draftCode:data.draftCode,durable:true,submissionRequestId:requestId},'*');return data.draftCode;}
+  if(requestId){const previous=m.quoteVersions?.find(v=>v.requestId===requestId);if(previous){const info=oqOrder(data.draftCode)?.[18]||{};if(!(info.erpRequests||[]).some(r=>r.versionId===previous.id||!r.versionId&&r.revision===previous.revision)&&info.erpRequestedRevision!==previous.revision)throw Error('该历史提交未记录ERP请求，请核对报价后重新提交');source?.postMessage({type:'pimsSaveAck',draftCode:data.draftCode,durable:true,submissionRequestId:requestId},'*');return data.draftCode;}}
   if(!v3Cats(data).length)throw Error('请填写报价产品');const error=v125SpaceValidation(data);if(error)throw Error(error.replaceAll('草稿','报价单'));
   const code=bs131Atomic(()=>oqCommitPublished(data.draftCode,data,opp,requestId));
   source?.postMessage({type:'pimsSaveAck',draftCode:code,durable:true,submissionRequestId:requestId},'*');
@@ -133,7 +135,7 @@ function oqQueueERP(order,m,operation) {
  const info=order[18];info.erpRequests ||= [];
  if(info.erpRequests.some(r=>r.versionId===m.currentQuoteVersion))return;
  info.erpRequests.push({id:order[0]+':'+m.currentQuoteVersion,operation,versionId:m.currentQuoteVersion,revision:m.revision,time:v3Stamp(),actor:v17Owner(),contents:v3Copy(m.submitted),state:'等待ERP对接'});
- info.erpRequestedRevision=m.revision;info.erpState='等待ERP回执';order[3]='未执行';
+ info.erpRequestedRevision=m.revision;info.erpState='等待ERP回执';if(!order[3]||['未传输','等待ERP回执','等待ERP对接','传输中','传输失败','已传输'].includes(order[3]))order[3]='未执行';
 }
 function oqFinalizePublished(code){
  const opp=oqQuoteOpp(code),order=oqOrder(code),m=V3.meta[code];
@@ -145,19 +147,19 @@ function oqFinalizePublished(code){
  return order;
 }
 function oqNormalizeExecutionStates() {
- for(const order of ORDERS)if(order[18]?.quoteCode&&order[18]?.erpRequestedRevision&&order[3]==='等待ERP回执')order[3]='未执行';
+ for(const order of ORDERS)if(order[18]?.quoteCode&&['未传输','等待ERP回执','等待ERP对接','传输中','传输失败','已传输'].includes(order[3])){order[18].legacyTransportState||=order[3];order[3]='未执行';}
 }
 oqNormalizeExecutionStates();
 function oqConfirmQuote(code,expectedRevision) {
- // Internal submission finalizer; retained name for historical runtime hooks.
- // There is no separate user-facing confirmation action.
+ // Read-only compatibility for already submitted versions. Never queue a
+ // historical quotation through the removed manual-confirmation path.
  const opp=oqQuoteOpp(code),order=oqOrder(code),m=V3.meta[code];
  if(!order||!m||!oqCanQuote(opp))throw Error('请由当前商机负责人提交报价');
  if(oqLockReason(code))throw Error(oqLockReason(code));
- if(!['已报价','已确认'].includes(oqStatus(code)))throw Error('请先提交最新报价；已保存的编辑内容不能确认报价');
+ if(!['已提交','已确认'].includes(oqStatus(code)))throw Error('请先提交最新报价；仅保存不能发起ERP请求');
  if(m.revision!==expectedRevision)throw Error('报价已更新，请重新核对最新版本');
  if(order[18].erpRequestedRevision===m.revision)return order;
- return bs131Atomic(()=>oqFinalizePublished(code));
+ throw Error('请编辑报价并提交，不能通过旧确认报价入口补传ERP');
 }
 function oqReviewConfirm(code) {
  return toast('请编辑报价并提交，提交成功后自动传输 ERP 并完成相关待办');
@@ -202,10 +204,10 @@ orderRowsHtml=function(project,oppId){
  return list.map(r=>{
   const code=r[18]?.quoteCode,opp=oqOpp(orderOppOf(r)),can=code&&oqCanQuote(opp)&&!oqLockReason(code),acts=code?[
    ...(can?[{t:'编辑报价',act:r[18].kind==='design'?'oqDesignEdit':'oqEdit',extra:`data-code="${esc(code)}" data-opp="${esc(opp?.[0]||'')}" data-proj="${esc(project)}"`}]:[]),
-   ...(can&&r[18].kind==='design'&&oqStatus(code)==='已保存'?[{t:'提交报价',act:'oqPublishDesign',extra:`data-code="${esc(code)}"`}]:[]),
+   ...(can&&r[18].kind==='design'&&oqStatus(code)==='已暂存'?[{t:'提交报价',act:'oqPublishDesign',extra:`data-code="${esc(code)}"`}]:[]),
    {t:'报价历史',act:'oqHistory',extra:`data-proj="${esc(project)}" data-code="${esc(code)}"`}]:r[18]?.legacySalesRecord||r[2]==='销售订单'?[]:orderActs(r);
   const archived=!!r[18]?.legacyQuoteArchive;
-  return `<tr ${archived?'data-archived-quote="true"':''}>${r.slice(0,15).map((value,i)=>(i===10?oqSavedAmountCell(r):'')+`<td>${i===0?esc(typeof oqFormatOrderNumber==='function'?oqFormatOrderNumber(value,project):value):i===2?tag(archived?'报价单（历史归档）':value==='销售订单'?'报价单':value):i===3?tag(value):esc(value||'—')}</td>`).join('')}<td>${code?tag(archived?'历史归档':oqStatus(code)):'未记录'}</td>${ops(acts)}</tr>`;
+  return `<tr ${archived?'data-archived-quote="true"':''}>${r.slice(0,15).map((value,i)=>(i===10?oqSavedAmountCell(r):'')+`<td>${i===0?esc(typeof oqFormatOrderNumber==='function'?oqFormatOrderNumber(value,project):value):i===2?tag(archived?'报价单（历史归档）':value==='销售订单'?'报价单':value):i===3?tag(typeof oqERPStatus==='function'?oqERPStatus(r):value):esc(value||'—')}</td>`).join('')}<td>${code?tag(archived?'历史归档':oqStatus(code)):'未记录'}</td>${ops(acts)}</tr>`;
  }).join('');
 };
 const oqOppPageBase=pageOppDetail;
@@ -261,7 +263,7 @@ dw132FeeOrder=function(oppId,amount,fields={}){
   if(oqLockReason(code))throw Error(oqLockReason(code));
   const data={...v3Copy(opp[20]||{}),draftCode:code,name:opp[1]+' · 设计报价',project:opp[4],customer:opp[6],tpl:'设计服务',sm:opp[7],oppId,todoId:task.id,designFields:v3Copy(fields),spaces:[{name:'设计服务',products:[{name:'设计服务',cat:'设计服务',sku:'DESIGN-FEE',qty:1,price:amount,amt:amount,publicQuote:{name:'设计服务',category:'设计服务',quantity:1,unit:'项',unitPrice:amount,amount,description:fields.gdsRemark||'',designAttachments:v3Copy(fields.attachments||[])}}]}],rows:[]};
   upsertDraftFromPims({...data,savedAt:v3Stamp()});if(!old)oqNewOrder(opp,code,'design');
-  const m=v3Meta(code);m.categories=['设计服务'];m.workingSaved=true;m.status='已保存';task.draft=code;task.drafts=[code];
+  const m=v3Meta(code);m.categories=['设计服务'];m.workingSaved=true;m.status='已暂存';task.draft=code;task.drafts=[code];
   oqOrder(code)[18].workingFields=v3Copy(fields);return oqOrder(code);
  });
 };
@@ -337,7 +339,7 @@ handleAct=function(button){const act=button?.dataset?.act,id=button?.dataset?.id
   if(act==='customerDesignRequest')return toast('请在项目创建后，由项目经理从项目列表发起设计待办');
   if(act==='oqDesignRequest')return oqOpenDesignRequest(button.dataset.proj);
   if(act==='oqRequestSave'){if(v69UploadsBusy())return toast('附件正在上传，请稍候');oqInitiateDesign(OQ134.project,{designType:$('#oqDesignType').value,designer:$('#oqDesigner').value,attachments:v69UploadValues('oqCustomerFiles'),note:$('#oqDesignNote').value.trim(),expectedCompletionAt:$('#oqDesignExpected')?.value||''},OQ134.requestToken,OQ134.task);$('#mask').classList.remove('on');markPagesDirty();openPage('todos');return toast('项目设计待办已发起');}
-  if(act==='oqDesignComplete'){if(v69UploadsBusy())return toast('附件正在上传，请稍候');const task=TODOS.find(t=>t.id===id),data={projectType:$('#dw132ProjectType').value,projectArea:$('#dw132Area').value,spaceCats:[...document.querySelectorAll('[data-design-space]')].map(el=>({id:el.dataset.spaceId,name:el.value.trim(),cats:[]})),attachments:v69UploadValues('dw132DesignFiles')};const before=v125ProjectSpaces(task.project),after=oqDesignSpaces(task.project,data.spaceCats),impact=v125SpaceImpact(task.project,before,after);const commit=()=>{dw132CompleteDesign(task,data);document.getElementById('v3Dialog')?.remove();$('#mask').classList.remove('on');markPagesDirty();openPage('todos');toast('设计资料已回写项目，设计待办已完成');};if(!impact.affected.length)return commit();const signature=JSON.stringify(before);v3Dialog('确认设计空间变更',`${v125SpaceChangeHtml(before,after)}<p>受影响品类：${impact.affected.map(esc).join('、')}</p><p>${impact.editable.length} 张可编辑报价单将转为已保存，需要重新提交；两端总览变为待更新、未确认，报价待办重新激活。已备货订单和历史报价保持不变。</p>`,`<button class="wk-btn" data-v3="closeDialog">返回修改</button><button class="wk-btn primary" id="oqDesignImpactSave">确认并保存</button>`);document.getElementById('oqDesignImpactSave').onclick=()=>{try{if(JSON.stringify(v125ProjectSpaces(task.project))!==signature)throw Error('项目空间已更新，请重新核对');commit();}catch(error){toast(error.message);}};return;}
+  if(act==='oqDesignComplete'){if(v69UploadsBusy())return toast('附件正在上传，请稍候');const task=TODOS.find(t=>t.id===id),data={projectType:$('#dw132ProjectType').value,projectArea:$('#dw132Area').value,spaceCats:[...document.querySelectorAll('[data-design-space]')].map(el=>({id:el.dataset.spaceId,name:el.value.trim(),cats:[]})),attachments:v69UploadValues('dw132DesignFiles')};const before=v125ProjectSpaces(task.project),after=oqDesignSpaces(task.project,data.spaceCats),impact=v125SpaceImpact(task.project,before,after);const commit=()=>{dw132CompleteDesign(task,data);document.getElementById('v3Dialog')?.remove();$('#mask').classList.remove('on');markPagesDirty();openPage('todos');toast('设计资料已回写项目，设计待办已完成');};if(!impact.affected.length)return commit();const signature=JSON.stringify(before);v3Dialog('确认设计空间变更',`${v125SpaceChangeHtml(before,after)}<p>受影响品类：${impact.affected.map(esc).join('、')}</p><p>${impact.editable.length} 张可编辑报价单将转为已暂存，需要重新提交；两端总览变为待更新、未确认，报价待办重新激活。已备货订单和历史报价保持不变。</p>`,`<button class="wk-btn" data-v3="closeDialog">返回修改</button><button class="wk-btn primary" id="oqDesignImpactSave">确认并保存</button>`);document.getElementById('oqDesignImpactSave').onclick=()=>{try{if(JSON.stringify(v125ProjectSpaces(task.project))!==signature)throw Error('项目空间已更新，请重新核对');commit();}catch(error){toast(error.message);}};return;}
   if(act==='dw132Allocate'){dw132CreateOpportunities(V68.allocation.project,[...document.querySelectorAll('[data-design-person]:checked')].map(el=>el.value),V68.allocation.sourceTodoId,V68.allocation.token);$('#mask').classList.remove('on');markPagesDirty();openPage('todos');return toast('已生成设计师确认商机待办');}
   if(act==='oqOpenOpp')return oqOpenOpportunity(button.dataset.opp);
   if(act==='oqEdit'||act==='v3EditTodo'||act==='createDraftQuote'){const task=TODOS.find(t=>t.id===id),oppId=button.dataset.opp||task?.opp;return openDraftEditor(code||task?.draft||oqCreateQuote(oppId),task?.type==='报价待办'?task.id:'');}
@@ -362,7 +364,7 @@ function oqMigrateSalesRecords(){
 }
 try{if(typeof localStorage==='undefined'||localStorage.getItem('crm-quotation-types-v147')!=='1')bs131Atomic(()=>{oqMigrateSalesRecords();if(typeof localStorage!=='undefined')localStorage.setItem('crm-quotation-types-v147','1');});}catch(error){toast('报价单类型更新未保存，请重试：'+error.message);}
 function oqMigrate(){
- for(const task of TODOS){if(task.type==='草稿报价待办')task.type='报价待办';if(['创建项目待办','订单待办','设计单'].includes(task.type)&&task.status==='待处理'){task.status='已取消';task.cancelReason='流程调整：由项目发起设计，由商机确认报价';task.cancelledAt=v3Stamp();}}
+ for(const task of TODOS){if(task.type==='草稿报价待办')task.type='报价待办';if(['创建项目待办','订单待办','设计单'].includes(task.type)&&task.status==='待处理'){task.status='已取消';task.cancelReason='流程调整：由项目发起设计，由商机提交报价并自动发起ERP请求';task.cancelledAt=v3Stamp();}}
  for(const [code,d] of Object.entries(DRAFT_DATA)){
   let opp=oqQuoteOpp(code);if(!opp){const cats=v3Cats(d).length?v3Cats(d):[d.tpl],matches=OPPS.filter(o=>o[4]===d.project&&cats.length===1&&o[3]===cats[0]&&!o[20]?.isAddon);if(matches.length===1){opp=matches[0];d.oppId=opp[0];}}
   if(!opp)continue;
@@ -384,7 +386,7 @@ function oqMigrateActiveTodos(){
   if(OQ_RETIRED_TODO_TYPES.has(task.type)){
    task.retiredWorkflow135=true;
    if(task.status==='待处理'){
-    task.retiredSnapshot135||=v3Copy(task);task.status='已取消';task.cancelReason='新流程由商机负责人确认报价，旧待办保留为历史记录';task.cancelledAt=v3Stamp();
+    task.retiredSnapshot135||=v3Copy(task);task.status='已取消';task.cancelReason='新流程由负责人提交报价并自动发起ERP请求，旧待办保留为历史记录';task.cancelledAt=v3Stamp();
    }
    continue;
   }
@@ -419,7 +421,7 @@ const oqWaitingBase=v16QuoteWaiting;
 v16QuoteWaiting=function(task){return task.type==='报价待办'&&task.opp?false:oqWaitingBase(task);};
 
 const oqTodoSubjectBase=todoSubject;
-todoSubject=function(task){if(task.type==='报价待办'&&task.opp){const code=task.draft||(task.drafts||[])[0],state=code?oqStatus(code):'待报价';if(state==='已报价'||state==='已确认')return task.status==='已处理'?(state==='已确认'?'客户已确认报价':'报价已提交'):state+'，请核对并重新提交';}return oqTodoSubjectBase(task);};
+todoSubject=function(task){if(task.type==='报价待办'&&task.opp){const code=task.draft||(task.drafts||[])[0],state=code?oqStatus(code):'待报价';if(state==='已提交'||state==='已确认')return task.status==='已处理'?(state==='已确认'?'客户已确认报价':'报价已提交'):state+'，请核对并重新提交';}return oqTodoSubjectBase(task);};
 
 // The task-center source and navigation counts use the same current-workflow policy.
 if(typeof v21Rows==='function'){const oqVisibleRowsBase=v21Rows;v21Rows=(...args)=>oqVisibleRowsBase(...args).filter(crmTodoEnabled);}

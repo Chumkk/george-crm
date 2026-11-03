@@ -2450,7 +2450,7 @@ function allSpaceConfirmStatus(quotes){
 function catQuoteStatus(quotes, cat){
   if(!hasDraftForCat(archiveProject, cat)) return '未报价';
   if(projectCatConfirmed(quotes, cat)) return '已确认';
-  return '已报价';
+  return '已提交';
 }
 function allCatQuoteStatus(quotes, project){
   const cats=[...new Set([...quoteCatsOf(quotes||[]), ...unquotedCats(project)])];
@@ -2458,12 +2458,12 @@ function allCatQuoteStatus(quotes, project){
   const sts=cats.map(c=>catQuoteStatus(quotes,c));
   if(sts.every(s=>s==='已确认')) return '已确认';
   if(sts.every(s=>s==='未报价')) return '未报价';
-  return '已报价';
+  return '已提交';
 }
 function navStClass(st){
   if(st==='已确认') return 'st-done';
   if(st==='部分确认') return 'st-part';
-  if(st==='已报价') return 'st-quoted';
+  if(st==='已提交'||st==='已报价') return 'st-quoted';
   if(st==='未报价') return 'st-miss';
   return 'st-none';
 }

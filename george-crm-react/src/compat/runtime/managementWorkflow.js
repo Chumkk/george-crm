@@ -56,6 +56,8 @@ function mgOpportunityState(opp, orders=ORDERS) {
  if(opp[20]?.preliminaryTask)return opp[2];
  if(opp[20]?.lostAt||/^(输单|已输单)$/.test(opp[2]))return '已输单';
  const rows=orders.filter(o=>o[15]===opp[4]&&orderOppOf(o)===opp[0]&&!o[18]?.legacyQuoteArchive&&o[2]!=='费用订单'&&o[18]?.kind!=='fee');
+ const cents=value=>{const text=String(value??'').trim().replace(/[¥￥$,，\s]/g,'');if(!text||!/^\d+(?:\.\d{1,2})?$/.test(text))return null;const n=Number(text)*100;return Number.isSafeInteger(Math.round(n))?Math.round(n):null;};
+ const depositReached=o=>{const amount=cents(o[10]),paid=cents(o[13]);return amount>0&&paid!==null&&paid*5>=amount;};
  // Exact design-order GDS receipts drive service fulfillment independently of
  // ERP collection amounts and drawing-review synchronization.
  if(opp[20]?.kind==='design'){
@@ -64,7 +66,8 @@ function mgOpportunityState(opp, orders=ORDERS) {
   const exactTask=o=>tasks.find(t=>t.type==='设计待办'&&t.project===opp[4]&&t.opp===opp[0]&&t.order===o[0]&&t.drawingWorkflow185&&!t.retiredWorkflow135&&t.status!=='已取消');
   if(design.length&&design.every(o=>{const t=exactTask(o);return t?.gdsCompleted===true&&t.status==='已处理';}))return '已完成';
   if(design.some(o=>{const t=exactTask(o),p=t?.gdsPaymentConfirmed;return p?.eventId&&p.order===o[0]&&p.opportunity===opp[0];}))return '交付中';
-  if(design.length)return '待下单';
+  if(design.some(depositReached))return '待下单';
+  if(design.length)return '待下定';
   if(rows.some(o=>(o[2]==='设计单'||o[18]?.kind==='design')&&o[18]?.quoteCode))return '报价中';
   return '洽谈中';
  }
@@ -73,8 +76,7 @@ function mgOpportunityState(opp, orders=ORDERS) {
  if(transmitted.length&&transmitted.every(completed))return '已完成';
  if(transmitted.some(o=>o[18]?.stockStartedAt||o.stockStartedAt||o[18]?.productionConfirmedAt||[o[18]?.stockStatus,o[3]].some(s=>/^(备货中|已备货|生产中|已生产|发货中|已发货|交付中)$/.test(s))))return '交付中';
  const confirmed=rows.filter(o=>o[18]?.erpRequestedRevision);
- const cents=value=>{const text=String(value??'').trim().replace(/[¥￥$,，\s]/g,'');if(!text||!/^\d+(?:\.\d{1,2})?$/.test(text))return null;const n=Number(text)*100;return Number.isSafeInteger(Math.round(n))?Math.round(n):null;};
- if(confirmed.some(o=>{const amount=cents(o[10]),paid=cents(o[13]);return amount>0&&paid!==null&&paid*5>=amount;}))return '待下单';
+ if(confirmed.some(depositReached))return '待下单';
  if(confirmed.length)return '待下定';
  if(rows.some(o=>o[18]?.quoteCode))return '报价中';
  if(/^(已完成|交付中|待下定|待下单|报价中)$/.test(opp[2]))return opp[2];
@@ -117,7 +119,7 @@ function mgTaskBusinessInfo(task) {
  if(meta.needsSpaceUpdate){info.customerStatus='待更新，需重新确认';return info;}
  const confirmed=!!meta.confirmedCats?.includes(category);
  info.customerStatus=confirmed?'已确认':'未确认';
- info.quoteStatus=meta.workingSaved?'':confirmed?'已确认':'已报价';
+ info.quoteStatus=meta.workingSaved?'':confirmed?'已确认':'已提交';
  if(confirmed){const record=[...(meta.confirmationHistory||[])].reverse().find(item=>item.revision===meta.revision&&(!item.versionId||item.versionId===meta.currentQuoteVersion)&&item.confirmedCats?.includes(category)&&!item.reason);info.confirmedAt=record?.confirmedAt||meta.confirmedAt||'';}
  return info;
 }
@@ -234,7 +236,7 @@ handleAct=function(button){const a=button?.dataset?.act,id=button?.dataset?.id;t
  if(a==='mgDesignSync'){
   if(v69UploadsBusy())throw Error('附件正在上传，请稍候');const t=TODOS.find(t=>t.id===id),data=mgDesignData(),before=v125ProjectSpaces(t.project),spatial=mgRequiresSpaces(t.handoff),after=spatial?oqDesignSpaces(t.project,data.spaceCats):before,beforeCats=v137ProjectCategories(t.project),impact=spatial?v125SpaceImpact(t.project,before,after):v137CategoryImpact(t.project,beforeCats,data.purchaseCategory),signature=JSON.stringify([before,beforeCats]);
   const commit=()=>{if(JSON.stringify([v125ProjectSpaces(t.project),v137ProjectCategories(t.project)])!==signature)throw Error('项目信息已更新，请重新核对');mgSyncDesign(t,data);document.getElementById('v3Dialog')?.remove();$('#mask').classList.remove('on');markPagesDirty();openPage('todos');toast('项目档案已同步，设计确认待办已完成');};
-  if(!impact.affected.length)return commit();v3Dialog('同步设计资料的影响',`${spatial?v125SpaceChangeHtml(before,after):`<p>采购品类由 ${beforeCats.map(esc).join('、')||'无'} 调整为 ${data.purchaseCategory.map(esc).join('、')||'无'}。</p>`}<p>受影响品类：${impact.affected.map(esc).join('、')}</p><p>${impact.editable.length} 张可编辑报价单将转为已保存，需重新提交客户确认；两端总览同步更新。备货订单和历史报价保持不变。</p>`,`<button class="wk-btn" data-v3="closeDialog">返回修改</button><button class="wk-btn primary" id="mgSyncImpact">确认同步</button>`);$('#mgSyncImpact').onclick=()=>{try{commit();}catch(error){toast(error.message);}};return;
+  if(!impact.affected.length)return commit();v3Dialog('同步设计资料的影响',`${spatial?v125SpaceChangeHtml(before,after):`<p>采购品类由 ${beforeCats.map(esc).join('、')||'无'} 调整为 ${data.purchaseCategory.map(esc).join('、')||'无'}。</p>`}<p>受影响品类：${impact.affected.map(esc).join('、')}</p><p>${impact.editable.length} 张可编辑报价单将转为已暂存，需重新提交客户确认；两端总览同步更新。备货订单和历史报价保持不变。</p>`,`<button class="wk-btn" data-v3="closeDialog">返回修改</button><button class="wk-btn primary" id="mgSyncImpact">确认同步</button>`);$('#mgSyncImpact').onclick=()=>{try{commit();}catch(error){toast(error.message);}};return;
  }
  if(a==='mgDesignReject'){const t=TODOS.find(t=>t.id===id);if(!mgReviewActive(t))throw Error('当前设计确认待办不可驳回');MG135.rejectData=$('#dw132ProjectType')?mgDesignData():null;v68Modal('驳回设计确认待办',`<label class="v68-field">驳回原因<textarea id="mgRejectReason" aria-label="驳回原因"></textarea></label><p>本次提交记录保留，退回原设计师修改后重新提交。</p>`,`<button class="btn default" data-act="closeModal">取消</button><button class="btn" data-act="mgDesignRejectSave" data-id="${esc(id)}">确认驳回</button>`);return;}
  if(a==='mgDesignRejectSave'){mgRejectDesign(TODOS.find(t=>t.id===id),$('#mgRejectReason').value.trim(),MG135.rejectData);$('#mask').classList.remove('on');markPagesDirty();openPage('todos');return toast('已退回原设计师修改');}
@@ -319,7 +321,7 @@ if(typeof applyProjectSave==='function'){
   const project=archiveProject,data=v3Copy(wizardState.project),before=v125ProjectSpaces(project),beforeCats=v137ProjectCategories(project),afterCats=data.purchaseCategory||[],impact=v137CategoryImpact(project,beforeCats,afterCats);
   if(!impact.affected.length)return mgProjectSaveBase();
   const signature=JSON.stringify(beforeCats);
-  v3Dialog('确认项目采购品类变更',`<div class="q125-impact"><p>修改前：${beforeCats.map(esc).join('、')||'无'}；修改后：${afterCats.map(esc).join('、')||'无'}。</p><p>涉及品类：${impact.affected.map(esc).join('、')}。${impact.editable.length} 张可编辑报价单转为已保存，需重新提交；两端总览更新为待更新、未确认。已移除品类的未完成报价待办取消。</p><p>已备货订单、历史报价及确认记录保持不变。</p></div>`,`<button class="wk-btn" data-v3="closeDialog">返回修改</button><button class="wk-btn primary" id="mgCategoryImpactSave">确认修改</button>`);
+  v3Dialog('确认项目采购品类变更',`<div class="q125-impact"><p>修改前：${beforeCats.map(esc).join('、')||'无'}；修改后：${afterCats.map(esc).join('、')||'无'}。</p><p>涉及品类：${impact.affected.map(esc).join('、')}。${impact.editable.length} 张可编辑报价单转为已暂存，需重新提交；两端总览更新为待更新、未确认。已移除品类的未完成报价待办取消。</p><p>已备货订单、历史报价及确认记录保持不变。</p></div>`,`<button class="wk-btn" data-v3="closeDialog">返回修改</button><button class="wk-btn primary" id="mgCategoryImpactSave">确认修改</button>`);
   $('#mgCategoryImpactSave').onclick=()=>{if(project!==archiveProject||signature!==JSON.stringify(v137ProjectCategories(project)))return toast('项目已更新，请返回后重新核对');v125SaveProjectWithSpaces(data,before);};
  };
 }
@@ -562,8 +564,8 @@ function mgCurrentFlowBody(item,model){
  if(group){
   const entry=group.entry,quote=group.items.filter(t=>t.type==='报价待办'),approval=entry&&entry.type!=='确认商机';
   if(entry)branch+=mgFlowStep(entry.type,entry,approval?'总经办审批跨区域或转介绍申请；通过后生成该商机与报价待办。驳回只结束本次申请，不生成商机和报价待办。':'被分配的 SM 或设计师确认承接后，生成该商机及报价待办；驳回本次邀请不生成商机。',1);
-  if(quote.length)branch+=quote.map(t=>mgFlowStep('报价待办',t,'负责人依据本商机创建唯一报价单。保存保留编辑内容；提交发布客户线上报价并保留版本。负责人手动【确认报价】后发起 ERP 传输请求，并完成本待办。客户线上确认仅记录对应版本和时间，不完成本待办。',entry?2:1)).join('');
-  else if(entry?.status!=='已驳回'&&entry?.status!=='已取消')branch+=mgFlowStep('报价待办',null,'确认承接或审批通过后生成；在对应商机内报价并手动确认报价后完成。',2,'承接或审批通过后生成');
+  if(quote.length)branch+=quote.map(t=>mgFlowStep('报价待办',t,'负责人依据本商机创建唯一报价单。保存保留编辑内容；提交发布客户线上报价并保留版本。提交成功同时发起 ERP 传输请求，并完成本待办。客户线上确认仅记录对应版本和时间，不完成本待办。',entry?2:1)).join('');
+  else if(entry?.status!=='已驳回'&&entry?.status!=='已取消')branch+=mgFlowStep('报价待办',null,'确认承接或审批通过后生成；在对应商机内成功提交报价后完成。',2,'承接或审批通过后生成');
   else branch+='<p class="mg-flow-note">本次邀请或申请已结束，未生成后续报价待办。重新分配须使用新的邀请或申请记录。</p>';
  }else branch='<p class="mg-flow-note">暂无精确关联的商机办理记录。未关联记录不按品类、负责人或客户名称合并。</p>';
  const title=group?`${esc(group.cat)} · ${esc(group.sm||'未指定负责人')}${group.oppId?' · 商机 '+esc(group.oppId):''}${addon?' · 加单（原订单 '+esc(opp[20].sourceOrderId||'未关联')+'）':''}`:'商机承接与报价';

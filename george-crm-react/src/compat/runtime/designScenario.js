@@ -30,7 +30,7 @@ function ds187Seed(){
   function design(name,index,coordination){
    const invitation=dw132CreateOpportunities(main[0],[name],'','MOCK187-DESIGN-'+index,{expectedCompletionAt:tfRelativeDate(index===0?-2:7),coordination})[0];Object.assign(invitation,marker,{sourceTodoId:parent.id});
    const id=v68CreateOpportunity(invitation);Object.assign(invitation,{status:'已处理',approver:name,approveTime:stamp});const opp=oqOpp(id);Object.assign(opp[20],marker);const quotation=oqEnsureTodo(opp,invitation.id);Object.assign(quotation,marker);
-   const order=dqSaveDesign(id,[18000,26000,32000][index],{attachments:[ds187File('参考作品','MOCK187-REF-'+index)],note:'设计范围：客厅与主卧；按阶段回传设计成果。'},true,true);oqConfirmQuote(order[18].quoteCode,V3.meta[order[18].quoteCode].revision);const task=TODOS.find(t=>t.id===order[18].designTodoId);Object.assign(task,marker);return task;
+   const order=dqSaveDesign(id,[18000,26000,32000][index],{attachments:[ds187File('参考作品','MOCK187-REF-'+index)],note:'设计范围：客厅与主卧；按阶段回传设计成果。'},true,true);const task=TODOS.find(t=>t.id===order[18].designTodoId);Object.assign(task,marker);return task;
   }
   const waiting=design(supervisors[0],0,{mode:'self',person:''});
   const person=dr187People().find(n=>n!==pm&&!supervisors.includes(n))||pm;
