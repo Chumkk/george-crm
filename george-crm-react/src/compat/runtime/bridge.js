@@ -7,14 +7,17 @@
     installed = false;
   const taskRelation = { auth: "", value: "all", context: null };
   let taskSort = "recent";
+  const displayOrderNumber=(value,project)=>typeof oqFormatOrderNumber==='function'?oqFormatOrderNumber(value,project):value||'';
+  const displayQuotationNumber=(code,project)=>typeof oqQuotationNumber==='function'?oqQuotationNumber(code,project):code;
+  const displayBusinessText=(value,project)=>typeof oqNumberText==='function'?oqNumberText(value,project):value;
   function quotationOrderNumber(task) {
     if (task.type !== "报价待办" || typeof ORDERS === "undefined") return "";
     const rows = ORDERS.filter(o => o[15] === task.project && o[2] !== "费用订单" && o[18]?.kind !== "fee");
     const codes = [task.draft, ...(task.drafts || [])].filter(Boolean);
     const exact = rows.find(o => o[0] === task.order || o[18]?.quoteCode && codes.includes(o[18].quoteCode));
-    if (exact) return exact[0];
+    if (exact) return displayOrderNumber(exact[0],task.project);
     const related = task.opp ? rows.filter(o => !o[18]?.legacyQuoteArchive && (typeof orderOppOf === "function" ? orderOppOf(o) : o[17]) === task.opp && o[18]?.quoteCode) : [];
-    return related.length === 1 ? related[0][0] : "";
+    return related.length === 1 ? displayOrderNumber(related[0][0],task.project) : "";
   }
   function relationRows() {
     const owner = v17Owner();
@@ -322,6 +325,7 @@
           expenseSource: t.type === "费用订单待办" && typeof efTaskSource === "function" ? efTaskSource(t) : null,
           opportunityName: ["转介绍商机审批待办", "报价待办"].includes(t.type) ? (typeof OPPS !== "undefined" && OPPS.find(o => o[0] === t.opp || o[0] === t.createdOppId)?.[1]) || (typeof mgInvitationName === "function" ? mgInvitationName(t) : "") : "",
           orderNumber: quotationOrderNumber(t),
+          displayOrder: displayOrderNumber(t.order,t.project),
           canOperate: v21CanOperate(t),
           customerMeta: ["客户待办", "设计待办", "创建项目待办"].includes(
             t.type,
@@ -335,7 +339,12 @@
     todoHistory(id) {
       const task = relationRows().find(item => item.id === id);
       if (!task || typeof th192History !== "function") return null;
-      return th192Copy(th192History(task));
+      const result=th192Copy(th192History(task));
+      if(!result)return result;
+      result.displayOrder=displayOrderNumber(result.order,task.project)||quotationOrderNumber(task);
+      result.subject=displayBusinessText(result.subject,task.project);
+      for(const event of result.events||[]){event.orderNumber=event.quotation?displayQuotationNumber(event.quotation,task.project):displayOrderNumber(event.order,task.project);event.detail=displayBusinessText(event.detail,task.project);event.reason=displayBusinessText(event.reason,task.project);for(const change of event.changes||[]){change.before=displayBusinessText(change.before,task.project);change.after=displayBusinessText(change.after,task.project);}}
+      return result;
     },
     guideTaskState(id) {
       const task = relationRows().find(item => item.id === id);
@@ -483,6 +492,7 @@
         const m = v3Meta(r[0]);
         return {
           code: r[0],
+          number: displayQuotationNumber(r[0],m.project),
           name: r[1],
           creator: r[2],
           sm: r[3],

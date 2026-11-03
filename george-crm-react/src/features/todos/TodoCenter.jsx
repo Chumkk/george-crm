@@ -26,6 +26,9 @@ function TaskAction({ api, action, appearance = "secondary" }) {
 }
 function TaskRow({ task, api, onHistory }) {
   const isDesignDelivery = ["设计待办", "设计确认待办"].includes(task.type);
+  const workflow = task.businessInfo?.workflow;
+  const isProductQuote = task.type === "报价待办" && !task.businessInfo?.design && !task.designOpportunity;
+  const workflowHint = workflow?.lockReason || (workflow?.workingSaved && workflow?.publishedRevision ? `有未提交修改 · 上次发布第 ${workflow.publishedRevision} 版 · 客户${workflow.customerStatus}` : "");
   const subtitle = taskSubtitle(task);
   const actions = splitActions(task.actions.filter((action) => action.act !== "viewDealFlow"));
   const rejectionReason = taskRejectionReason(task);
@@ -60,6 +63,7 @@ function TaskRow({ task, api, onHistory }) {
             {!isDesignDelivery && !["设计服务", "设计单报价"].includes(task.businessInfo.label) && <span className="rx-task-tag">{task.businessInfo.label}</span>}
             {task.businessInfo.scope && <span className="rx-task-tag addon">{task.businessInfo.scope}</span>}
             {task.businessInfo.quoteStatus && <span className={`rx-task-tag ${task.businessInfo.quoteStatus === '已确认' ? 'confirmed' : 'quoted'}`} title={task.businessInfo.confirmedAt ? `客户确认时间：${task.businessInfo.confirmedAt}` : undefined}>{task.businessInfo.quoteStatus}</span>}
+            {isProductQuote && workflow?.erpStatus && <span className="rx-task-tag erp" title={`ERP状态：${workflow.erpStatus}${workflow.erpRequest ? `；请求记录：${workflow.erpRequest}` : ""}${workflow.lockReason ? `；${workflow.lockReason}` : ""}`}>ERP · {workflow.erpStatus}</span>}
           </>}
           <Status value={task.status} />
         </div>
@@ -124,7 +128,7 @@ function TaskRow({ task, api, onHistory }) {
         )}
       </div>
       <div className="rx-task-timing">
-        {task.businessInfo?.workflow && <div className="rx-quote-workflow"><span>ERP状态 · {task.businessInfo.workflow.erpStatus}{task.businessInfo.workflow.erpRequest && task.businessInfo.workflow.erpRequest !== task.businessInfo.workflow.erpStatus ? ` · ${task.businessInfo.workflow.erpRequest}` : ""}</span><span>{task.businessInfo.workflow.lockReason || (task.businessInfo.workflow.workingSaved && task.businessInfo.workflow.publishedRevision ? `有未提交修改 · 上次发布第 ${task.businessInfo.workflow.publishedRevision} 版 · 客户${task.businessInfo.workflow.customerStatus}` : "")}</span></div>}
+        {workflow && <div className="rx-quote-workflow">{isProductQuote ? workflow.erpRequest && workflow.erpRequest !== workflow.erpStatus && <span>ERP请求 · {workflow.erpRequest}</span> : <span>ERP状态 · {workflow.erpStatus}{workflow.erpRequest && workflow.erpRequest !== workflow.erpStatus ? ` · ${workflow.erpRequest}` : ""}</span>}{workflowHint && <span>{workflowHint}</span>}</div>}
         <div><span>到达时间 · {task.arrival || "未记录"}</span>{!task.timing?.closed && <span>停留时间 · {task.timing?.duration || (task.stayLabel || "未记录").replace(/^(已停留|处理用时|用时)\s*/, "")}</span>}</div>
         {task.timing?.closed && <div><span>{task.timing.handledLabel} · {taskTimeStamp(task.timing.handledAt)}</span><span>响应用时 · {task.timing.duration}</span></div>}
         {task.followup?.deadline && <div><span>期望完成时间 · {task.followup.deadline.date ? task.followup.deadline.date + " 23:59" : "未设置"}</span><span className={task.followup.deadline.overdue ? "rx-task-overdue-duration" : ""}>{task.followup.deadline.overdue ? "逾期时间 · " + task.followup.deadline.overdueLabel.replace(/^已逾期\s*/, "") : ""}</span></div>}

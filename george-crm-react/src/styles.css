@@ -1131,6 +1131,14 @@ html[data-frontend="react"] .v3-dialog {
 html[data-frontend="react"] .m-head {
   background: #fbfdff;
 }
+/* Drawer headers close through their surrounding area; footer actions remain. */
+#drawer .d-head > [data-act="closeDrawer"],
+#v3Dialog.pql127-settings-drawer .v3-dialog-header [data-v3="closeDialog"],
+#q63Gallery.pql127-gallery-drawer [data-q63-action="close"],
+.pt-progress-drawer > header [data-act="ptCloseProgress"],
+#modalBox.ci130-drawer .m-head [data-act="closeModal"],
+.pql127-review-head [data-sky="cancelReview"],
+#v41Picker.pql127-picker-drawer .v41-picker-close { display: none !important; }
 html[data-frontend="react"] .m-body input:focus,
 html[data-frontend="react"] .m-body textarea:focus,
 html[data-frontend="react"] .m-body select:focus {

@@ -49,7 +49,7 @@ export function taskSubtitle(task) {
   }
   if (["转介绍商机审批待办", "报价待办"].includes(task.type)) subject = text(task.opportunityName) || project || subject;
   if (["邀请函审核", "邀请函审核待办", "公海跟进", "公海跟进待办"].includes(task.type)) subject = text(task.customer) || subject;
-  const code = ["设计待办", "设计确认待办"].includes(task.type) ? text(task.order)
+  const code = ["设计待办", "设计确认待办"].includes(task.type) ? text(task.displayOrder || task.order)
     : task.type === "报价待办" ? text(task.orderNumber) : projectReference ? projectCode : "";
   return { subject, code: subject.includes(code) ? "" : code,
     showProjectMeta: !projectReference && !!projectCode, projectCode,

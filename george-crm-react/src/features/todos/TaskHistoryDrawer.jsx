@@ -10,6 +10,7 @@ export function taskTimeStamp(value) {
 const stamp = taskTimeStamp;
 export function TaskHistoryDrawer({ api, id, onClose }) {
   const root = useRef(null);
+  const outsideStarted = useRef(false);
   const data = api.todoHistory(id);
   useEffect(() => {
     const previous = document.activeElement;
@@ -25,12 +26,12 @@ export function TaskHistoryDrawer({ api, id, onClose }) {
     document.addEventListener("keydown", key, true);
     return () => { document.removeEventListener("keydown", key, true); if (previous?.isConnected) previous.focus(); };
   }, [id, onClose]);
-  return createPortal(<div className="rx-history-mask" onClick={event => { if (event.target === event.currentTarget) onClose(); }}>
+  return createPortal(<div className="rx-history-mask" onPointerDown={event => { outsideStarted.current=event.target===event.currentTarget; }} onPointerUp={event => { const close=outsideStarted.current&&event.target===event.currentTarget;outsideStarted.current=false;if(close)onClose(); }} onPointerCancel={() => {outsideStarted.current=false;}}>
     <section className="rx-history-drawer" ref={root} role="dialog" aria-modal="true" aria-labelledby="task-history-title">
-      <header><div><h2 id="task-history-title">处理记录</h2><p>{data?.title || "待办"} · {id}</p></div><button className="rx-btn quiet" aria-label="关闭处理记录" onClick={onClose}>×</button></header>
+      <header><div><h2 id="task-history-title">处理记录</h2><p>{data?.title || "待办"} · {id}</p></div></header>
       <div className="rx-history-body" tabIndex={0}>
         {!data ? <p role="alert">当前无权查看此待办，或记录已不可用。</p> : <>
-          <div className="rx-history-subject"><strong>{data.subject}</strong><Status value={data.status} /><p>{[data.project, data.order].filter(Boolean).join(" · ")}</p><p>待办人 · {data.owner || "未记录"}　发起人 · {data.initiator || "未记录"}</p></div>
+          <div className="rx-history-subject"><strong>{data.subject}</strong><Status value={data.status} /><p>{[data.project, data.displayOrder || data.order].filter(Boolean).join(" · ")}</p><p>待办人 · {data.owner || "未记录"}　发起人 · {data.initiator || "未记录"}</p></div>
           <div className="rx-history-metrics">{[["总历时", data.summary.total], ["催办次数", data.summary.reminders], ["转派次数", data.summary.transfers]].map(([label, value]) => <div key={label}><span>{label}</span><strong>{value}</strong></div>)}</div>
           <h3>处理时间线 <small>{data.events.length} 条记录 · 北京时间</small></h3>
           <ol className="rx-history-timeline">{[...data.events].reverse().map(event => <li key={event.id} className={`event-${event.kind}`}>
@@ -39,6 +40,7 @@ export function TaskHistoryDrawer({ api, id, onClose }) {
               <div className="rx-history-event-time"><time>{stamp(event.at)}</time>{event.firstResponse && <span className="rx-history-first-response" title={event.firstResponse.startedAt ? `从本次接手时间 ${stamp(event.firstResponse.startedAt)} 计算` : "历史接手时间未记录，无法计算首次响应用时"}>首次响应用时 · {event.firstResponse.duration}</span>}</div>
             </div>
             {(event.fromOwner || event.toOwner) && <p>{event.kind === "transferred" ? `转派：${event.fromOwner || "未记录"} → ${event.toOwner || "未记录"}` : `接收人 · ${event.toOwner || "未记录"}`}</p>}
+            {event.orderNumber && <p className="rx-history-reference">关联单号 · {event.orderNumber}</p>}
             {event.reason && <p className="rx-history-reason">原因 / 结果：{event.reason}</p>}
             {event.changes?.length > 0 && <details className="rx-history-changes"><summary>查看修改内容</summary>{event.changes.map((change, index) => <p key={index}><strong>{change.label}</strong><br/>{change.before} → {change.after}</p>)}</details>}
           </li>)}</ol>

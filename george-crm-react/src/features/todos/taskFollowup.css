@@ -1,5 +1,5 @@
 .rx-task-overdue{display:inline-flex;padding:3px 8px;border-radius:5px;background:#fff0e9;color:#ad4f28;font-size:11px;font-weight:500;line-height:1.5}
-.rx-task-tag{display:inline-flex;padding:3px 7px;border-radius:4px;font-size:11px;font-weight:400;line-height:1.5;color:#267dab;background:#eaf5fd;white-space:nowrap}.rx-task-tag.addon{color:#846725;background:#faf4e4}.rx-task-tag.quoted{color:#3972a0;background:#edf3fb}.rx-task-tag.confirmed{color:#287c60;background:#eaf6f0}
+.rx-task-tag{display:inline-flex;padding:3px 7px;border-radius:4px;font-size:11px;font-weight:400;line-height:1.5;color:#267dab;background:#eaf5fd;white-space:nowrap}.rx-task-tag.addon{color:#846725;background:#faf4e4}.rx-task-tag.quoted{color:#3972a0;background:#edf3fb}.rx-task-tag.confirmed{color:#287c60;background:#eaf6f0}.rx-task-tag.erp{color:#52677a;background:#f0f3f6}.rx-quote-workflow:empty{display:none}
 .rx-task-deadline{font-size:11px;color:#758c9e;margin-top:7px;line-height:1.6}
 .rx-task-deadline.overdue,.tf137-deadline.overdue{color:#ad4f28}
 .rx-task-reminder-info{display:flex;flex-direction:column;gap:3px;font-size:10px;color:#8194a3;line-height:1.5;overflow-wrap:anywhere}
