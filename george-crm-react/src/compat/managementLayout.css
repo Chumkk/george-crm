@@ -23,6 +23,16 @@
   overflow-x: auto;
   overflow-y: hidden;
 }
+.rx-management-header {
+  position: fixed;
+  z-index: 29;
+  overflow: hidden;
+  pointer-events: none;
+  background: var(--thead, #f7f9fb);
+  box-shadow: 0 2px 5px #2442580a;
+}
+.rx-management-header[hidden] { display: none; }
+@media print { .rx-management-header { display: none !important; } }
 body > .pt-progress-mask > .pt-progress-drawer {
   width: min(920px, 76vw);
   max-width: calc(100vw - 48px);

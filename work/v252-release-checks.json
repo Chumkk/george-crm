@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "version": "dd7335791076d14e70aa2aac421e1f0325b401902d476e5c54f30b08c8dc4bf2",
+  "builtAt": "2026-11-03T13:38:43.261Z",
+  "documents": {
+    "space-quote-prd.html": "f52ae19d84e4e2f8820ea3e32e1e5e11f9e62b0a22f6bcf5ee7320edac7c4083",
+    "customer-followup-prd.html": "10b94d64c6fc595638bb1b920ed1667d798f80313c416cb52b5c454f1058376b",
+    "new-workflow.html": "9fcbaa8ea7706fb0cab219da4ab4db2ec7c86e91f93749210871422a4ddb77dc",
+    "workflow-comparison.html": "855a4b0554151ddeea6a9e92221862e50aa097355ea07a3465ecd10209145f46"
+  },
+  "testsPassed": 778,
+  "buildPassed": true,
+  "documentFilesUnchanged": true,
+  "layout": "Project and opportunity toolbar plus column headings remain above the outer-scrolling rows; column headings follow horizontal table scroll and column visibility/size changes",
+  "renderedBrowserVerified": false
+}
