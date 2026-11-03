@@ -1,0 +1,2928 @@
+{
+  "project": "PJ0018011",
+  "revision": 1,
+  "rooms": [
+    {
+      "name": "客厅",
+      "en": "Living Room",
+      "kind": "living",
+      "rect": [
+        419,
+        374,
+        120,
+        95
+      ],
+      "label": [
+        516,
+        451
+      ]
+    },
+    {
+      "name": "餐厅",
+      "en": "Dining Room",
+      "kind": "dining",
+      "rect": [
+        480,
+        304,
+        59,
+        70
+      ],
+      "label": [
+        510,
+        368
+      ]
+    },
+    {
+      "name": "厨房",
+      "en": "Kitchen",
+      "kind": "kitchen",
+      "rect": [
+        540,
+        343,
+        77,
+        78
+      ],
+      "label": [
+        591,
+        401
+      ]
+    },
+    {
+      "name": "家庭厅",
+      "en": "Family Lounge",
+      "kind": "lounge",
+      "rect": [
+        540,
+        484,
+        77,
+        64
+      ],
+      "label": [
+        552,
+        519
+      ]
+    },
+    {
+      "name": "主卧",
+      "en": "Primary Suite",
+      "kind": "bed",
+      "rect": [
+        321,
+        363,
+        97,
+        64
+      ],
+      "poly": [
+        [
+          321,
+          363
+        ],
+        [
+          375,
+          363
+        ],
+        [
+          375,
+          374
+        ],
+        [
+          418,
+          374
+        ],
+        [
+          418,
+          427
+        ],
+        [
+          321,
+          427
+        ]
+      ],
+      "label": [
+        360,
+        419
+      ]
+    },
+    {
+      "name": "主卫",
+      "en": "Primary Bath",
+      "kind": "bath",
+      "rect": [
+        321,
+        334,
+        54,
+        29
+      ],
+      "label": [
+        345,
+        355
+      ]
+    },
+    {
+      "name": "客卧一",
+      "en": "Guest Suite 1",
+      "kind": "bed",
+      "rect": [
+        394,
+        305,
+        48,
+        53
+      ],
+      "label": [
+        424,
+        351
+      ]
+    },
+    {
+      "name": "客卧二",
+      "en": "Twin Suite",
+      "kind": "twin",
+      "rect": [
+        321,
+        239,
+        70,
+        70
+      ],
+      "label": [
+        355,
+        278
+      ]
+    },
+    {
+      "name": "客卫二",
+      "en": "Guest Bath 2",
+      "kind": "bath",
+      "rect": [
+        321,
+        311,
+        54,
+        23
+      ],
+      "label": [
+        358,
+        317
+      ]
+    },
+    {
+      "name": "客卧三",
+      "en": "Guest Suite 3",
+      "kind": "bed",
+      "rect": [
+        566,
+        423,
+        51,
+        41
+      ],
+      "label": [
+        589,
+        444
+      ]
+    },
+    {
+      "name": "客卫三",
+      "en": "Guest Bath 3",
+      "kind": "bath",
+      "rect": [
+        578,
+        465,
+        39,
+        19
+      ],
+      "label": [
+        607,
+        476
+      ]
+    },
+    {
+      "name": "客卧四",
+      "en": "Guest Suite 4",
+      "kind": "bed",
+      "rect": [
+        579,
+        549,
+        38,
+        47
+      ],
+      "label": [
+        591,
+        571
+      ]
+    },
+    {
+      "name": "客卫四",
+      "en": "Guest Bath 4",
+      "kind": "bath",
+      "rect": [
+        579,
+        597,
+        38,
+        26
+      ],
+      "label": [
+        608,
+        610
+      ]
+    },
+    {
+      "name": "客卧五",
+      "en": "Guest Suite 5",
+      "kind": "bed",
+      "rect": [
+        540,
+        549,
+        38,
+        47
+      ],
+      "label": [
+        550,
+        571
+      ]
+    },
+    {
+      "name": "客卫五",
+      "en": "Guest Bath 5",
+      "kind": "bath",
+      "rect": [
+        540,
+        597,
+        38,
+        26
+      ],
+      "label": [
+        567,
+        610
+      ]
+    },
+    {
+      "name": "洗衣房",
+      "en": "Laundry",
+      "kind": "laundry",
+      "rect": [
+        561,
+        305,
+        56,
+        38
+      ],
+      "label": [
+        587,
+        322
+      ]
+    },
+    {
+      "name": "车库健身房",
+      "en": "Garage & Gym",
+      "kind": "gym",
+      "rect": [
+        539,
+        237,
+        78,
+        67
+      ],
+      "label": [
+        582,
+        270
+      ]
+    },
+    {
+      "name": "客用盥洗室",
+      "en": "Powder Room",
+      "kind": "powder",
+      "rect": [
+        540,
+        305,
+        21,
+        37
+      ],
+      "label": [
+        550,
+        314
+      ]
+    },
+    {
+      "name": "玄关",
+      "en": "Entrance Hall",
+      "kind": "entry",
+      "rect": [
+        442,
+        304,
+        38,
+        70
+      ],
+      "label": [
+        457,
+        312
+      ]
+    }
+  ],
+  "items": [
+    {
+      "room": "客厅",
+      "cat": "家具",
+      "name": "弧形模块沙发",
+      "en": "Curved Modular Sofa",
+      "price": 68000,
+      "qty": 1,
+      "kind": "sofa",
+      "bounds": [
+        452,
+        382,
+        43,
+        14
+      ],
+      "rot": 0,
+      "sku": "GAD-0001"
+    },
+    {
+      "room": "客厅",
+      "cat": "家具",
+      "name": "休闲沙发",
+      "en": "Lounge Sofa",
+      "price": 28600,
+      "qty": 1,
+      "kind": "sofa",
+      "bounds": [
+        486,
+        400,
+        14,
+        40
+      ],
+      "rot": 90,
+      "sku": "GAD-0002"
+    },
+    {
+      "room": "客厅",
+      "cat": "家具",
+      "name": "休闲沙发",
+      "en": "Lounge Sofa",
+      "price": 28600,
+      "qty": 1,
+      "kind": "sofa",
+      "bounds": [
+        437,
+        435,
+        36,
+        17
+      ],
+      "rot": -35,
+      "sku": "GAD-0003"
+    },
+    {
+      "room": "客厅",
+      "cat": "石材",
+      "name": "天然石材茶几",
+      "en": "Natural Stone Coffee Table",
+      "price": 15600,
+      "qty": 1,
+      "kind": "coffee",
+      "bounds": [
+        461,
+        405,
+        18,
+        17
+      ],
+      "rot": 0,
+      "sku": "GAD-0004"
+    },
+    {
+      "room": "客厅",
+      "cat": "定制",
+      "name": "定制电视背景柜",
+      "en": "Media Wall Cabinet",
+      "price": 36800,
+      "qty": 1,
+      "kind": "cabinet",
+      "bounds": [
+        417,
+        389,
+        4,
+        43
+      ],
+      "rot": 90,
+      "sku": "GAD-0005"
+    },
+    {
+      "room": "客厅",
+      "cat": "Sourcing",
+      "name": "手工羊毛地毯",
+      "en": "Handwoven Wool Rug",
+      "price": 12800,
+      "qty": 1,
+      "kind": "rug",
+      "bounds": [
+        448,
+        391,
+        49,
+        53
+      ],
+      "rot": 0,
+      "sku": "GAD-0006"
+    },
+    {
+      "room": "客厅",
+      "cat": "墙板",
+      "name": "木饰面背景墙",
+      "en": "Timber Wall Panels",
+      "price": 860,
+      "qty": 32,
+      "kind": "panel",
+      "bounds": [
+        420,
+        382,
+        2,
+        28
+      ],
+      "rot": 90,
+      "sku": "GAD-0007"
+    },
+    {
+      "room": "客厅",
+      "cat": "地板",
+      "name": "工程木地板",
+      "en": "Engineered Timber Flooring",
+      "price": 680,
+      "qty": 86,
+      "kind": "floor",
+      "bounds": [
+        419.8,
+        374.8,
+        118.4,
+        93.4
+      ],
+      "rot": 0,
+      "sku": "GAD-0008"
+    },
+    {
+      "room": "客厅",
+      "cat": "灯饰",
+      "name": "空间照明组合",
+      "en": "Architectural Lighting Set",
+      "price": 9600,
+      "qty": 1,
+      "kind": "light",
+      "bounds": [
+        477,
+        419.5,
+        4,
+        4
+      ],
+      "rot": 0,
+      "sku": "GAD-0009"
+    },
+    {
+      "room": "客厅",
+      "cat": "门窗",
+      "name": "隔热门窗系统",
+      "en": "Thermally Broken Glazing",
+      "price": 38500,
+      "qty": 1,
+      "kind": "window",
+      "bounds": [
+        422,
+        374.1,
+        24,
+        1.5
+      ],
+      "rot": 0,
+      "sku": "GAD-0010"
+    },
+    {
+      "room": "餐厅",
+      "cat": "家具",
+      "name": "十人位餐桌椅",
+      "en": "Ten-seat Dining Set",
+      "price": 76000,
+      "qty": 1,
+      "kind": "dining",
+      "bounds": [
+        491,
+        323,
+        24,
+        51
+      ],
+      "rot": 90,
+      "sku": "GAD-0011"
+    },
+    {
+      "room": "餐厅",
+      "cat": "定制",
+      "name": "餐边展示柜",
+      "en": "Dining Display Cabinet",
+      "price": 24800,
+      "qty": 1,
+      "kind": "cabinet",
+      "bounds": [
+        478,
+        324,
+        5,
+        51
+      ],
+      "rot": 90,
+      "sku": "GAD-0012"
+    },
+    {
+      "room": "餐厅",
+      "cat": "石材",
+      "name": "餐边石材台面",
+      "en": "Stone Sideboard Top",
+      "price": 1280,
+      "qty": 7.2,
+      "kind": "counter",
+      "bounds": [
+        479,
+        326,
+        3,
+        46
+      ],
+      "rot": 90,
+      "sku": "GAD-0013"
+    },
+    {
+      "room": "餐厅",
+      "cat": "地板",
+      "name": "工程木地板",
+      "en": "Engineered Timber Flooring",
+      "price": 680,
+      "qty": 31,
+      "kind": "floor",
+      "bounds": [
+        480.8,
+        304.8,
+        57.4,
+        68.4
+      ],
+      "rot": 0,
+      "sku": "GAD-0014"
+    },
+    {
+      "room": "餐厅",
+      "cat": "灯饰",
+      "name": "空间照明组合",
+      "en": "Architectural Lighting Set",
+      "price": 9600,
+      "qty": 1,
+      "kind": "light",
+      "bounds": [
+        507.5,
+        337,
+        4,
+        4
+      ],
+      "rot": 0,
+      "sku": "GAD-0015"
+    },
+    {
+      "room": "餐厅",
+      "cat": "门窗",
+      "name": "隔热门窗系统",
+      "en": "Thermally Broken Glazing",
+      "price": 9600,
+      "qty": 1,
+      "kind": "window",
+      "bounds": [
+        483,
+        304.1,
+        24,
+        1.5
+      ],
+      "rot": 0,
+      "sku": "GAD-0016"
+    },
+    {
+      "room": "厨房",
+      "cat": "定制",
+      "name": "整体厨房橱柜",
+      "en": "Fitted Kitchen Cabinets",
+      "price": 128000,
+      "qty": 1,
+      "kind": "kitchen",
+      "bounds": [
+        542,
+        413,
+        73,
+        8
+      ],
+      "rot": 0,
+      "sku": "GAD-0017"
+    },
+    {
+      "room": "厨房",
+      "cat": "石材",
+      "name": "厨房岛台石材",
+      "en": "Kitchen Island Stone Top",
+      "price": 19800,
+      "qty": 1,
+      "kind": "island",
+      "bounds": [
+        573,
+        364,
+        20,
+        32
+      ],
+      "rot": 90,
+      "sku": "GAD-0018"
+    },
+    {
+      "room": "厨房",
+      "cat": "电器",
+      "name": "嵌入式厨房电器套装",
+      "en": "Integrated Kitchen Appliances",
+      "price": 86500,
+      "qty": 1,
+      "kind": "appliance",
+      "bounds": [
+        589,
+        335,
+        26,
+        8
+      ],
+      "rot": 0,
+      "sku": "GAD-0019"
+    },
+    {
+      "room": "厨房",
+      "cat": "家具",
+      "name": "岛台高脚椅",
+      "en": "Island Bar Stools",
+      "price": 1800,
+      "qty": 4,
+      "kind": "stools",
+      "bounds": [
+        566,
+        365,
+        5,
+        30
+      ],
+      "rot": 90,
+      "sku": "GAD-0020"
+    },
+    {
+      "room": "厨房",
+      "cat": "金玻",
+      "name": "金属玻璃展示柜",
+      "en": "Metal & Glass Display Cabinet",
+      "price": 14800,
+      "qty": 1,
+      "kind": "glass",
+      "bounds": [
+        610,
+        375,
+        5,
+        32
+      ],
+      "rot": 90,
+      "sku": "GAD-0021"
+    },
+    {
+      "room": "厨房",
+      "cat": "陶瓷",
+      "name": "防滑墙地砖",
+      "en": "Porcelain Wall & Floor Tiles",
+      "price": 460,
+      "qty": 45,
+      "kind": "floor",
+      "bounds": [
+        540.8,
+        343.8,
+        75.4,
+        76.4
+      ],
+      "rot": 0,
+      "sku": "GAD-0022"
+    },
+    {
+      "room": "厨房",
+      "cat": "灯饰",
+      "name": "空间照明组合",
+      "en": "Architectural Lighting Set",
+      "price": 9600,
+      "qty": 1,
+      "kind": "light",
+      "bounds": [
+        576.5,
+        380,
+        4,
+        4
+      ],
+      "rot": 0,
+      "sku": "GAD-0023"
+    },
+    {
+      "room": "厨房",
+      "cat": "门窗",
+      "name": "隔热门窗系统",
+      "en": "Thermally Broken Glazing",
+      "price": 9600,
+      "qty": 1,
+      "kind": "window",
+      "bounds": [
+        543,
+        343.1,
+        24,
+        1.5
+      ],
+      "rot": 0,
+      "sku": "GAD-0024"
+    },
+    {
+      "room": "家庭厅",
+      "cat": "家具",
+      "name": "弧形模块沙发",
+      "en": "Curved Modular Sofa",
+      "price": 68000,
+      "qty": 1,
+      "kind": "sofa",
+      "bounds": [
+        566,
+        487,
+        41,
+        13
+      ],
+      "rot": 0,
+      "sku": "GAD-0025"
+    },
+    {
+      "room": "家庭厅",
+      "cat": "家具",
+      "name": "休闲沙发",
+      "en": "Lounge Sofa",
+      "price": 28600,
+      "qty": 1,
+      "kind": "sofa",
+      "bounds": [
+        566,
+        530,
+        41,
+        13
+      ],
+      "rot": 0,
+      "sku": "GAD-0026"
+    },
+    {
+      "room": "家庭厅",
+      "cat": "石材",
+      "name": "天然石材茶几",
+      "en": "Natural Stone Coffee Table",
+      "price": 15600,
+      "qty": 1,
+      "kind": "coffee",
+      "bounds": [
+        574,
+        508,
+        27,
+        13
+      ],
+      "rot": 0,
+      "sku": "GAD-0027"
+    },
+    {
+      "room": "家庭厅",
+      "cat": "定制",
+      "name": "定制电视背景柜",
+      "en": "Media Wall Cabinet",
+      "price": 36800,
+      "qty": 1,
+      "kind": "cabinet",
+      "bounds": [
+        611,
+        490,
+        5,
+        52
+      ],
+      "rot": 90,
+      "sku": "GAD-0028"
+    },
+    {
+      "room": "家庭厅",
+      "cat": "Sourcing",
+      "name": "手工羊毛地毯",
+      "en": "Handwoven Wool Rug",
+      "price": 12800,
+      "qty": 1,
+      "kind": "rug",
+      "bounds": [
+        563,
+        502,
+        47,
+        25
+      ],
+      "rot": 0,
+      "sku": "GAD-0029"
+    },
+    {
+      "room": "家庭厅",
+      "cat": "墙板",
+      "name": "木饰面背景墙",
+      "en": "Timber Wall Panels",
+      "price": 860,
+      "qty": 32,
+      "kind": "panel",
+      "bounds": [
+        541,
+        492,
+        2,
+        28
+      ],
+      "rot": 90,
+      "sku": "GAD-0030"
+    },
+    {
+      "room": "家庭厅",
+      "cat": "地板",
+      "name": "工程木地板",
+      "en": "Engineered Timber Flooring",
+      "price": 680,
+      "qty": 37,
+      "kind": "floor",
+      "bounds": [
+        540.8,
+        484.8,
+        75.4,
+        62.4
+      ],
+      "rot": 0,
+      "sku": "GAD-0031"
+    },
+    {
+      "room": "家庭厅",
+      "cat": "灯饰",
+      "name": "空间照明组合",
+      "en": "Architectural Lighting Set",
+      "price": 9600,
+      "qty": 1,
+      "kind": "light",
+      "bounds": [
+        576.5,
+        514,
+        4,
+        4
+      ],
+      "rot": 0,
+      "sku": "GAD-0032"
+    },
+    {
+      "room": "家庭厅",
+      "cat": "门窗",
+      "name": "隔热门窗系统",
+      "en": "Thermally Broken Glazing",
+      "price": 9600,
+      "qty": 1,
+      "kind": "window",
+      "bounds": [
+        543,
+        484.1,
+        24,
+        1.5
+      ],
+      "rot": 0,
+      "sku": "GAD-0033"
+    },
+    {
+      "room": "主卧",
+      "cat": "家具",
+      "name": "软包床与床头柜",
+      "en": "Upholstered Bed & Nightstands",
+      "price": 58000,
+      "qty": 1,
+      "kind": "bed",
+      "bounds": [
+        323,
+        383,
+        42,
+        34
+      ],
+      "rot": 90,
+      "sku": "GAD-0034"
+    },
+    {
+      "room": "主卧",
+      "cat": "定制",
+      "name": "整体衣柜系统",
+      "en": "Fitted Wardrobe System",
+      "price": 88000,
+      "qty": 1,
+      "kind": "wardrobe",
+      "bounds": [
+        388,
+        377,
+        27,
+        46
+      ],
+      "rot": 0,
+      "sku": "GAD-0035"
+    },
+    {
+      "room": "主卧",
+      "cat": "酒店用品",
+      "name": "床品与客房配套",
+      "en": "Bed Linen & Guest Amenities",
+      "price": 3600,
+      "qty": 1,
+      "kind": "linen",
+      "bounds": [
+        326,
+        409,
+        36,
+        4
+      ],
+      "rot": 0,
+      "sku": "GAD-0036"
+    },
+    {
+      "room": "主卧",
+      "cat": "墙板",
+      "name": "床头饰面板",
+      "en": "Headboard Wall Panels",
+      "price": 680,
+      "qty": 18,
+      "kind": "panel",
+      "bounds": [
+        323,
+        381,
+        42,
+        2
+      ],
+      "rot": 0,
+      "sku": "GAD-0037"
+    },
+    {
+      "room": "主卧",
+      "cat": "地板",
+      "name": "工程木地板",
+      "en": "Engineered Timber Flooring",
+      "price": 680,
+      "qty": 47,
+      "kind": "floor",
+      "bounds": [
+        321.8,
+        363.8,
+        95.4,
+        62.4
+      ],
+      "rot": 0,
+      "sku": "GAD-0038"
+    },
+    {
+      "room": "主卧",
+      "cat": "灯饰",
+      "name": "空间照明组合",
+      "en": "Architectural Lighting Set",
+      "price": 6500,
+      "qty": 1,
+      "kind": "light",
+      "bounds": [
+        367.5,
+        393,
+        4,
+        4
+      ],
+      "rot": 0,
+      "sku": "GAD-0039"
+    },
+    {
+      "room": "主卧",
+      "cat": "门窗",
+      "name": "隔热门窗系统",
+      "en": "Thermally Broken Glazing",
+      "price": 16800,
+      "qty": 1,
+      "kind": "window",
+      "bounds": [
+        324,
+        363.1,
+        24,
+        1.5
+      ],
+      "rot": 0,
+      "sku": "GAD-0040"
+    },
+    {
+      "room": "主卫",
+      "cat": "卫浴",
+      "name": "台盆柜与龙头",
+      "en": "Vanity & Basin Mixer",
+      "price": 24600,
+      "qty": 1,
+      "kind": "vanity",
+      "bounds": [
+        324,
+        336,
+        22,
+        6
+      ],
+      "rot": 0,
+      "sku": "GAD-0041"
+    },
+    {
+      "room": "主卫",
+      "cat": "卫浴",
+      "name": "智能坐便器",
+      "en": "Smart Toilet",
+      "price": 6800,
+      "qty": 1,
+      "kind": "toilet",
+      "bounds": [
+        364,
+        351,
+        8,
+        10
+      ],
+      "rot": 0,
+      "sku": "GAD-0042"
+    },
+    {
+      "room": "主卫",
+      "cat": "金玻",
+      "name": "淋浴玻璃隔断",
+      "en": "Shower Glass Enclosure",
+      "price": 6900,
+      "qty": 1,
+      "kind": "shower",
+      "bounds": [
+        323,
+        351,
+        13,
+        10
+      ],
+      "rot": 0,
+      "sku": "GAD-0043"
+    },
+    {
+      "room": "主卫",
+      "cat": "卫浴",
+      "name": "恒温淋浴系统",
+      "en": "Thermostatic Shower Set",
+      "price": 5800,
+      "qty": 1,
+      "kind": "showerhead",
+      "bounds": [
+        325,
+        352,
+        9,
+        2
+      ],
+      "rot": 0,
+      "sku": "GAD-0044"
+    },
+    {
+      "room": "主卫",
+      "cat": "酒店用品",
+      "name": "浴室配套用品",
+      "en": "Bathroom Amenity Set",
+      "price": 1600,
+      "qty": 1,
+      "kind": "accessories",
+      "bounds": [
+        343,
+        337,
+        2,
+        3
+      ],
+      "rot": 0,
+      "sku": "GAD-0045"
+    },
+    {
+      "room": "主卫",
+      "cat": "陶瓷",
+      "name": "防滑墙地砖",
+      "en": "Porcelain Wall & Floor Tiles",
+      "price": 360,
+      "qty": 29,
+      "kind": "floor",
+      "bounds": [
+        321.8,
+        334.8,
+        52.4,
+        27.4
+      ],
+      "rot": 0,
+      "sku": "GAD-0046"
+    },
+    {
+      "room": "主卫",
+      "cat": "灯饰",
+      "name": "防潮灯具",
+      "en": "Bathroom Lighting",
+      "price": 2800,
+      "qty": 1,
+      "kind": "light",
+      "bounds": [
+        346,
+        346.5,
+        4,
+        4
+      ],
+      "rot": 0,
+      "sku": "GAD-0047"
+    },
+    {
+      "room": "主卫",
+      "cat": "门窗",
+      "name": "隔热门窗系统",
+      "en": "Thermally Broken Glazing",
+      "price": 9600,
+      "qty": 1,
+      "kind": "window",
+      "bounds": [
+        324,
+        334.1,
+        24,
+        1.5
+      ],
+      "rot": 0,
+      "sku": "GAD-0048"
+    },
+    {
+      "room": "客卧一",
+      "cat": "家具",
+      "name": "软包床与床头柜",
+      "en": "Upholstered Bed & Nightstands",
+      "price": 26500,
+      "qty": 1,
+      "kind": "bed",
+      "bounds": [
+        413,
+        309,
+        27,
+        29
+      ],
+      "rot": 90,
+      "sku": "GAD-0049"
+    },
+    {
+      "room": "客卧一",
+      "cat": "定制",
+      "name": "整体衣柜系统",
+      "en": "Fitted Wardrobe System",
+      "price": 32600,
+      "qty": 1,
+      "kind": "wardrobe",
+      "bounds": [
+        396,
+        345,
+        29,
+        6
+      ],
+      "rot": 0,
+      "sku": "GAD-0050"
+    },
+    {
+      "room": "客卧一",
+      "cat": "酒店用品",
+      "name": "床品与客房配套",
+      "en": "Bed Linen & Guest Amenities",
+      "price": 3600,
+      "qty": 1,
+      "kind": "linen",
+      "bounds": [
+        416,
+        330,
+        21,
+        4
+      ],
+      "rot": 0,
+      "sku": "GAD-0051"
+    },
+    {
+      "room": "客卧一",
+      "cat": "墙板",
+      "name": "床头饰面板",
+      "en": "Headboard Wall Panels",
+      "price": 680,
+      "qty": 18,
+      "kind": "panel",
+      "bounds": [
+        413,
+        307,
+        27,
+        2
+      ],
+      "rot": 0,
+      "sku": "GAD-0052"
+    },
+    {
+      "room": "客卧一",
+      "cat": "地板",
+      "name": "工程木地板",
+      "en": "Engineered Timber Flooring",
+      "price": 680,
+      "qty": 19,
+      "kind": "floor",
+      "bounds": [
+        394.8,
+        305.8,
+        46.4,
+        51.4
+      ],
+      "rot": 0,
+      "sku": "GAD-0053"
+    },
+    {
+      "room": "客卧一",
+      "cat": "灯饰",
+      "name": "空间照明组合",
+      "en": "Architectural Lighting Set",
+      "price": 6500,
+      "qty": 1,
+      "kind": "light",
+      "bounds": [
+        416,
+        329.5,
+        4,
+        4
+      ],
+      "rot": 0,
+      "sku": "GAD-0054"
+    },
+    {
+      "room": "客卧一",
+      "cat": "门窗",
+      "name": "隔热门窗系统",
+      "en": "Thermally Broken Glazing",
+      "price": 16800,
+      "qty": 1,
+      "kind": "window",
+      "bounds": [
+        397,
+        305.1,
+        24,
+        1.5
+      ],
+      "rot": 0,
+      "sku": "GAD-0055"
+    },
+    {
+      "room": "客卧二",
+      "cat": "家具",
+      "name": "双床套组",
+      "en": "Twin Bed Set",
+      "price": 36800,
+      "qty": 1,
+      "kind": "bed",
+      "bounds": [
+        330,
+        243,
+        23,
+        27
+      ],
+      "rot": 0,
+      "sku": "GAD-0056"
+    },
+    {
+      "room": "客卧二",
+      "cat": "家具",
+      "name": "客房软包床",
+      "en": "Guest Upholstered Bed",
+      "price": 16800,
+      "qty": 1,
+      "kind": "bed",
+      "bounds": [
+        354,
+        243,
+        23,
+        27
+      ],
+      "rot": 0,
+      "sku": "GAD-0057"
+    },
+    {
+      "room": "客卧二",
+      "cat": "定制",
+      "name": "整体衣柜系统",
+      "en": "Fitted Wardrobe System",
+      "price": 32600,
+      "qty": 1,
+      "kind": "wardrobe",
+      "bounds": [
+        326,
+        289,
+        44,
+        16
+      ],
+      "rot": 0,
+      "sku": "GAD-0058"
+    },
+    {
+      "room": "客卧二",
+      "cat": "酒店用品",
+      "name": "床品与客房配套",
+      "en": "Bed Linen & Guest Amenities",
+      "price": 3600,
+      "qty": 2,
+      "kind": "linen",
+      "bounds": [
+        333,
+        262,
+        17,
+        4
+      ],
+      "rot": 0,
+      "sku": "GAD-0059"
+    },
+    {
+      "room": "客卧二",
+      "cat": "墙板",
+      "name": "床头饰面板",
+      "en": "Headboard Wall Panels",
+      "price": 680,
+      "qty": 18,
+      "kind": "panel",
+      "bounds": [
+        330,
+        241,
+        23,
+        2
+      ],
+      "rot": 0,
+      "sku": "GAD-0060"
+    },
+    {
+      "room": "客卧二",
+      "cat": "地板",
+      "name": "工程木地板",
+      "en": "Engineered Timber Flooring",
+      "price": 680,
+      "qty": 37,
+      "kind": "floor",
+      "bounds": [
+        321.8,
+        239.8,
+        68.4,
+        68.4
+      ],
+      "rot": 0,
+      "sku": "GAD-0061"
+    },
+    {
+      "room": "客卧二",
+      "cat": "灯饰",
+      "name": "空间照明组合",
+      "en": "Architectural Lighting Set",
+      "price": 6500,
+      "qty": 1,
+      "kind": "light",
+      "bounds": [
+        354,
+        272,
+        4,
+        4
+      ],
+      "rot": 0,
+      "sku": "GAD-0062"
+    },
+    {
+      "room": "客卧二",
+      "cat": "门窗",
+      "name": "隔热门窗系统",
+      "en": "Thermally Broken Glazing",
+      "price": 16800,
+      "qty": 1,
+      "kind": "window",
+      "bounds": [
+        324,
+        239.1,
+        24,
+        1.5
+      ],
+      "rot": 0,
+      "sku": "GAD-0063"
+    },
+    {
+      "room": "客卫二",
+      "cat": "卫浴",
+      "name": "台盆柜与龙头",
+      "en": "Vanity & Basin Mixer",
+      "price": 8600,
+      "qty": 1,
+      "kind": "vanity",
+      "bounds": [
+        324,
+        313,
+        22,
+        6
+      ],
+      "rot": 0,
+      "sku": "GAD-0064"
+    },
+    {
+      "room": "客卫二",
+      "cat": "卫浴",
+      "name": "智能坐便器",
+      "en": "Smart Toilet",
+      "price": 6800,
+      "qty": 1,
+      "kind": "toilet",
+      "bounds": [
+        364,
+        322,
+        8,
+        10
+      ],
+      "rot": 0,
+      "sku": "GAD-0065"
+    },
+    {
+      "room": "客卫二",
+      "cat": "金玻",
+      "name": "淋浴玻璃隔断",
+      "en": "Shower Glass Enclosure",
+      "price": 6900,
+      "qty": 1,
+      "kind": "shower",
+      "bounds": [
+        323,
+        322,
+        13,
+        10
+      ],
+      "rot": 0,
+      "sku": "GAD-0066"
+    },
+    {
+      "room": "客卫二",
+      "cat": "卫浴",
+      "name": "恒温淋浴系统",
+      "en": "Thermostatic Shower Set",
+      "price": 5800,
+      "qty": 1,
+      "kind": "showerhead",
+      "bounds": [
+        325,
+        323,
+        9,
+        2
+      ],
+      "rot": 0,
+      "sku": "GAD-0067"
+    },
+    {
+      "room": "客卫二",
+      "cat": "酒店用品",
+      "name": "浴室配套用品",
+      "en": "Bathroom Amenity Set",
+      "price": 1600,
+      "qty": 1,
+      "kind": "accessories",
+      "bounds": [
+        343,
+        314,
+        2,
+        3
+      ],
+      "rot": 0,
+      "sku": "GAD-0068"
+    },
+    {
+      "room": "客卫二",
+      "cat": "陶瓷",
+      "name": "防滑墙地砖",
+      "en": "Porcelain Wall & Floor Tiles",
+      "price": 360,
+      "qty": 22,
+      "kind": "floor",
+      "bounds": [
+        321.8,
+        311.8,
+        52.4,
+        21.4
+      ],
+      "rot": 0,
+      "sku": "GAD-0069"
+    },
+    {
+      "room": "客卫二",
+      "cat": "灯饰",
+      "name": "防潮灯具",
+      "en": "Bathroom Lighting",
+      "price": 2800,
+      "qty": 1,
+      "kind": "light",
+      "bounds": [
+        346,
+        320.5,
+        4,
+        4
+      ],
+      "rot": 0,
+      "sku": "GAD-0070"
+    },
+    {
+      "room": "客卫二",
+      "cat": "门窗",
+      "name": "隔热门窗系统",
+      "en": "Thermally Broken Glazing",
+      "price": 9600,
+      "qty": 1,
+      "kind": "window",
+      "bounds": [
+        324,
+        311.1,
+        24,
+        1.5
+      ],
+      "rot": 0,
+      "sku": "GAD-0071"
+    },
+    {
+      "room": "客卧三",
+      "cat": "家具",
+      "name": "软包床与床头柜",
+      "en": "Upholstered Bed & Nightstands",
+      "price": 26500,
+      "qty": 1,
+      "kind": "bed",
+      "bounds": [
+        586,
+        430,
+        28,
+        29
+      ],
+      "rot": 90,
+      "sku": "GAD-0072"
+    },
+    {
+      "room": "客卧三",
+      "cat": "定制",
+      "name": "整体衣柜系统",
+      "en": "Fitted Wardrobe System",
+      "price": 32600,
+      "qty": 1,
+      "kind": "wardrobe",
+      "bounds": [
+        568,
+        451,
+        29,
+        6
+      ],
+      "rot": 0,
+      "sku": "GAD-0073"
+    },
+    {
+      "room": "客卧三",
+      "cat": "酒店用品",
+      "name": "床品与客房配套",
+      "en": "Bed Linen & Guest Amenities",
+      "price": 3600,
+      "qty": 1,
+      "kind": "linen",
+      "bounds": [
+        589,
+        451,
+        22,
+        4
+      ],
+      "rot": 0,
+      "sku": "GAD-0074"
+    },
+    {
+      "room": "客卧三",
+      "cat": "墙板",
+      "name": "床头饰面板",
+      "en": "Headboard Wall Panels",
+      "price": 680,
+      "qty": 18,
+      "kind": "panel",
+      "bounds": [
+        586,
+        428,
+        28,
+        2
+      ],
+      "rot": 0,
+      "sku": "GAD-0075"
+    },
+    {
+      "room": "客卧三",
+      "cat": "地板",
+      "name": "工程木地板",
+      "en": "Engineered Timber Flooring",
+      "price": 680,
+      "qty": 16,
+      "kind": "floor",
+      "bounds": [
+        566.8,
+        423.8,
+        49.4,
+        39.4
+      ],
+      "rot": 0,
+      "sku": "GAD-0076"
+    },
+    {
+      "room": "客卧三",
+      "cat": "灯饰",
+      "name": "空间照明组合",
+      "en": "Architectural Lighting Set",
+      "price": 6500,
+      "qty": 1,
+      "kind": "light",
+      "bounds": [
+        589.5,
+        441.5,
+        4,
+        4
+      ],
+      "rot": 0,
+      "sku": "GAD-0077"
+    },
+    {
+      "room": "客卧三",
+      "cat": "门窗",
+      "name": "隔热门窗系统",
+      "en": "Thermally Broken Glazing",
+      "price": 16800,
+      "qty": 1,
+      "kind": "window",
+      "bounds": [
+        569,
+        423.1,
+        24,
+        1.5
+      ],
+      "rot": 0,
+      "sku": "GAD-0078"
+    },
+    {
+      "room": "客卫三",
+      "cat": "卫浴",
+      "name": "台盆柜与龙头",
+      "en": "Vanity & Basin Mixer",
+      "price": 8600,
+      "qty": 1,
+      "kind": "vanity",
+      "bounds": [
+        581,
+        467,
+        22,
+        6
+      ],
+      "rot": 0,
+      "sku": "GAD-0079"
+    },
+    {
+      "room": "客卫三",
+      "cat": "卫浴",
+      "name": "智能坐便器",
+      "en": "Smart Toilet",
+      "price": 6800,
+      "qty": 1,
+      "kind": "toilet",
+      "bounds": [
+        606,
+        472,
+        8,
+        10
+      ],
+      "rot": 0,
+      "sku": "GAD-0080"
+    },
+    {
+      "room": "客卫三",
+      "cat": "金玻",
+      "name": "淋浴玻璃隔断",
+      "en": "Shower Glass Enclosure",
+      "price": 6900,
+      "qty": 1,
+      "kind": "shower",
+      "bounds": [
+        580,
+        472,
+        13,
+        10
+      ],
+      "rot": 0,
+      "sku": "GAD-0081"
+    },
+    {
+      "room": "客卫三",
+      "cat": "卫浴",
+      "name": "恒温淋浴系统",
+      "en": "Thermostatic Shower Set",
+      "price": 5800,
+      "qty": 1,
+      "kind": "showerhead",
+      "bounds": [
+        582,
+        473,
+        9,
+        2
+      ],
+      "rot": 0,
+      "sku": "GAD-0082"
+    },
+    {
+      "room": "客卫三",
+      "cat": "酒店用品",
+      "name": "浴室配套用品",
+      "en": "Bathroom Amenity Set",
+      "price": 1600,
+      "qty": 1,
+      "kind": "accessories",
+      "bounds": [
+        600,
+        468,
+        2,
+        3
+      ],
+      "rot": 0,
+      "sku": "GAD-0083"
+    },
+    {
+      "room": "客卫三",
+      "cat": "陶瓷",
+      "name": "防滑墙地砖",
+      "en": "Porcelain Wall & Floor Tiles",
+      "price": 360,
+      "qty": 14,
+      "kind": "floor",
+      "bounds": [
+        578.8,
+        465.8,
+        37.4,
+        17.4
+      ],
+      "rot": 0,
+      "sku": "GAD-0084"
+    },
+    {
+      "room": "客卫三",
+      "cat": "灯饰",
+      "name": "防潮灯具",
+      "en": "Bathroom Lighting",
+      "price": 2800,
+      "qty": 1,
+      "kind": "light",
+      "bounds": [
+        595.5,
+        472.5,
+        4,
+        4
+      ],
+      "rot": 0,
+      "sku": "GAD-0085"
+    },
+    {
+      "room": "客卫三",
+      "cat": "门窗",
+      "name": "隔热门窗系统",
+      "en": "Thermally Broken Glazing",
+      "price": 9600,
+      "qty": 1,
+      "kind": "window",
+      "bounds": [
+        581,
+        465.1,
+        24,
+        1.5
+      ],
+      "rot": 0,
+      "sku": "GAD-0086"
+    },
+    {
+      "room": "客卧四",
+      "cat": "家具",
+      "name": "软包床与床头柜",
+      "en": "Upholstered Bed & Nightstands",
+      "price": 26500,
+      "qty": 1,
+      "kind": "bed",
+      "bounds": [
+        589,
+        555,
+        26,
+        30
+      ],
+      "rot": 90,
+      "sku": "GAD-0087"
+    },
+    {
+      "room": "客卧四",
+      "cat": "定制",
+      "name": "整体衣柜系统",
+      "en": "Fitted Wardrobe System",
+      "price": 32600,
+      "qty": 1,
+      "kind": "wardrobe",
+      "bounds": [
+        581,
+        583,
+        29,
+        6
+      ],
+      "rot": 0,
+      "sku": "GAD-0088"
+    },
+    {
+      "room": "客卧四",
+      "cat": "酒店用品",
+      "name": "床品与客房配套",
+      "en": "Bed Linen & Guest Amenities",
+      "price": 3600,
+      "qty": 1,
+      "kind": "linen",
+      "bounds": [
+        592,
+        577,
+        20,
+        4
+      ],
+      "rot": 0,
+      "sku": "GAD-0089"
+    },
+    {
+      "room": "客卧四",
+      "cat": "墙板",
+      "name": "床头饰面板",
+      "en": "Headboard Wall Panels",
+      "price": 680,
+      "qty": 18,
+      "kind": "panel",
+      "bounds": [
+        589,
+        553,
+        26,
+        2
+      ],
+      "rot": 0,
+      "sku": "GAD-0090"
+    },
+    {
+      "room": "客卧四",
+      "cat": "地板",
+      "name": "工程木地板",
+      "en": "Engineered Timber Flooring",
+      "price": 680,
+      "qty": 14,
+      "kind": "floor",
+      "bounds": [
+        579.8,
+        549.8,
+        36.4,
+        45.4
+      ],
+      "rot": 0,
+      "sku": "GAD-0091"
+    },
+    {
+      "room": "客卧四",
+      "cat": "灯饰",
+      "name": "空间照明组合",
+      "en": "Architectural Lighting Set",
+      "price": 6500,
+      "qty": 1,
+      "kind": "light",
+      "bounds": [
+        596,
+        570.5,
+        4,
+        4
+      ],
+      "rot": 0,
+      "sku": "GAD-0092"
+    },
+    {
+      "room": "客卧四",
+      "cat": "门窗",
+      "name": "隔热门窗系统",
+      "en": "Thermally Broken Glazing",
+      "price": 16800,
+      "qty": 1,
+      "kind": "window",
+      "bounds": [
+        582,
+        549.1,
+        24,
+        1.5
+      ],
+      "rot": 0,
+      "sku": "GAD-0093"
+    },
+    {
+      "room": "客卫四",
+      "cat": "卫浴",
+      "name": "台盆柜与龙头",
+      "en": "Vanity & Basin Mixer",
+      "price": 8600,
+      "qty": 1,
+      "kind": "vanity",
+      "bounds": [
+        582,
+        599,
+        22,
+        6
+      ],
+      "rot": 0,
+      "sku": "GAD-0094"
+    },
+    {
+      "room": "客卫四",
+      "cat": "卫浴",
+      "name": "智能坐便器",
+      "en": "Smart Toilet",
+      "price": 6800,
+      "qty": 1,
+      "kind": "toilet",
+      "bounds": [
+        606,
+        611,
+        8,
+        10
+      ],
+      "rot": 0,
+      "sku": "GAD-0095"
+    },
+    {
+      "room": "客卫四",
+      "cat": "金玻",
+      "name": "淋浴玻璃隔断",
+      "en": "Shower Glass Enclosure",
+      "price": 6900,
+      "qty": 1,
+      "kind": "shower",
+      "bounds": [
+        581,
+        611,
+        12.666666666666666,
+        10
+      ],
+      "rot": 0,
+      "sku": "GAD-0096"
+    },
+    {
+      "room": "客卫四",
+      "cat": "卫浴",
+      "name": "恒温淋浴系统",
+      "en": "Thermostatic Shower Set",
+      "price": 5800,
+      "qty": 1,
+      "kind": "showerhead",
+      "bounds": [
+        583,
+        612,
+        8.666666666666666,
+        2
+      ],
+      "rot": 0,
+      "sku": "GAD-0097"
+    },
+    {
+      "room": "客卫四",
+      "cat": "酒店用品",
+      "name": "浴室配套用品",
+      "en": "Bathroom Amenity Set",
+      "price": 1600,
+      "qty": 1,
+      "kind": "accessories",
+      "bounds": [
+        601,
+        600,
+        2,
+        3
+      ],
+      "rot": 0,
+      "sku": "GAD-0098"
+    },
+    {
+      "room": "客卫四",
+      "cat": "陶瓷",
+      "name": "防滑墙地砖",
+      "en": "Porcelain Wall & Floor Tiles",
+      "price": 360,
+      "qty": 17,
+      "kind": "floor",
+      "bounds": [
+        579.8,
+        597.8,
+        36.4,
+        24.4
+      ],
+      "rot": 0,
+      "sku": "GAD-0099"
+    },
+    {
+      "room": "客卫四",
+      "cat": "灯饰",
+      "name": "防潮灯具",
+      "en": "Bathroom Lighting",
+      "price": 2800,
+      "qty": 1,
+      "kind": "light",
+      "bounds": [
+        596,
+        608,
+        4,
+        4
+      ],
+      "rot": 0,
+      "sku": "GAD-0100"
+    },
+    {
+      "room": "客卫四",
+      "cat": "门窗",
+      "name": "隔热门窗系统",
+      "en": "Thermally Broken Glazing",
+      "price": 9600,
+      "qty": 1,
+      "kind": "window",
+      "bounds": [
+        582,
+        597.1,
+        24,
+        1.5
+      ],
+      "rot": 0,
+      "sku": "GAD-0101"
+    },
+    {
+      "room": "客卧五",
+      "cat": "家具",
+      "name": "软包床与床头柜",
+      "en": "Upholstered Bed & Nightstands",
+      "price": 26500,
+      "qty": 1,
+      "kind": "bed",
+      "bounds": [
+        542,
+        554,
+        27,
+        29
+      ],
+      "rot": 90,
+      "sku": "GAD-0102"
+    },
+    {
+      "room": "客卧五",
+      "cat": "定制",
+      "name": "整体衣柜系统",
+      "en": "Fitted Wardrobe System",
+      "price": 32600,
+      "qty": 1,
+      "kind": "wardrobe",
+      "bounds": [
+        542,
+        583,
+        29,
+        6
+      ],
+      "rot": 0,
+      "sku": "GAD-0103"
+    },
+    {
+      "room": "客卧五",
+      "cat": "酒店用品",
+      "name": "床品与客房配套",
+      "en": "Bed Linen & Guest Amenities",
+      "price": 3600,
+      "qty": 1,
+      "kind": "linen",
+      "bounds": [
+        545,
+        575,
+        21,
+        4
+      ],
+      "rot": 0,
+      "sku": "GAD-0104"
+    },
+    {
+      "room": "客卧五",
+      "cat": "墙板",
+      "name": "床头饰面板",
+      "en": "Headboard Wall Panels",
+      "price": 680,
+      "qty": 18,
+      "kind": "panel",
+      "bounds": [
+        542,
+        552,
+        27,
+        2
+      ],
+      "rot": 0,
+      "sku": "GAD-0105"
+    },
+    {
+      "room": "客卧五",
+      "cat": "地板",
+      "name": "工程木地板",
+      "en": "Engineered Timber Flooring",
+      "price": 680,
+      "qty": 14,
+      "kind": "floor",
+      "bounds": [
+        540.8,
+        549.8,
+        36.4,
+        45.4
+      ],
+      "rot": 0,
+      "sku": "GAD-0106"
+    },
+    {
+      "room": "客卧五",
+      "cat": "灯饰",
+      "name": "空间照明组合",
+      "en": "Architectural Lighting Set",
+      "price": 6500,
+      "qty": 1,
+      "kind": "light",
+      "bounds": [
+        557,
+        570.5,
+        4,
+        4
+      ],
+      "rot": 0,
+      "sku": "GAD-0107"
+    },
+    {
+      "room": "客卧五",
+      "cat": "门窗",
+      "name": "隔热门窗系统",
+      "en": "Thermally Broken Glazing",
+      "price": 16800,
+      "qty": 1,
+      "kind": "window",
+      "bounds": [
+        543,
+        549.1,
+        24,
+        1.5
+      ],
+      "rot": 0,
+      "sku": "GAD-0108"
+    },
+    {
+      "room": "客卫五",
+      "cat": "卫浴",
+      "name": "台盆柜与龙头",
+      "en": "Vanity & Basin Mixer",
+      "price": 8600,
+      "qty": 1,
+      "kind": "vanity",
+      "bounds": [
+        543,
+        599,
+        22,
+        6
+      ],
+      "rot": 0,
+      "sku": "GAD-0109"
+    },
+    {
+      "room": "客卫五",
+      "cat": "卫浴",
+      "name": "智能坐便器",
+      "en": "Smart Toilet",
+      "price": 6800,
+      "qty": 1,
+      "kind": "toilet",
+      "bounds": [
+        567,
+        611,
+        8,
+        10
+      ],
+      "rot": 0,
+      "sku": "GAD-0110"
+    },
+    {
+      "room": "客卫五",
+      "cat": "金玻",
+      "name": "淋浴玻璃隔断",
+      "en": "Shower Glass Enclosure",
+      "price": 6900,
+      "qty": 1,
+      "kind": "shower",
+      "bounds": [
+        542,
+        611,
+        12.666666666666666,
+        10
+      ],
+      "rot": 0,
+      "sku": "GAD-0111"
+    },
+    {
+      "room": "客卫五",
+      "cat": "卫浴",
+      "name": "恒温淋浴系统",
+      "en": "Thermostatic Shower Set",
+      "price": 5800,
+      "qty": 1,
+      "kind": "showerhead",
+      "bounds": [
+        544,
+        612,
+        8.666666666666666,
+        2
+      ],
+      "rot": 0,
+      "sku": "GAD-0112"
+    },
+    {
+      "room": "客卫五",
+      "cat": "酒店用品",
+      "name": "浴室配套用品",
+      "en": "Bathroom Amenity Set",
+      "price": 1600,
+      "qty": 1,
+      "kind": "accessories",
+      "bounds": [
+        562,
+        600,
+        2,
+        3
+      ],
+      "rot": 0,
+      "sku": "GAD-0113"
+    },
+    {
+      "room": "客卫五",
+      "cat": "陶瓷",
+      "name": "防滑墙地砖",
+      "en": "Porcelain Wall & Floor Tiles",
+      "price": 360,
+      "qty": 17,
+      "kind": "floor",
+      "bounds": [
+        540.8,
+        597.8,
+        36.4,
+        24.4
+      ],
+      "rot": 0,
+      "sku": "GAD-0114"
+    },
+    {
+      "room": "客卫五",
+      "cat": "灯饰",
+      "name": "防潮灯具",
+      "en": "Bathroom Lighting",
+      "price": 2800,
+      "qty": 1,
+      "kind": "light",
+      "bounds": [
+        557,
+        608,
+        4,
+        4
+      ],
+      "rot": 0,
+      "sku": "GAD-0115"
+    },
+    {
+      "room": "客卫五",
+      "cat": "门窗",
+      "name": "隔热门窗系统",
+      "en": "Thermally Broken Glazing",
+      "price": 9600,
+      "qty": 1,
+      "kind": "window",
+      "bounds": [
+        543,
+        597.1,
+        24,
+        1.5
+      ],
+      "rot": 0,
+      "sku": "GAD-0116"
+    },
+    {
+      "room": "洗衣房",
+      "cat": "电器",
+      "name": "洗烘组合",
+      "en": "Washer & Dryer Set",
+      "price": 12600,
+      "qty": 1,
+      "kind": "washer",
+      "bounds": [
+        591,
+        328,
+        22,
+        11
+      ],
+      "rot": 0,
+      "sku": "GAD-0117"
+    },
+    {
+      "room": "洗衣房",
+      "cat": "定制",
+      "name": "家政收纳柜",
+      "en": "Utility Cabinet",
+      "price": 16800,
+      "qty": 1,
+      "kind": "cabinet",
+      "bounds": [
+        564,
+        306,
+        50,
+        8
+      ],
+      "rot": 0,
+      "sku": "GAD-0118"
+    },
+    {
+      "room": "洗衣房",
+      "cat": "陶瓷",
+      "name": "防滑墙地砖",
+      "en": "Porcelain Wall & Floor Tiles",
+      "price": 360,
+      "qty": 38,
+      "kind": "floor",
+      "bounds": [
+        561.8,
+        305.8,
+        54.4,
+        36.4
+      ],
+      "rot": 0,
+      "sku": "GAD-0119"
+    },
+    {
+      "room": "洗衣房",
+      "cat": "灯饰",
+      "name": "防潮灯具",
+      "en": "Bathroom Lighting",
+      "price": 2800,
+      "qty": 1,
+      "kind": "light",
+      "bounds": [
+        587,
+        322,
+        4,
+        4
+      ],
+      "rot": 0,
+      "sku": "GAD-0120"
+    },
+    {
+      "room": "车库健身房",
+      "cat": "Sourcing",
+      "name": "家用健身设备套装",
+      "en": "Home Gym Equipment Set",
+      "price": 86000,
+      "qty": 1,
+      "kind": "gym",
+      "bounds": [
+        544,
+        244,
+        60,
+        22
+      ],
+      "rot": 0,
+      "sku": "GAD-0121"
+    },
+    {
+      "room": "车库健身房",
+      "cat": "定制",
+      "name": "运动器材收纳柜",
+      "en": "Gym Storage Cabinet",
+      "price": 26800,
+      "qty": 1,
+      "kind": "cabinet",
+      "bounds": [
+        543,
+        289,
+        41,
+        5
+      ],
+      "rot": 0,
+      "sku": "GAD-0122"
+    },
+    {
+      "room": "车库健身房",
+      "cat": "金玻",
+      "name": "健身镜面墙",
+      "en": "Gym Mirror Wall",
+      "price": 620,
+      "qty": 19,
+      "kind": "mirror",
+      "bounds": [
+        613,
+        242,
+        2,
+        38
+      ],
+      "rot": 90,
+      "sku": "GAD-0123"
+    },
+    {
+      "room": "车库健身房",
+      "cat": "地板",
+      "name": "工程木地板",
+      "en": "Engineered Timber Flooring",
+      "price": 680,
+      "qty": 40,
+      "kind": "floor",
+      "bounds": [
+        539.8,
+        237.8,
+        76.4,
+        65.4
+      ],
+      "rot": 0,
+      "sku": "GAD-0124"
+    },
+    {
+      "room": "车库健身房",
+      "cat": "灯饰",
+      "name": "空间照明组合",
+      "en": "Architectural Lighting Set",
+      "price": 9600,
+      "qty": 1,
+      "kind": "light",
+      "bounds": [
+        576,
+        268.5,
+        4,
+        4
+      ],
+      "rot": 0,
+      "sku": "GAD-0125"
+    },
+    {
+      "room": "车库健身房",
+      "cat": "门窗",
+      "name": "隔热门窗系统",
+      "en": "Thermally Broken Glazing",
+      "price": 42000,
+      "qty": 1,
+      "kind": "window",
+      "bounds": [
+        542,
+        237.1,
+        24,
+        1.5
+      ],
+      "rot": 0,
+      "sku": "GAD-0126"
+    },
+    {
+      "room": "客用盥洗室",
+      "cat": "卫浴",
+      "name": "台盆柜与龙头",
+      "en": "Vanity & Basin Mixer",
+      "price": 8600,
+      "qty": 1,
+      "kind": "vanity",
+      "bounds": [
+        543,
+        307,
+        15,
+        6
+      ],
+      "rot": 0,
+      "sku": "GAD-0127"
+    },
+    {
+      "room": "客用盥洗室",
+      "cat": "卫浴",
+      "name": "智能坐便器",
+      "en": "Smart Toilet",
+      "price": 6800,
+      "qty": 1,
+      "kind": "toilet",
+      "bounds": [
+        550,
+        330,
+        8,
+        10
+      ],
+      "rot": 0,
+      "sku": "GAD-0128"
+    },
+    {
+      "room": "客用盥洗室",
+      "cat": "酒店用品",
+      "name": "浴室配套用品",
+      "en": "Bathroom Amenity Set",
+      "price": 1600,
+      "qty": 1,
+      "kind": "accessories",
+      "bounds": [
+        555,
+        308,
+        2,
+        3
+      ],
+      "rot": 0,
+      "sku": "GAD-0129"
+    },
+    {
+      "room": "客用盥洗室",
+      "cat": "陶瓷",
+      "name": "防滑墙地砖",
+      "en": "Porcelain Wall & Floor Tiles",
+      "price": 360,
+      "qty": 14,
+      "kind": "floor",
+      "bounds": [
+        540.8,
+        305.8,
+        19.4,
+        35.4
+      ],
+      "rot": 0,
+      "sku": "GAD-0130"
+    },
+    {
+      "room": "客用盥洗室",
+      "cat": "灯饰",
+      "name": "防潮灯具",
+      "en": "Bathroom Lighting",
+      "price": 2800,
+      "qty": 1,
+      "kind": "light",
+      "bounds": [
+        548.5,
+        321.5,
+        4,
+        4
+      ],
+      "rot": 0,
+      "sku": "GAD-0131"
+    },
+    {
+      "room": "玄关",
+      "cat": "定制",
+      "name": "玄关收纳柜",
+      "en": "Entrance Storage Cabinet",
+      "price": 18800,
+      "qty": 1,
+      "kind": "cabinet",
+      "bounds": [
+        443,
+        338,
+        5,
+        20
+      ],
+      "rot": 90,
+      "sku": "GAD-0132"
+    },
+    {
+      "room": "玄关",
+      "cat": "Sourcing",
+      "name": "玄关装饰与摆件",
+      "en": "Entrance Decor Collection",
+      "price": 7800,
+      "qty": 1,
+      "kind": "decor",
+      "bounds": [
+        450,
+        343,
+        8,
+        7
+      ],
+      "rot": 0,
+      "sku": "GAD-0133"
+    },
+    {
+      "room": "玄关",
+      "cat": "地板",
+      "name": "工程木地板",
+      "en": "Engineered Timber Flooring",
+      "price": 680,
+      "qty": 20,
+      "kind": "floor",
+      "bounds": [
+        442.8,
+        304.8,
+        36.4,
+        68.4
+      ],
+      "rot": 0,
+      "sku": "GAD-0134"
+    },
+    {
+      "room": "玄关",
+      "cat": "灯饰",
+      "name": "空间照明组合",
+      "en": "Architectural Lighting Set",
+      "price": 9600,
+      "qty": 1,
+      "kind": "light",
+      "bounds": [
+        459,
+        337,
+        4,
+        4
+      ],
+      "rot": 0,
+      "sku": "GAD-0135"
+    }
+  ],
+  "walls": [
+    [
+      320,
+      238,
+      391,
+      238
+    ],
+    [
+      320,
+      238,
+      320,
+      427
+    ],
+    [
+      320,
+      427,
+      419,
+      427
+    ],
+    [
+      391,
+      238,
+      391,
+      303
+    ],
+    [
+      391,
+      303,
+      445,
+      303
+    ],
+    [
+      466,
+      303,
+      538,
+      303
+    ],
+    [
+      538,
+      236,
+      538,
+      303
+    ],
+    [
+      538,
+      236,
+      617,
+      236
+    ],
+    [
+      617,
+      236,
+      617,
+      284
+    ],
+    [
+      617,
+      299,
+      617,
+      349
+    ],
+    [
+      617,
+      364,
+      617,
+      623
+    ],
+    [
+      539,
+      623,
+      617,
+      623
+    ],
+    [
+      539,
+      548,
+      539,
+      623
+    ],
+    [
+      539,
+      469,
+      539,
+      548
+    ],
+    [
+      419,
+      469,
+      539,
+      469
+    ],
+    [
+      419,
+      427,
+      419,
+      469
+    ],
+    [
+      321,
+      309,
+      373,
+      309
+    ],
+    [
+      373,
+      290,
+      389,
+      290
+    ],
+    [
+      373,
+      290,
+      373,
+      309
+    ],
+    [
+      321,
+      334,
+      375,
+      334
+    ],
+    [
+      375,
+      310,
+      375,
+      319
+    ],
+    [
+      375,
+      329,
+      375,
+      363
+    ],
+    [
+      321,
+      363,
+      354,
+      363
+    ],
+    [
+      367,
+      363,
+      375,
+      363
+    ],
+    [
+      375,
+      363,
+      375,
+      374
+    ],
+    [
+      375,
+      374,
+      418,
+      374
+    ],
+    [
+      394,
+      305,
+      442,
+      305
+    ],
+    [
+      442,
+      305,
+      442,
+      358
+    ],
+    [
+      414,
+      358,
+      442,
+      358
+    ],
+    [
+      394,
+      305,
+      394,
+      341
+    ],
+    [
+      394,
+      352,
+      407,
+      352
+    ],
+    [
+      394,
+      358,
+      403,
+      358
+    ],
+    [
+      538,
+      304,
+      581,
+      304
+    ],
+    [
+      595,
+      304,
+      617,
+      304
+    ],
+    [
+      561,
+      305,
+      561,
+      342
+    ],
+    [
+      540,
+      326,
+      560,
+      326
+    ],
+    [
+      540,
+      305,
+      540,
+      320
+    ],
+    [
+      540,
+      334,
+      561,
+      334
+    ],
+    [
+      561,
+      343,
+      580,
+      343
+    ],
+    [
+      596,
+      343,
+      617,
+      343
+    ],
+    [
+      540,
+      422,
+      617,
+      422
+    ],
+    [
+      566,
+      431,
+      566,
+      464
+    ],
+    [
+      566,
+      464,
+      617,
+      464
+    ],
+    [
+      578,
+      465,
+      578,
+      484
+    ],
+    [
+      540,
+      484,
+      617,
+      484
+    ],
+    [
+      540,
+      549,
+      566,
+      549
+    ],
+    [
+      586,
+      549,
+      617,
+      549
+    ],
+    [
+      578,
+      549,
+      578,
+      623
+    ],
+    [
+      540,
+      597,
+      560,
+      597
+    ],
+    [
+      567,
+      597,
+      578,
+      597
+    ],
+    [
+      579,
+      597,
+      585,
+      597
+    ],
+    [
+      600,
+      597,
+      617,
+      597
+    ]
+  ]
+}
