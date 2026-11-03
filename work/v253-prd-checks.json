@@ -1,0 +1,16 @@
+{
+  "revision": "V2.03",
+  "pages": 45,
+  "reviewPages": [
+    1,
+    34,
+    35,
+    40
+  ],
+  "anchorsValid": true,
+  "archiveMatched": true,
+  "releaseMatched": true,
+  "testsPassed": 782,
+  "buildPassed": true,
+  "renderedBrowserVerified": false
+}
