@@ -1,10 +1,11 @@
 /* Exact-task lifecycle evidence. Local prototype persistence; production audit
  * storage must be append-only on the server. Viewing never creates an event. */
 const TH192 = { baseline: new Map(), busy: false };
-const TH192_NAMES = {created:'发起待办',arrived:'到达记录',reminded:'催办',transferred:'转派',edited:'编辑资料',rejected:'驳回',resubmitted:'重新提交',completed:'完成待办',state:'状态变更',receipt:'GDS 回执',delivery:'回传设计图纸','drawing-confirm':'确认图纸','drawing-reject':'驳回图纸','drawing-resubmit':'重提图纸','quote-created':'创建报价','quote-submitted':'提交报价',initiator:'发起人交接'};
+const TH192_NAMES = {created:'发起待办',arrived:'到达记录',reminded:'催办',transferred:'转派',edited:'编辑资料',rejected:'驳回',resubmitted:'重新提交',reactivated:'重新激活待办',completed:'完成待办',state:'状态变更',receipt:'GDS 回执',delivery:'回传设计图纸','drawing-confirm':'确认图纸','drawing-reject':'驳回图纸','drawing-resubmit':'重提图纸','quote-created':'创建报价','quote-submitted':'提交报价',initiator:'发起人交接'};
 function th192Copy(value){return JSON.parse(JSON.stringify(value));}
 function th192Time(value){return typeof tfTime==='function'?tfTime(value):null;}
 function th192Text(value){return typeof value==='string'&&!['-','—'].includes(value.trim())?value.trim():'';}
+function th192StatusKey(t,status=t.status,time=t.approveTime,revision=t.editRevision||0,cycle=t.quoteCompletionCycle246||0){return JSON.stringify([status,time,revision,...(t.type==='报价待办'&&cycle?[cycle]:[])]);}
 function th192Event(task,kind,key,data={}){return {id:task.id+':'+key,evidence:key,kind,title:TH192_NAMES[kind]||kind,project:task.project||'',opportunity:task.opp||'',order:task.order||'',quotation:task.draft||'',at:'',actor:'',source:'CRM',fromStatus:'',toStatus:'',fromOwner:'',toOwner:'',reason:'',...data};}
 function th192Changes(before={},after={}){
  const describe=value=>value===undefined||value===null||value===''?'未填写':Array.isArray(value)?value.map(v=>typeof v==='string'?v:v?.name||'附件').join('、'):typeof value==='object'?[value.person,value.sm,value.cat,value.reason].filter(Boolean).join(' · ')||'业务资料':String(value);
@@ -15,12 +16,16 @@ function th192Evidence(t){
  for(const r of t.reminders||[])add('reminded','reminder:'+(r.messageId||r.at+':'+r.by),{at:r.at,actor:r.by,toOwner:r.to,detail:'催办当前负责人；通知结果与业务处理结果分别记录'});
  for(const r of t.ownerHistory||[])add('transferred','owner:'+JSON.stringify([r.time,r.from,r.to,r.actor]),{at:r.time,actor:r.actor,fromOwner:r.from,toOwner:r.to,reason:r.reason||''});
  for(const r of t.quoteAssistHistory||[])add('quote-assistant','quote-assistant:'+r.revision,{at:r.time,actor:r.actor,title:r.to?'安排报价助理':'取消报价助理',toOwner:r.to,changes:[{label:'报价助理',before:r.from||'未安排',after:r.to||'未安排'}]});
+ for(const r of t.quoteReactivations246||[]){
+  const previous=r.previous;if(previous?.status==='已处理'&&th192Time(previous.approveTime)!==null)add('completed','status:'+th192StatusKey(t,'已处理',previous.approveTime,previous.editRevision||0,previous.cycle||0),{at:previous.approveTime,actor:th192Text(previous.approver),fromStatus:'待处理',toStatus:'已处理',reason:previous.completionReason||''});
+  add('reactivated',r.id,{at:r.at,actor:r.by,fromStatus:'已处理',toStatus:'待处理',toOwner:t.owner,reason:r.reason,legacy:!!r.legacy});
+ }
  for(const r of t.initiatorHistory||[])add('initiator','initiator:'+JSON.stringify([r.time,r.from,r.to,r.by]),{at:r.time,actor:r.by,detail:(r.from||'未记录')+' → '+(r.to||'未记录'),reason:r.reason||''});
  for(const r of t.editHistory||[]){
   const resubmit=r.fromStatus==='已驳回';
   add(resubmit?'resubmitted':'edited','edit:'+JSON.stringify([r.revision,r.time,r.actor]),{at:r.time,actor:r.actor,fromStatus:r.fromStatus,toStatus:'待处理',toOwner:r.after?.owner||r.after?.sm||'',reason:r.decision?.reason||'',changes:th192Changes(r.before,r.after),detail:resubmit?'修改原待办后重新提交':'更新原待办资料'});
  }
- if(['已处理','已驳回'].includes(t.status)&&th192Time(t.approveTime)!==null)add(t.status==='已处理'?'completed':'rejected','status:'+JSON.stringify([t.status,t.approveTime,t.editRevision||0]),{at:t.approveTime,actor:th192Text(t.approver),fromStatus:'待处理',toStatus:t.status,reason:t.status==='已驳回'?t.rejectReason||t.approvalNote||'':t.completionReason||'',source:t.gdsCompleted?'GDS':'CRM'});
+ if(['已处理','已驳回'].includes(t.status)&&th192Time(t.approveTime)!==null)add(t.status==='已处理'?'completed':'rejected','status:'+th192StatusKey(t),{at:t.approveTime,actor:th192Text(t.approver),fromStatus:'待处理',toStatus:t.status,reason:t.status==='已驳回'?t.rejectReason||t.approvalNote||'':t.completionReason||'',source:t.gdsCompleted?'GDS':'CRM'});
  for(const r of t.gds?.receipts||[])add('receipt','receipt:'+r.eventId,{at:r.time,actor:r.actor,source:'GDS',detail:({submit:'回传设计图纸',complete:'GDS 完成设计任务','payment-confirmed':'GDS 确认设计单收款',resubmit:'重新提交图纸',synchronize:'图纸同步',reject:'驳回图纸','confirm-drawing':'确认图纸回执','reject-drawing':'驳回图纸回执'})[r.action]||r.action,eventId:r.eventId});
  for(const r of t.designSubmissions||[])add('delivery','delivery:'+JSON.stringify([r.revision,r.time,r.by]),{at:r.time,actor:r.by,source:'GDS',detail:'回传第 '+r.revision+' 批设计图纸'});
  for(const d of t.drawings||[])for(const [i,r] of (d.history||[]).entries()){
@@ -41,7 +46,7 @@ function th192Delta(t,old,now,actor){
  const current=th192Tracked(t),events=[];
  if(old&&typeof OQ244_REPAIR!=='undefined'&&OQ244_REPAIR.tasks.has(t.id)){
   const known=new Set(old.evidence.map(e=>e.evidence));
-  return [...current.evidence.filter(e=>!known.has(e.evidence)).map(e=>({...e,legacy:true,source:'历史记录校正'})),th192Event(t,'state','quote-completion-repair:'+t.quoteCompletionRepair244?.versionId,{at:now,actor:'',source:'历史记录校正',fromStatus:old.status,toStatus:t.status,reason:'依据原报价提交记录校正待办状态，未重新提交或传输ERP'})];
+  return [...current.evidence.filter(e=>!known.has(e.evidence)).map(e=>({...e,legacy:true,source:'历史记录校正'})),th192Event(t,'state','quote-state-repair:'+t.status+':'+(t.quoteReactivations246?.length||t.quoteCompletionRepair244?.versionId||''),{at:now,actor:'',source:'历史记录校正',fromStatus:old.status,toStatus:t.status,reason:'依据原报价提交及暂存记录校正待办状态，未重新提交或传输ERP'})];
  }
  if(!old)return [th192Event(t,'created','created',{at:now,actor,source:t.type==='设计确认待办'?'GDS':'CRM',toStatus:t.status,toOwner:t.owner,detail:'关联原业务生成待办，发起人 · '+(t.initiator||'未记录')}),...current.evidence.map(e=>({...e,legacy:false,businessAt:e.at,at:now,actor:e.actor||actor}))];
  const known=new Set(old.evidence.map(e=>e.evidence));
@@ -51,7 +56,7 @@ function th192Delta(t,old,now,actor){
  if(old.owner!==t.owner&&!events.some(e=>e.kind==='transferred'))add('transferred','owner:'+JSON.stringify([now,old.owner,t.owner,actor]),{fromOwner:old.owner,toOwner:t.owner});
  if(old.status!==t.status&&!events.some(e=>e.toStatus===t.status)){
   const kind=t.status==='已驳回'?'rejected':t.status==='已处理'?'completed':old.status==='已驳回'&&t.status==='待处理'?'resubmitted':'state';
-  add(kind,'status:'+JSON.stringify([t.status,t.approveTime||now,t.editRevision||0]),{fromStatus:old.status,toStatus:t.status,toOwner:t.owner,source:t.gdsCompleted?'GDS':'CRM',actor:th192Text(t.approver)||actor,reason:t.status==='已驳回'?t.rejectReason||t.approvalNote||'':t.completionReason||''});
+  add(kind,'status:'+th192StatusKey(t,t.status,t.approveTime||now),{fromStatus:old.status,toStatus:t.status,toOwner:t.owner,source:t.gdsCompleted?'GDS':'CRM',actor:th192Text(t.approver)||actor,reason:t.status==='已驳回'?t.rejectReason||t.approvalNote||'':t.completionReason||''});
  }
  const changed=['expectedCompletionAt','note','title'].filter(k=>old[k]!==current[k]);
  if((changed.length||old.editRevision!==current.editRevision)&&!events.some(e=>['edited','resubmitted','drawing-confirm','drawing-reject','drawing-resubmit','delivery'].includes(e.kind)))add('edited','observed-edit:'+JSON.stringify([now,current.editRevision,changed]),{detail:changed.length?'更新'+changed.map(k=>({expectedCompletionAt:'期望完成时间',note:'备注',title:'业务资料'})[k]).join('、'):'更新待办资料',fromStatus:old.status,toStatus:t.status});
@@ -77,6 +82,7 @@ function th192Segments(task,events,now){
   }
   else if(e.kind==='rejected'){const resumeOwner=current?.owner||e.responsibleOwner||'';close(e.at,'已驳回');open(task.originalInitiator||task.initiator,e.at,'等待补充资料',!!e.legacy);current.resumeOwner=resumeOwner;}
   else if(e.kind==='resubmitted'){const owner=e.toOwner||e.responsibleOwner||current?.resumeOwner;close(e.at,'已重新提交');open(owner,e.at,'负责人处理',!!e.legacy);}
+  else if(e.kind==='reactivated'){close(e.at,'待重新提交');open(e.toOwner||task.owner,e.at,'负责人处理',!!e.legacy);}
   else if(e.kind==='completed')close(e.at,'已完成');
  }
  if(!current&&!segments.length)open(task.owner,'','负责人处理',true);

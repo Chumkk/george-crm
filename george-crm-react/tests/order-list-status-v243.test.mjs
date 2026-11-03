@@ -12,7 +12,7 @@ test('项目与商机订单列表从首次成功暂存或提交显示，仅有�
  c.V3.meta[code].confirmedCats=['家具'];for(const html of both(c))assert.match(html,/<tag>已确认<\/tag>/);
  const submitted=JSON.stringify(c.V3.meta[code].submitted);c.v3QuickSave(data);
  for(const html of both(c))assert.match(html,/<tag>已暂存<\/tag>/);
- assert.equal(JSON.stringify(c.V3.meta[code].submitted),submitted);assert.equal(c.TODOS[0].status,'已处理');
+ assert.equal(JSON.stringify(c.V3.meta[code].submitted),submitted);assert.equal(c.TODOS[0].status,'待处理');
 });
 test('保存失败不展示未保存占位，跨商机与跨项目记录保持隔离',()=>{
  const c=boot(),{data}=quote(c);c.actor='SM';c.fail=true;c.v3QuickSave(data);

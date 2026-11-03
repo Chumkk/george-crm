@@ -10,6 +10,15 @@ function boot(tasks=[]){
  vm.createContext(c);vm.runInContext(source,c);return {c,store,fail:()=>success=false,pass:()=>success=true};
 }
 const task=()=>({id:'T1',type:'确认商机',project:'PJ1',owner:'SM-A',initiator:'PM',status:'待处理',time:'2026-10-19 08:00'});
+test('报价暂存重新激活保留上次完成，并在同一分钟重新提交时记录独立的新完成轮次',()=>{
+ const t={...task(),type:'报价待办',draft:'Q',status:'已处理',approver:'SM-A',approveTime:'2026-10-19 09:00',completionReason:'已提交报价'}, {c}=boot([t]);
+ c.v3Save();t.quoteReactivations246=[{id:'T1:save:1',at:'2026-10-19 09:00',by:'SM-A',reason:'报价已暂存，需重新提交',previous:{status:'已处理',approver:t.approver,approveTime:t.approveTime,completionReason:t.completionReason,cycle:0}}];
+ Object.assign(t,{status:'待处理',approver:'',approveTime:'',completionReason:'',quoteCompletionCycle246:1});c.v3Save();
+ let view=c.th192History(t);assert.equal(view.events.filter(e=>e.kind==='completed').length,1);assert.equal(view.events.filter(e=>e.kind==='reactivated').length,1);assert.ok(view.segments.at(-1).active);
+ Object.assign(t,{status:'已处理',approver:'SM-A',approveTime:'2026-10-19 09:00',completionReason:'已提交报价'});c.v3Save();view=c.th192History(t);
+ assert.equal(view.events.filter(e=>e.kind==='completed').length,2);assert.equal(new Set(view.events.filter(e=>e.kind==='completed').map(e=>e.evidence)).size,2);assert.ok(!view.segments.some(s=>s.active));
+ const saved=JSON.stringify(view.events);c.v3Save();assert.equal(JSON.stringify(c.th192History(t).events),saved);
+});
 test('发起、催办、转派、驳回、重提、完成按成功保存追加，重复保存不重复记录',()=>{
  const {c}=boot();const t=task();c.TODOS.push(t);c.v3Save();assert.equal(t.lifecycle192[0].kind,'created');
  t.reminders=[{messageId:'M1',at:'2026-10-19T08:30:00+08:00',by:'PM',to:'SM-A'}];c.v3Save();

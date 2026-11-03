@@ -1,0 +1,1442 @@
+{
+  "unified": {
+    "nodes": [
+      {
+        "id": "customer",
+        "number": "01",
+        "col": 0,
+        "x": 126,
+        "y": 126,
+        "w": 184,
+        "h": 132,
+        "title": "创建客户",
+        "lines": [
+          "运营保存客户资料",
+          "PM 创建关联项目"
+        ],
+        "tone": "action",
+        "ports": []
+      },
+      {
+        "id": "project",
+        "number": "02",
+        "col": 1,
+        "x": 338,
+        "y": 126,
+        "w": 184,
+        "h": 132,
+        "title": "创建项目",
+        "lines": [
+          "项目信息含空间、图纸及附件",
+          "空间选填，PM 完善项目资料",
+          "保存生成 PM 分配商机任务"
+        ],
+        "tone": "action",
+        "ports": []
+      },
+      {
+        "id": "allocation",
+        "number": "03",
+        "col": 1,
+        "x": 338,
+        "y": 314,
+        "w": 184,
+        "h": 132,
+        "title": "分配商机",
+        "lines": [
+          "产品空间只读，原抽屉维护",
+          "设计选主管、期望时间和协调员",
+          "产品、设计商机可并行分配"
+        ],
+        "tone": "task",
+        "ports": []
+      },
+      {
+        "id": "spaces",
+        "number": "03P",
+        "col": 1,
+        "x": 550,
+        "y": 314,
+        "w": 184,
+        "h": 132,
+        "title": "区域内 / 跨区域分配",
+        "lines": [
+          "只读项目空间，原抽屉维护",
+          "PM确认品类名称并查重",
+          "转介绍附原因及同意截图"
+        ],
+        "tone": "action",
+        "ports": []
+      },
+      {
+        "id": "acceptproduct",
+        "number": "04P",
+        "col": 3,
+        "x": 1398,
+        "y": 502,
+        "w": 184,
+        "h": 132,
+        "title": "采购商机接单：承接",
+        "lines": [
+          "无转介绍时 SM 确认或拒绝",
+          "确认生成产品商机和报价任务"
+        ],
+        "tone": "task",
+        "ports": []
+      },
+      {
+        "id": "approval",
+        "number": "04C",
+        "col": 5,
+        "x": 2246,
+        "y": 502,
+        "w": 184,
+        "h": 132,
+        "title": "跨区域 / 转介绍审批",
+        "lines": [
+          "核对接收 SM、原因和附件",
+          "通过生成产品商机和报价任务",
+          "驳回原申请，通知 PM"
+        ],
+        "tone": "approval",
+        "ports": []
+      },
+      {
+        "id": "acceptdesign",
+        "number": "04D",
+        "col": 2,
+        "x": 762,
+        "y": 502,
+        "w": 184,
+        "h": 132,
+        "title": "设计商机接单：承接",
+        "lines": [
+          "接收主管确认或拒绝本次邀请",
+          "核对期望时间、协调员安排",
+          "承接生成商机及报价任务"
+        ],
+        "tone": "task",
+        "ports": []
+      },
+      {
+        "id": "retry",
+        "number": "R",
+        "col": 1,
+        "x": 338,
+        "y": 502,
+        "w": 184,
+        "h": 132,
+        "title": "编辑原待办并重提",
+        "lines": [
+          "拒绝 / 驳回通知原发起人",
+          "编辑同一申请，不另建待办",
+          "重提恢复待处理并通知接收人"
+        ],
+        "tone": "action",
+        "ports": []
+      },
+      {
+        "id": "productquote",
+        "number": "05P",
+        "col": 3,
+        "x": 1398,
+        "y": 690,
+        "w": 184,
+        "h": 132,
+        "title": "产品报价：创建报价",
+        "lines": [
+          "SM及助理依ERP状态办理",
+          "复用最近提交到工作稿",
+          "统一总览品类名称"
+        ],
+        "tone": "task",
+        "ports": []
+      },
+      {
+        "id": "productsave",
+        "number": "06P",
+        "col": 3,
+        "x": 1610,
+        "y": 690,
+        "w": 184,
+        "h": 132,
+        "title": "暂存产品报价",
+        "lines": [
+          "暂存不发布、不传ERP",
+          "已提交后再暂存：激活原待办"
+        ],
+        "tone": "action",
+        "ports": []
+      },
+      {
+        "id": "productsubmit",
+        "number": "07P",
+        "col": 3,
+        "x": 1398,
+        "y": 878,
+        "w": 396,
+        "h": 132,
+        "title": "提交产品报价并传 ERP",
+        "lines": [
+          "校验空间，发布两端及历史",
+          "提交人实名，ERP请求及原待办完成",
+          "进入待下定，通知当前 PM"
+        ],
+        "tone": "action",
+        "ports": [
+          "Q1",
+          "N1"
+        ]
+      },
+      {
+        "id": "designquote",
+        "number": "05D",
+        "col": 2,
+        "x": 974,
+        "y": 690,
+        "w": 184,
+        "h": 132,
+        "title": "设计报价：创建设计单",
+        "lines": [
+          "设计费用必填，附件备注选填",
+          "不做产品空间校验",
+          "提交成功后生成设计中任务"
+        ],
+        "tone": "task",
+        "ports": []
+      },
+      {
+        "id": "designsave",
+        "number": "06D",
+        "col": 2,
+        "x": 1186,
+        "y": 690,
+        "w": 184,
+        "h": 132,
+        "title": "暂存设计报价",
+        "lines": [
+          "暂存不发布、不传ERP",
+          "已提交后再暂存：激活原待办"
+        ],
+        "tone": "action",
+        "ports": []
+      },
+      {
+        "id": "designsubmit",
+        "number": "07D",
+        "col": 2,
+        "x": 974,
+        "y": 878,
+        "w": 396,
+        "h": 132,
+        "title": "提交设计报价并传 ERP",
+        "lines": [
+          "发布两端、ERP 请求并完成报价任务",
+          "待下定，同时生成 GDS 设计中",
+          "设计与产品业务并行"
+        ],
+        "tone": "action",
+        "ports": [
+          "Q1",
+          "N1"
+        ]
+      },
+      {
+        "id": "overview",
+        "number": "Q1",
+        "col": 1,
+        "x": 338,
+        "y": 878,
+        "w": 184,
+        "h": 132,
+        "title": "项目报价总览",
+        "lines": [
+          "汇集产品、设计及加单报价",
+          "与客户共用同一提交版本",
+          "内部使用人民币原币展示"
+        ],
+        "tone": "action",
+        "ports": [
+          "Q1"
+        ]
+      },
+      {
+        "id": "designresult",
+        "number": "D1",
+        "col": 2,
+        "x": 762,
+        "y": 1110,
+        "w": 184,
+        "h": 132,
+        "title": "设计中：GDS 交付",
+        "lines": [
+          "携带已提交的设计单",
+          "带期望时间、协调员安排",
+          "可分批回图，GDS 决定任务完成"
+        ],
+        "tone": "task",
+        "ports": []
+      },
+      {
+        "id": "coordinator",
+        "number": "D2G",
+        "col": 2,
+        "x": 974,
+        "y": 1298,
+        "w": 184,
+        "h": 132,
+        "title": "GDS 协调员确认",
+        "lines": [
+          "设计师安排协调员时",
+          "协调员在 GDS 确认图纸",
+          "回传结果，PM 在 CRM 同步"
+        ],
+        "tone": "action",
+        "ports": []
+      },
+      {
+        "id": "review",
+        "number": "D2",
+        "col": 1,
+        "x": 338,
+        "y": 1298,
+        "w": 184,
+        "h": 132,
+        "title": "设计定稿：图纸审核",
+        "lines": [
+          "PM / 指定协调员逐图审核",
+          "仅被驳回图纸重提",
+          "全确认后手动同步，完成审核"
+        ],
+        "tone": "task",
+        "ports": []
+      },
+      {
+        "id": "notifypm",
+        "number": "N1",
+        "col": 1,
+        "x": 338,
+        "y": 1510,
+        "w": 184,
+        "h": 132,
+        "title": "PM 的业务通知",
+        "lines": [
+          "承接、审批及驳回 / 重提",
+          "设计确认到达、报价提交",
+          "客户确认、报价完成、催办"
+        ],
+        "tone": "notice",
+        "ports": [
+          "N1",
+          "Q2"
+        ]
+      },
+      {
+        "id": "notifydesign",
+        "number": "N1",
+        "col": 2,
+        "x": 762,
+        "y": 1510,
+        "w": 184,
+        "h": 132,
+        "title": "设计师的业务通知",
+        "lines": [
+          "商机承接、设计及报价到达",
+          "审核驳回 / 重提、催办",
+          "打开精确关联的本次待办"
+        ],
+        "tone": "notice",
+        "ports": [
+          "N1"
+        ]
+      },
+      {
+        "id": "notifysm",
+        "number": "N1",
+        "col": 3,
+        "x": 1398,
+        "y": 1510,
+        "w": 184,
+        "h": 132,
+        "title": "SM 的业务通知",
+        "lines": [
+          "商机邀请及报价任务到达",
+          "报价退回 / 更新、客户确认",
+          "移交、重提与催办"
+        ],
+        "tone": "notice",
+        "ports": [
+          "N1",
+          "Q2"
+        ]
+      },
+      {
+        "id": "notifyoffice",
+        "number": "N1",
+        "col": 5,
+        "x": 2246,
+        "y": 1510,
+        "w": 184,
+        "h": 132,
+        "title": "总经办的业务通知",
+        "lines": [
+          "跨区域及转介绍申请到达 / 更新",
+          "审批催办",
+          "打开本次审批待办"
+        ],
+        "tone": "notice",
+        "ports": [
+          "N1"
+        ]
+      },
+      {
+        "id": "remind",
+        "number": "N",
+        "col": 1,
+        "x": 338,
+        "y": 1698,
+        "w": 184,
+        "h": 132,
+        "title": "待办催办 / 通知入口",
+        "lines": [
+          "发起人给他人：每 24 小时一次",
+          "驳回通知，原待办编辑重提",
+          "通知不自动完成业务待办"
+        ],
+        "tone": "notice",
+        "ports": []
+      },
+      {
+        "id": "preview",
+        "number": "P1",
+        "col": 1,
+        "x": 338,
+        "y": 2000,
+        "w": 184,
+        "h": 132,
+        "title": "报价预览与分享",
+        "lines": [
+          "填写客户、贸易、计价与费用",
+          "免密内部链接 / 密码客户链接",
+          "按原模板导出合同Word"
+        ],
+        "tone": "action",
+        "ports": []
+      },
+      {
+        "id": "online",
+        "number": "Q1",
+        "col": 4,
+        "x": 1822,
+        "y": 2000,
+        "w": 184,
+        "h": 132,
+        "title": "客户线上总览",
+        "lines": [
+          "Summary / 报价清单",
+          "品类提示新报价，右侧确认",
+          "Summary列A/B价与收款资料"
+        ],
+        "tone": "client",
+        "ports": [
+          "Q1"
+        ]
+      },
+      {
+        "id": "clientconfirm",
+        "number": "Q2",
+        "col": 4,
+        "x": 1822,
+        "y": 2188,
+        "w": 184,
+        "h": 132,
+        "title": "客户密码链接确认",
+        "lines": [
+          "验证密码后核对当前版本",
+          "记录版本和时间，通知PM/SM",
+          "产品备货必要条件之一"
+        ],
+        "tone": "client",
+        "ports": [
+          "Q2"
+        ]
+      },
+      {
+        "id": "erp",
+        "number": "09",
+        "col": 6,
+        "x": 2458,
+        "y": 2410,
+        "w": 184,
+        "h": 132,
+        "title": "ERP 收款及结果回传",
+        "lines": [
+          "先完成报价，再收款",
+          "请求、实际回执与实收分开",
+          "提交报价后初始状态：未执行"
+        ],
+        "tone": "erp",
+        "ports": []
+      },
+      {
+        "id": "stock",
+        "number": "10P",
+        "col": 1,
+        "x": 338,
+        "y": 2598,
+        "w": 184,
+        "h": 132,
+        "title": "待下单：产品备货",
+        "lines": [
+          "实收≥20%：进入待下单",
+          "当前版本获客户确认且资料齐全",
+          "PM / SM 在 ERP 点击备货"
+        ],
+        "tone": "erp",
+        "ports": []
+      },
+      {
+        "id": "delivery",
+        "number": "11P",
+        "col": 3,
+        "x": 1398,
+        "y": 2598,
+        "w": 184,
+        "h": 132,
+        "title": "产品交付及状态回传",
+        "lines": [
+          "实际备货进入交付中",
+          "正常交付结束：已完成",
+          "汇总关联项目状态"
+        ],
+        "tone": "erp",
+        "ports": []
+      },
+      {
+        "id": "service",
+        "number": "10D",
+        "col": 2,
+        "x": 762,
+        "y": 2598,
+        "w": 184,
+        "h": 132,
+        "title": "待下单：设计履行",
+        "lines": [
+          "该单 ERP 实收≥20%：待下单",
+          "GDS 确认收到款：交付中",
+          "GDS 完成设计中：已完成"
+        ],
+        "tone": "erp",
+        "ports": []
+      }
+    ],
+    "edges": [
+      {
+        "start": "customer",
+        "end": "project",
+        "label": "",
+        "kind": "business",
+        "dashed": false,
+        "points": [
+          [
+            310,
+            192.0
+          ],
+          [
+            338,
+            192.0
+          ]
+        ]
+      },
+      {
+        "start": "project",
+        "end": "allocation",
+        "label": "",
+        "kind": "business",
+        "dashed": false,
+        "points": [
+          [
+            430.0,
+            258
+          ],
+          [
+            430.0,
+            314
+          ]
+        ]
+      },
+      {
+        "start": "allocation",
+        "end": "spaces",
+        "label": "产品分配",
+        "kind": "business",
+        "dashed": false,
+        "points": [
+          [
+            522,
+            380.0
+          ],
+          [
+            550,
+            380.0
+          ]
+        ],
+        "labelAt": null
+      },
+      {
+        "start": "spaces",
+        "end": "acceptproduct",
+        "label": "普通区域内",
+        "kind": "business",
+        "dashed": false,
+        "points": [
+          [
+            642.0,
+            446
+          ],
+          [
+            642.0,
+            488
+          ],
+          [
+            1490.0,
+            488
+          ],
+          [
+            1490.0,
+            502
+          ]
+        ],
+        "labelAt": [
+          1066.0,
+          510
+        ]
+      },
+      {
+        "start": "spaces",
+        "end": "approval",
+        "label": "跨区域 / 转介绍",
+        "kind": "business",
+        "dashed": false,
+        "points": [
+          [
+            642.0,
+            446
+          ],
+          [
+            642.0,
+            488
+          ],
+          [
+            2338.0,
+            488
+          ],
+          [
+            2338.0,
+            502
+          ]
+        ],
+        "labelAt": [
+          1490.0,
+          480
+        ]
+      },
+      {
+        "start": "allocation",
+        "end": "acceptdesign",
+        "label": "设计服务，可与产品并行",
+        "kind": "business",
+        "dashed": false,
+        "points": [
+          [
+            430.0,
+            446
+          ],
+          [
+            430.0,
+            488
+          ],
+          [
+            854.0,
+            488
+          ],
+          [
+            854.0,
+            502
+          ]
+        ],
+        "labelAt": [
+          642.0,
+          510
+        ]
+      },
+      {
+        "start": "acceptproduct",
+        "end": "retry",
+        "label": "拒绝",
+        "kind": "return",
+        "dashed": true,
+        "points": [
+          [
+            1398,
+            568.0
+          ],
+          [
+            1384,
+            568.0
+          ],
+          [
+            1384,
+            488
+          ],
+          [
+            536,
+            488
+          ],
+          [
+            536,
+            568.0
+          ],
+          [
+            522,
+            568.0
+          ]
+        ],
+        "labelAt": [
+          960.0,
+          480
+        ]
+      },
+      {
+        "start": "approval",
+        "end": "retry",
+        "label": "驳回",
+        "kind": "return",
+        "dashed": true,
+        "points": [
+          [
+            2246,
+            568.0
+          ],
+          [
+            2232,
+            568.0
+          ],
+          [
+            2232,
+            488
+          ],
+          [
+            536,
+            488
+          ],
+          [
+            536,
+            568.0
+          ],
+          [
+            522,
+            568.0
+          ]
+        ],
+        "labelAt": [
+          1384.0,
+          480
+        ]
+      },
+      {
+        "start": "acceptdesign",
+        "end": "retry",
+        "label": "拒绝",
+        "kind": "return",
+        "dashed": true,
+        "points": [
+          [
+            762,
+            568.0
+          ],
+          [
+            522,
+            568.0
+          ]
+        ],
+        "labelAt": [
+          642.0,
+          590.0
+        ]
+      },
+      {
+        "start": "retry",
+        "end": "allocation",
+        "label": "编辑原申请重提",
+        "kind": "return",
+        "dashed": true,
+        "points": [
+          [
+            338,
+            568.0
+          ],
+          [
+            324,
+            568.0
+          ],
+          [
+            324,
+            380.0
+          ],
+          [
+            338,
+            380.0
+          ]
+        ],
+        "labelAt": null
+      },
+      {
+        "start": "acceptproduct",
+        "end": "productquote",
+        "label": "",
+        "kind": "business",
+        "dashed": false,
+        "points": [
+          [
+            1490.0,
+            634
+          ],
+          [
+            1490.0,
+            690
+          ]
+        ]
+      },
+      {
+        "start": "approval",
+        "end": "productquote",
+        "label": "审批通过",
+        "kind": "business",
+        "dashed": false,
+        "points": [
+          [
+            2338.0,
+            634
+          ],
+          [
+            2338.0,
+            676
+          ],
+          [
+            1490.0,
+            676
+          ],
+          [
+            1490.0,
+            690
+          ]
+        ],
+        "labelAt": [
+          1914.0,
+          698
+        ]
+      },
+      {
+        "start": "productquote",
+        "end": "productsave",
+        "label": "",
+        "kind": "business",
+        "dashed": false,
+        "points": [
+          [
+            1582,
+            756.0
+          ],
+          [
+            1610,
+            756.0
+          ]
+        ]
+      },
+      {
+        "start": "productsave",
+        "end": "productsubmit",
+        "label": "",
+        "kind": "business",
+        "dashed": false,
+        "points": [
+          [
+            1702.0,
+            822
+          ],
+          [
+            1702.0,
+            864
+          ],
+          [
+            1596.0,
+            864
+          ],
+          [
+            1596.0,
+            878
+          ]
+        ]
+      },
+      {
+        "start": "productsubmit",
+        "end": "overview",
+        "label": "发布 Q1",
+        "kind": "business",
+        "dashed": false,
+        "points": [
+          [
+            1398,
+            944.0
+          ],
+          [
+            1384,
+            944.0
+          ],
+          [
+            1384,
+            864
+          ],
+          [
+            536,
+            864
+          ],
+          [
+            536,
+            944.0
+          ],
+          [
+            522,
+            944.0
+          ]
+        ],
+        "labelAt": [
+          960.0,
+          856
+        ]
+      },
+      {
+        "start": "acceptdesign",
+        "end": "designquote",
+        "label": "同时生成报价任务",
+        "kind": "business",
+        "dashed": false,
+        "points": [
+          [
+            854.0,
+            634
+          ],
+          [
+            854.0,
+            676
+          ],
+          [
+            1066.0,
+            676
+          ],
+          [
+            1066.0,
+            690
+          ]
+        ],
+        "labelAt": [
+          960.0,
+          668
+        ]
+      },
+      {
+        "start": "designsubmit",
+        "end": "designresult",
+        "label": "提交成功生成设计中任务",
+        "kind": "business",
+        "dashed": false,
+        "points": [
+          [
+            1172.0,
+            1010
+          ],
+          [
+            1172.0,
+            1096
+          ],
+          [
+            854.0,
+            1096
+          ],
+          [
+            854.0,
+            1110
+          ]
+        ],
+        "labelAt": [
+          1013.0,
+          1088
+        ]
+      },
+      {
+        "start": "designquote",
+        "end": "designsave",
+        "label": "",
+        "kind": "business",
+        "dashed": false,
+        "points": [
+          [
+            1158,
+            756.0
+          ],
+          [
+            1186,
+            756.0
+          ]
+        ]
+      },
+      {
+        "start": "designsave",
+        "end": "designsubmit",
+        "label": "",
+        "kind": "business",
+        "dashed": false,
+        "points": [
+          [
+            1278.0,
+            822
+          ],
+          [
+            1278.0,
+            864
+          ],
+          [
+            1172.0,
+            864
+          ],
+          [
+            1172.0,
+            878
+          ]
+        ]
+      },
+      {
+        "start": "designsubmit",
+        "end": "overview",
+        "label": "发布 Q1",
+        "kind": "business",
+        "dashed": false,
+        "points": [
+          [
+            974,
+            944.0
+          ],
+          [
+            522,
+            944.0
+          ]
+        ],
+        "labelAt": [
+          748.0,
+          966.0
+        ]
+      },
+      {
+        "start": "designresult",
+        "end": "coordinator",
+        "label": "设计师安排协调员",
+        "kind": "business",
+        "dashed": false,
+        "points": [
+          [
+            854.0,
+            1242
+          ],
+          [
+            854.0,
+            1284
+          ],
+          [
+            1066.0,
+            1284
+          ],
+          [
+            1066.0,
+            1298
+          ]
+        ],
+        "labelAt": [
+          960.0,
+          1276
+        ]
+      },
+      {
+        "start": "coordinator",
+        "end": "review",
+        "label": "已确认结果 / PM 同步",
+        "kind": "business",
+        "dashed": false,
+        "points": [
+          [
+            974,
+            1364.0
+          ],
+          [
+            522,
+            1364.0
+          ]
+        ],
+        "labelAt": [
+          748.0,
+          1386.0
+        ]
+      },
+      {
+        "start": "designresult",
+        "end": "review",
+        "label": "PM 或指定协调员审核",
+        "kind": "business",
+        "dashed": false,
+        "points": [
+          [
+            854.0,
+            1242
+          ],
+          [
+            854.0,
+            1284
+          ],
+          [
+            430.0,
+            1284
+          ],
+          [
+            430.0,
+            1298
+          ]
+        ],
+        "labelAt": [
+          642.0,
+          1306
+        ]
+      },
+      {
+        "start": "review",
+        "end": "designresult",
+        "label": "仅被驳回图纸由 GDS 重提",
+        "kind": "return",
+        "dashed": true,
+        "points": [
+          [
+            522,
+            1364.0
+          ],
+          [
+            960,
+            1364.0
+          ],
+          [
+            960,
+            1176.0
+          ],
+          [
+            946,
+            1176.0
+          ]
+        ],
+        "labelAt": [
+          741.0,
+          1356.0
+        ]
+      },
+      {
+        "start": "overview",
+        "end": "preview",
+        "label": "PM维护对客信息",
+        "kind": "business",
+        "dashed": false,
+        "points": [
+          [
+            430.0,
+            1010
+          ],
+          [
+            430.0,
+            1024
+          ],
+          [
+            324,
+            1024
+          ],
+          [
+            324,
+            1986
+          ],
+          [
+            430.0,
+            1986
+          ],
+          [
+            430.0,
+            2000
+          ]
+        ],
+        "labelAt": [
+          377.0,
+          1978
+        ]
+      },
+      {
+        "start": "preview",
+        "end": "online",
+        "label": "填写保存后预览 / 分享",
+        "kind": "business",
+        "dashed": false,
+        "points": [
+          [
+            522,
+            2066.0
+          ],
+          [
+            1822,
+            2066.0
+          ]
+        ],
+        "labelAt": [
+          1172.0,
+          2088.0
+        ]
+      },
+      {
+        "start": "online",
+        "end": "clientconfirm",
+        "label": "密码验证后客户确认",
+        "kind": "business",
+        "dashed": false,
+        "points": [
+          [
+            1914.0,
+            2132
+          ],
+          [
+            1914.0,
+            2188
+          ]
+        ],
+        "labelAt": null
+      },
+      {
+        "start": "productsubmit",
+        "end": "erp",
+        "label": "产品报价提交",
+        "kind": "business",
+        "dashed": false,
+        "points": [
+          [
+            1596.0,
+            1010
+          ],
+          [
+            1596.0,
+            2396
+          ],
+          [
+            2550.0,
+            2396
+          ],
+          [
+            2550.0,
+            2410
+          ]
+        ],
+        "labelAt": [
+          2073.0,
+          2418
+        ]
+      },
+      {
+        "start": "designsubmit",
+        "end": "erp",
+        "label": "设计报价提交",
+        "kind": "business",
+        "dashed": false,
+        "points": [
+          [
+            1172.0,
+            1010
+          ],
+          [
+            1172.0,
+            2396
+          ],
+          [
+            2550.0,
+            2396
+          ],
+          [
+            2550.0,
+            2410
+          ]
+        ],
+        "labelAt": [
+          1861.0,
+          2418
+        ]
+      },
+      {
+        "start": "erp",
+        "end": "stock",
+        "label": "产品实收达到20%",
+        "kind": "business",
+        "dashed": false,
+        "points": [
+          [
+            2550.0,
+            2542
+          ],
+          [
+            2550.0,
+            2584
+          ],
+          [
+            430.0,
+            2584
+          ],
+          [
+            430.0,
+            2598
+          ]
+        ],
+        "labelAt": [
+          1490.0,
+          2576
+        ]
+      },
+      {
+        "start": "clientconfirm",
+        "end": "stock",
+        "label": "当前版本确认，结合实收与资料校验",
+        "kind": "notice",
+        "dashed": true,
+        "points": [
+          [
+            1914.0,
+            2320
+          ],
+          [
+            1914.0,
+            2584
+          ],
+          [
+            430.0,
+            2584
+          ],
+          [
+            430.0,
+            2598
+          ]
+        ],
+        "labelAt": [
+          1172.0,
+          2606
+        ]
+      },
+      {
+        "start": "stock",
+        "end": "delivery",
+        "label": "",
+        "kind": "business",
+        "dashed": false,
+        "points": [
+          [
+            522,
+            2664.0
+          ],
+          [
+            536,
+            2664.0
+          ],
+          [
+            536,
+            2584
+          ],
+          [
+            1384,
+            2584
+          ],
+          [
+            1384,
+            2664.0
+          ],
+          [
+            1398,
+            2664.0
+          ]
+        ]
+      },
+      {
+        "start": "erp",
+        "end": "service",
+        "label": "设计单实收达到20%",
+        "kind": "business",
+        "dashed": false,
+        "points": [
+          [
+            2550.0,
+            2542
+          ],
+          [
+            2550.0,
+            2584
+          ],
+          [
+            854.0,
+            2584
+          ],
+          [
+            854.0,
+            2598
+          ]
+        ],
+        "labelAt": [
+          1702.0,
+          2606
+        ]
+      }
+    ],
+    "systems": [
+      [
+        "CRM",
+        82,
+        1070
+      ],
+      [
+        "CRM / GDS",
+        1070,
+        1470
+      ],
+      [
+        "企业微信",
+        1470,
+        1960
+      ],
+      [
+        "客户线上报价",
+        1960,
+        2370
+      ],
+      [
+        "ERP",
+        2370,
+        2800
+      ]
+    ],
+    "width": 2656,
+    "height": 2800,
+    "widths": [
+      212,
+      424,
+      636,
+      424,
+      424,
+      212,
+      212
+    ]
+  }
+}

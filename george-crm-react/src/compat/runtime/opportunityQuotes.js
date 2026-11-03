@@ -71,7 +71,7 @@ const OQ244_REPAIR={tasks:new Set()};
 function oqQuoteTaskCompletion(task){
  if(task?.status!=='待处理'||task.retiredWorkflow135)return null;
  const code=oqTaskQuoteCode(task),m=code&&V3.meta[code],order=code&&oqOrder(code);
- if(!m?.submitted||!(m.revision>0)||m.needsSpaceUpdate||!order)return null;
+ if(!m?.submitted||!(m.revision>0)||m.needsSpaceUpdate||m.workingSaved||!order)return null;
  const version=(m.quoteVersions||[]).find(v=>v.id===m.currentQuoteVersion)||{};
  return {code,order:order[0],revision:m.revision,versionId:m.currentQuoteVersion||version.id||'',actor:version.submittedBy||m.submittedBy||'',time:version.submittedAt||m.submittedAt||''};
 }
@@ -86,8 +86,23 @@ function oqWithTaskRepair(ids,change){
 }
 function oqReconcileSubmittedTasks(ids=null){
  const plans=TODOS.filter(t=>!ids||ids.includes(t.id)).map(task=>({task,evidence:oqQuoteTaskCompletion(task)})).filter(x=>x.evidence);
- if(!plans.length)return 0;
- return oqWithTaskRepair(plans.map(p=>p.task.id),()=>{for(const {task,evidence}of plans)oqApplyTaskCompletionRepair(task,evidence);return plans.length;});
+ const reopen=TODOS.filter(t=>(!ids||ids.includes(t.id))&&oqQuoteTaskNeedsReactivation(t));
+ if(!plans.length&&!reopen.length)return 0;
+ return oqWithTaskRepair([...plans.map(p=>p.task.id),...reopen.map(t=>t.id)],()=>{for(const {task,evidence}of plans)oqApplyTaskCompletionRepair(task,evidence);for(const task of reopen){const code=oqTaskQuoteCode(task),m=V3.meta[code];oqReactivateQuoteTasks(code,m.workingSavedAt||DRAFT_DATA[code]?.savedAt||'',m.workingSavedBy||'',true);}return plans.length+reopen.length;});
+}
+function oqQuoteTaskNeedsReactivation(task){
+ if(task?.status!=='已处理'||task.retiredWorkflow135)return false;
+ const code=oqTaskQuoteCode(task),m=code&&V3.meta[code],order=code&&oqOrder(code),opp=code&&oqQuoteOpp(code);
+ return !!(m?.submitted&&m.workingSaved&&!m.legacyQuoteArchive&&!order?.[18]?.legacyQuoteArchive&&!oqLockReason(code)&&!(typeof mgOpportunityState==='function'&&['已输单','已完成'].includes(mgOpportunityState(opp))));
+}
+function oqReactivateQuoteTasks(code,time,actor,legacy=false){
+ const tasks=TODOS.filter(t=>oqTaskQuoteCode(t)===code&&oqQuoteTaskNeedsReactivation(t));
+ for(const task of tasks){const m=V3.meta[code],at=Number.isFinite(Date.parse(String(time).replace(' ','T')))?time:'';
+  task.quoteReactivations246=[...(task.quoteReactivations246||[]),{id:task.id+':quote-save:'+((task.quoteReactivations246?.length||0)+1),at,by:actor,legacy,versionId:m.currentQuoteVersion||'',quoteRevision:m.revision,reason:'报价已暂存，需重新提交',previous:{status:task.status,approver:task.approver||'',approveTime:task.approveTime||'',completionReason:task.completionReason||'',editRevision:task.editRevision||0,cycle:task.quoteCompletionCycle246||0}}];
+  Object.assign(task,{status:'待处理',approver:'',approveTime:'',completionReason:'',v21ArrivedAt:at||'未记录',quoteResubmitPending:true,quoteCompletionCycle246:(task.quoteCompletionCycle246||0)+1});
+  if(typeof tfQuotationInitiator==='function')tfQuotationInitiator(task,PROJECTS.find(p=>p[0]===task.project)?.[9]);
+ }
+ return tasks.length;
 }
 v125DraftLocked = m => { const code=Object.keys(V3.meta).find(k=>V3.meta[k]===m); return code?!!oqLockReason(code):false; };
 v126CanEditDraft = code => !oqLockReason(code) && oqCanQuote(oqQuoteOpp(code));
@@ -128,9 +143,9 @@ function oqValidateInput(input) {
 }
 v3QuickSave = function(input,source) {
  try { const {data}=oqValidateInput(input);bs131Atomic(()=>{
-   upsertDraftFromPims({...data,savedAt:v3Stamp()});const m=v3Meta(data.draftCode);m.workingSaved=true;m.status='已暂存';
+   const at=v3Stamp();upsertDraftFromPims({...data,savedAt:at});const m=v3Meta(data.draftCode);m.workingSaved=true;m.status='已暂存';m.workingSavedAt=at;m.workingSavedBy=v17Owner();oqReactivateQuoteTasks(data.draftCode,at,m.workingSavedBy);
   });draftEditorCtx={...DRAFT_DATA[data.draftCode],spaces:DRAFT_DATA[data.draftCode].spaces.map(s=>s.name)};
-  source?.postMessage({type:'pimsSaveAck',draftCode:data.draftCode,durable:true},'*');markPagesDirty();
+  source?.postMessage({type:'pimsSaveAck',draftCode:data.draftCode,durable:true,quotationWorkflow:typeof qaQuoteInfo==='function'?qaQuoteInfo(TODOS.find(t=>oqTaskQuoteCode(t)===data.draftCode)):undefined},'*');markPagesDirty();
  }catch(error){source?.postMessage({type:'v3SaveError',message:error.message},'*');toast(error.message);}
 };
 function oqStorePublishedVersion(code, data, opp, requestId='') {
@@ -153,7 +168,7 @@ applyDraftSaved = function(input) {
  const source=document.getElementById('pimsFrame')?.contentWindow,requestId=String(input.submissionRequestId||'');
  try {
   const {data,opp}=oqValidateInput(input),m=v3Meta(data.draftCode);
-  if(requestId){const previous=m.quoteVersions?.find(v=>v.requestId===requestId);if(previous){const info=oqOrder(data.draftCode)?.[18]||{};if(!(info.erpRequests||[]).some(r=>r.versionId===previous.id||!r.versionId&&r.revision===previous.revision)&&info.erpRequestedRevision!==previous.revision)throw Error('该历史提交未记录ERP请求，请核对报价后重新提交');if(m.needsSpaceUpdate)throw Error('项目空间已变更，请重新提交当前报价');if(previous.id===m.currentQuoteVersion)oqReconcileSubmittedTasks(TODOS.filter(t=>oqTaskQuoteCode(t)===data.draftCode).map(t=>t.id));source?.postMessage({type:'pimsSaveAck',draftCode:data.draftCode,durable:true,submissionRequestId:requestId},'*');return data.draftCode;}}
+  if(requestId){const previous=m.quoteVersions?.find(v=>v.requestId===requestId);if(previous){const info=oqOrder(data.draftCode)?.[18]||{};if(!(info.erpRequests||[]).some(r=>r.versionId===previous.id||!r.versionId&&r.revision===previous.revision)&&info.erpRequestedRevision!==previous.revision)throw Error('该历史提交未记录ERP请求，请核对报价后重新提交');if(m.needsSpaceUpdate||m.workingSaved)throw Error('当前报价有待提交内容，请重新提交当前报价');if(previous.id===m.currentQuoteVersion)oqReconcileSubmittedTasks(TODOS.filter(t=>oqTaskQuoteCode(t)===data.draftCode).map(t=>t.id));source?.postMessage({type:'pimsSaveAck',draftCode:data.draftCode,durable:true,submissionRequestId:requestId},'*');return data.draftCode;}}
   if(!v3Cats(data).length)throw Error('请填写报价产品');const error=v125SpaceValidation(data);if(error)throw Error(error.replaceAll('草稿','报价单'));
   const code=bs131Atomic(()=>oqCommitPublished(data.draftCode,data,opp,requestId));
   source?.postMessage({type:'pimsSaveAck',draftCode:code,durable:true,submissionRequestId:requestId},'*');
@@ -176,7 +191,7 @@ function oqFinalizePublished(code){
  oqQueueERP(order,m,order[18].erpRequestedRevision?'更新报价':'提交报价');
  order[18].submittedERPAt=v3Stamp();order[18].submittedERPBy=v17Owner();
  opp[12]='已录单';opp[15]=order[10];
- for(const task of tasks)if(task.status==='待处理')Object.assign(task,{status:'已处理',approver:v17Owner(),approveTime:v3Stamp(),completionReason:'已提交报价',order:order[0],quoteRevision:m.revision});
+ for(const task of tasks)if(task.status==='待处理')Object.assign(task,{status:'已处理',approver:v17Owner(),approveTime:v3Stamp(),completionReason:'已提交报价',order:order[0],quoteRevision:m.revision,quoteResubmitPending:false});
  return order;
 }
 function oqNormalizeExecutionStates() {
@@ -296,7 +311,7 @@ v68CreateOpportunity=function(task){
  const opp=[id,p[1]+' · 设计服务 · '+task.owner,'进行中','设计服务',p[0],p[6],p[7],task.owner,'-','-',p[9],p[11],'未录单','¥0','¥0','¥0','¥0','-',todoStamp(),'',{kind:'design',approvalTodo:task.id,designToken:task.designToken,assignmentManaged:true}];
  OPPS.unshift(opp);task.createdOppId=id;oqEnsureTodo(opp,task.id);return id;
 };
-dw132FeeOrder=function(oppId,amount,fields={}){
+dw132FeeOrder=function(oppId,amount,fields={},reactivate=true){
  const opp=oqOpp(oppId);if(!opp||opp[20]?.kind!=='design'||!oqCanQuote(opp))throw Error('请选择本人负责的设计商机');
  if(!Number.isFinite(amount)||amount<=0)throw Error('请填写大于零的设计费用');
  return bs131Atomic(()=>{
@@ -304,7 +319,7 @@ dw132FeeOrder=function(oppId,amount,fields={}){
   if(oqLockReason(code))throw Error(oqLockReason(code));
   const data={...v3Copy(opp[20]||{}),draftCode:code,name:opp[1]+' · 设计报价',project:opp[4],customer:opp[6],tpl:'设计服务',sm:opp[7],oppId,todoId:task.id,designFields:v3Copy(fields),spaces:[{name:'设计服务',products:[{name:'设计服务',cat:'设计服务',sku:'DESIGN-FEE',qty:1,price:amount,amt:amount,publicQuote:{name:'设计服务',category:'设计服务',quantity:1,unit:'项',unitPrice:amount,amount,description:fields.gdsRemark||'',designAttachments:v3Copy(fields.attachments||[])}}]}],rows:[]};
   upsertDraftFromPims({...data,savedAt:v3Stamp()});if(!old)oqNewOrder(opp,code,'design');
-  const m=v3Meta(code);m.categories=['设计服务'];m.workingSaved=true;m.status='已暂存';task.draft=code;task.drafts=[code];
+  const m=v3Meta(code);m.categories=['设计服务'];m.workingSaved=true;m.status='已暂存';m.workingSavedAt=v3Stamp();m.workingSavedBy=v17Owner();task.draft=code;task.drafts=[code];if(reactivate)oqReactivateQuoteTasks(code,m.workingSavedAt,m.workingSavedBy);
   oqOrder(code)[18].workingFields=v3Copy(fields);return oqOrder(code);
  });
 };

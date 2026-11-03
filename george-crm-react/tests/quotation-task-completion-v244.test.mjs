@@ -16,9 +16,9 @@ test('历史提交缺少ERP请求也恢复为已处理，采用原提交人时�
  assert.deepEqual(copy(c.events),[{task:'OTHER',event:'todo-result'}]);assert.equal(JSON.stringify({order,meta:m}),before);assert.equal(c.oqReconcileSubmittedTasks(),0);
  m.confirmedCats=['家具'];assert.equal(c.qaQuoteInfo(t).status,'已确认');assert.equal(t.status,'已处理');
 });
-test('普通暂存不会激活已完成待办；空间变更重新激活时保留已暂存，重新提交才完成',()=>{
- const {c,code,data}=submitted(),m=c.V3.meta[code],t=c.TODOS[0];c.v3QuickSave(data);assert.equal(t.status,'已处理');
- t.status='待处理';assert.equal(c.oqReconcileSubmittedTasks(),1);assert.equal(t.status,'已处理');
+test('普通暂存和空间变更均保留原待办待处理，重新提交才完成',()=>{
+ const {c,code,data}=submitted(),m=c.V3.meta[code],t=c.TODOS[0];c.v3QuickSave(data);assert.equal(t.status,'待处理');
+ t.status='待处理';assert.equal(c.oqReconcileSubmittedTasks(),0);assert.equal(t.status,'待处理');
  m.needsSpaceUpdate=true;m.active=false;t.status='待处理';assert.equal(c.oqReconcileSubmittedTasks(),0);assert.equal(c.oqStatus(code),'已暂存');
  assistance(c);assert.equal(t.status,'待处理');assert.equal(c.qaQuoteInfo(t).status,'已暂存');c.applyDraftSaved(data);assert.equal(t.status,'已处理');assert.equal(c.oqStatus(code),'已提交');
 });

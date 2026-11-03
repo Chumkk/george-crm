@@ -28,7 +28,7 @@ function TaskRow({ task, api, onHistory }) {
   const isDesignDelivery = ["设计待办", "设计确认待办"].includes(task.type);
   const workflow = task.businessInfo?.workflow;
   const isProductQuote = task.type === "报价待办" && !task.businessInfo?.design && !task.designOpportunity;
-  const workflowHint = [workflow?.lockReason, workflow?.erpNotice, workflow?.workingSaved && workflow?.publishedRevision ? `有未提交修改 · 上次发布第 ${workflow.publishedRevision} 版 · 客户${workflow.customerStatus}` : ""].filter(Boolean).join("；");
+  const workflowHint = [workflow?.lockReason, workflow?.erpNotice, workflow?.workingSaved && workflow?.publishedRevision ? `需重新提交 · 上次发布第 ${workflow.publishedRevision} 版 · 客户${workflow.customerStatus}` : ""].filter(Boolean).join("；");
   const subtitle = taskSubtitle(task);
   const actions = splitActions(task.actions.filter((action) => action.act !== "viewDealFlow"));
   const rejectionReason = taskRejectionReason(task);

@@ -1,0 +1,15 @@
+const fs=require('fs'),path=require('path'),root=path.resolve(__dirname,'..'),stamp='2026-11-03 12:09';
+let raw=fs.readFileSync(path.join(__dirname,'space-prd-v245-content.json'),'utf8');
+raw=raw.replace('已完成报价待办不因普通保存重新激活','成功暂存后原报价待办直接恢复待处理，提示需重新提交；重复暂存不新建待办、不重复激活、不重置本轮到达时间');
+const d=JSON.parse(raw);d.version='V2.02';d.updatedAt=stamp;
+const submit=d.modules.flatMap(m=>m.items).find(i=>i.title==='提交报价与 ERP 传输');
+submit.bullets[submit.bullets.length-1]='切换新规则后保留历史工作稿、提交、客户确认、ERP请求及任务结果。当前没有未提交工作稿且已提交版本仍有效时，精确关联报价待办为已处理；已有提交的报价再次暂存后，原待办为待处理。历史已暂存、尚未重新提交的修改同步恢复原待办待处理，采用可核实的原暂存时间；缺失字段显示未记录，不以当前查看人或校正时间代替。历史没有待提交修改却误留待处理的任务，依据同一报价版本的原提交记录校正为已处理。ERP请求缺失、等待回执、发送失败或客户确认不单独激活待办；校正不补造请求、提交或通知。';
+const list=d.modules.flatMap(m=>m.items).find(i=>i.bullets?.some(b=>b.includes('报价待办只显示精确关联报价')));list.bullets=list.bullets.map(b=>b.startsWith('报价待办只显示精确关联报价')?b+' 已有提交后再次暂存，直接恢复原待办待处理；重复暂存保留同一任务及本轮到达时间，再次提交成功后完成。':b);
+const history=d.modules.flatMap(m=>m.items).find(i=>i.title==='待办处理记录');if(history)history.bullets[0]=history.bullets[0].replace('重新提交和完成','重新提交、暂存后重新激活和完成');
+const revision=d.revisions.rows.find(r=>r.module.includes('保存、提交与客户确认'));revision.changes[0]='产品及设计报价提交成功即发布同版报价、记录ERP请求并完成精确报价待办。已提交或已确认报价再次暂存，直接激活原报价待办，当前报价为已暂存、需重新提交；不新建重复任务，重复暂存不重置本轮到达时间。再次提交成功后完成原待办并发布新版本；此前两端与ERP保留上次提交，历史暂存任务同步对齐。设计报价提交同时生成GDS设计中任务，客户确认独立记录。';
+fs.writeFileSync(path.join(__dirname,'space-prd-v246-content.json'),JSON.stringify(d,null,2)+'\n');
+let renderer=fs.readFileSync(path.join(__dirname,'render-prd-v245.py'),'utf8').replaceAll('space-prd-v245-content.json','space-prd-v246-content.json').replaceAll('V2.01','V2.02').replaceAll('2026-11-03 11:58',stamp).replace("['按ERP状态编辑；可复用最近提交版本','仅保存不发布、不传 ERP、不完成待办']","['暂存不发布、不传ERP；复用最近提交版本','已提交报价再暂存，原待办恢复待处理']");
+fs.writeFileSync(path.join(__dirname,'render-prd-v246.py'),renderer);
+let flow=fs.readFileSync(path.join(__dirname,'build-unified-workflow-v236.py'),'utf8').replace("'保存产品报价',['仅保存内部工作内容','不发布、不传 ERP、不完成待办']","'暂存产品报价',['暂存不发布、不传ERP','已提交后再暂存：激活原待办']").replace("'保存设计报价',['仅保存内部内容','不发布、不传 ERP、不完成待办']","'暂存设计报价',['暂存不发布、不传ERP','已提交后再暂存：激活原待办']").replace('采购与设计提交报价后均待下定','已提交报价再次暂存后激活原报价待办，提交新版本后完成；暂存期间两端与ERP仍使用上次提交。采购与设计提交报价后均待下定').replace('敬城CRM新流程图_2026-11-02_助理与部门品类.html','敬城CRM新流程图_2026-11-03_暂存重激活.html').replace('new-workflow-v236-layout.json','new-workflow-v246-layout.json');
+fs.writeFileSync(path.join(__dirname,'build-unified-workflow-v246.py'),flow);
+const updates=path.join(root,'george-crm-react/src/features/prd/document-updates.json'),u=JSON.parse(fs.readFileSync(updates,'utf8'));u['space-quote']=stamp;u['new-workflow']=stamp;fs.writeFileSync(updates,JSON.stringify(u,null,2)+'\n');
