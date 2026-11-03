@@ -24,4 +24,5 @@ search.addEventListener('keydown',e=>{if(e.key==='Escape')results.hidden=true});
 $('#collapse').onclick=()=>{const modules=[...document.querySelectorAll('main .module')],close=modules.some(d=>d.open);modules.forEach(d=>d.open=!close);$('#collapse').textContent=close?'展开模块':'收起模块'};
 $('#print').onclick=()=>{document.querySelectorAll('main details').forEach(d=>d.open=true);window.print()};window.addEventListener('beforeprint',()=>document.querySelectorAll('main details').forEach(d=>d.open=true));
 if(location.hash)requestAnimationFrame(()=>go(decodeURIComponent(location.hash.slice(1)),false));update();})();
-</script></body></html>
+</script><script src="./release-notice-loader.js?v=10b94d64c6fc595638bb1b920ed1667d798f80313c416cb52b5c454f1058376b" defer data-crm-document-release data-release-document="customer-followup-prd.html" data-release-version="10b94d64c6fc595638bb1b920ed1667d798f80313c416cb52b5c454f1058376b" data-release-built-at="2026-11-03T13:24:31.763Z"></script>
+</body></html>

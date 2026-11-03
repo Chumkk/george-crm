@@ -1,0 +1,30 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import vm from 'node:vm';
+import {prepareDocumentNotices,documentContent,documentVersion} from '../build/documentNotices.mjs';
+import {releaseVersion} from '../build/releaseVersion.mjs';
+const runtime=fs.readFileSync(new URL('../src/updates/releaseNotice.js',import.meta.url),'utf8');
+test('PRD bootstrapping preserves content, PDF, anchors, navigation and repeated-build identity',()=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'crm-doc-release-')),pub=path.join(root,'public');fs.mkdirSync(pub);const file=path.join(pub,'space-quote-prd.html'),pdf=path.join(pub,'space-quote-prd.pdf'),original='<!doctype html><html><body><nav><a href="#RQ1">目录</a></nav><main id="RQ1"><h1>PRD V2.02</h1><p>已确认规则</p></main><a href="space-quote-prd.pdf">PDF</a></body></html>';fs.writeFileSync(file,original);fs.writeFileSync(pdf,'original PDF');
+ try{const first=prepareDocumentNotices(root,new Date('2026-11-03T06:00:00Z')),instrumented=fs.readFileSync(file,'utf8'),a=releaseVersion(root);assert.equal(documentContent(instrumented),original);assert.equal((instrumented.match(/data-crm-document-release/g)||[]).length,1);assert.ok(instrumented.includes('data-release-document="space-quote-prd.html"'));assert.ok(instrumented.includes(first['space-quote-prd.html']));prepareDocumentNotices(root,new Date('2026-11-04T06:00:00Z'));assert.equal(fs.readFileSync(file,'utf8'),instrumented);assert.equal(releaseVersion(root).version,a.version);assert.equal(fs.readFileSync(pdf,'utf8'),'original PDF');fs.writeFileSync(file,instrumented.replace('已确认规则','更新后的已确认规则'));const next=prepareDocumentNotices(root);assert.notEqual(next['space-quote-prd.html'],first['space-quote-prd.html']);assert.equal(documentVersion(root,'space-quote-prd.html',fs.readFileSync(file,'utf8')),next['space-quote-prd.html']);assert.equal(releaseVersion(root).documents['space-quote-prd.html'],next['space-quote-prd.html']);}finally{fs.unlinkSync(file);fs.unlinkSync(pdf);fs.rmdirSync(pub);fs.rmdirSync(root);}
+});
+test('a PRD reader prompts for its own document update and ignores unrelated app or document releases',async()=>{
+ const c={URL,AbortController,Date};vm.createContext(c);vm.runInContext(runtime,c);const updates=[],doc={hidden:true,addEventListener(){},removeEventListener(){}},win={addEventListener(){},removeEventListener(){}},timers={setTimeout:()=>1,clearTimeout(){},setInterval:()=>2,clearInterval(){}};let time=0,docVersion='a'.repeat(64);const watcher=c.CRMReleaseNotice.createReleaseWatcher({documentKey:'space-quote-prd.html',version:docVersion,builtAt:'2026-11-03T01:00:00Z',url:'https://example.com/george-crm/app-release.json',document:doc,window:win,timers,now:()=>time,onUpdate:r=>updates.push(r),fetch:async()=>({ok:true,json:async()=>({schema:1,version:'f'.repeat(64),builtAt:'2026-11-03T06:00:00Z',documents:{'space-quote-prd.html':docVersion,'customer-followup-prd.html':'c'.repeat(64)}})})});doc.hidden=false;await watcher.check();assert.equal(updates.length,0);docVersion='b'.repeat(64);time+=60000;await watcher.check();assert.equal(updates.length,1);assert.equal(updates[0].version,docVersion);time+=60000;await watcher.check();assert.equal(updates.length,1);watcher.stop();
+});
+test('document refresh restores reading position and hash without writing business storage',()=>{
+ const c={URL,AbortController,Date};vm.createContext(c);vm.runInContext(runtime,c);const values=new Map(),moves=[],win={scrollY:1840,scrollX:12,location:{hash:'#RQ1'},sessionStorage:{setItem:(key,value)=>values.set(key,value),getItem:key=>values.get(key),removeItem:key=>values.delete(key)},requestAnimationFrame:fn=>fn(),scrollTo:(...args)=>moves.push(args)};c.CRMReleaseNotice.rememberReading({},win,'space-quote-prd.html');assert.equal(values.size,1);c.CRMReleaseNotice.restoreReading(win,'space-quote-prd.html');assert.deepEqual(moves,[[12,1840]]);assert.equal(values.size,0);c.CRMReleaseNotice.rememberReading({},win,'space-quote-prd.html');win.location.hash='#RQ2';c.CRMReleaseNotice.restoreReading(win,'space-quote-prd.html');assert.equal(moves.length,1);
+});
+
+test('embedded PRD delegates update notices to its watching parent instead of creating a second observer',()=>{
+ const win={parent:{CRMReleaseNotice:{watcher:{}}},document:{body:{},documentElement:{dataset:{}},currentScript:{src:'https://example.com/george-crm/update-notice.js',dataset:{releaseDocument:'space-quote-prd.html'}}},location:{hash:''},sessionStorage:{getItem:()=>null}};
+ const c={window:win,URL,AbortController,Date};vm.createContext(c);vm.runInContext(runtime,c);
+ assert.equal(win.CRMReleaseNotice.documentKey,'space-quote-prd.html');assert.equal(win.CRMReleaseNotice.watcher,undefined);assert.equal(typeof win.CRMReleaseNotice.rememberReading,'function');
+});
+
+test('explicit document refresh retains query/hash, busts stale HTML and remembers the reader position',()=>{
+ const c={URL,AbortController,Date};vm.createContext(c);vm.runInContext(runtime,c);const nodes={},buttons={},values=new Map();let target='';const box={setAttribute(){},appendChild(){},querySelector:key=>buttons[key]||={}},doc={getElementById:id=>nodes[id],createElement:tag=>tag==='aside'?box:{},querySelectorAll:()=>[],body:{appendChild:node=>nodes[node.id]=node}},win={scrollY:900,scrollX:0,sessionStorage:{setItem:(k,v)=>values.set(k,v)},location:{href:'https://example.com/george-crm/space-quote-prd.html?embed=1#RQ2',hash:'#RQ2',replace:url=>target=url}};
+ c.CRMReleaseNotice.showNotice(doc,win,{documentKey:'space-quote-prd.html',version:'b'.repeat(64)});assert.equal(target,'');buttons['[data-release-refresh]'].onclick();const url=new URL(target);assert.equal(url.hash,'#RQ2');assert.equal(url.searchParams.get('embed'),'1');assert.equal(url.searchParams.get('crmRelease'),'b'.repeat(64));assert.equal(JSON.parse(values.get('crm-document-reading:space-quote-prd.html')).top,900);
+});

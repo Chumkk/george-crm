@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "version": "3ddd73a451d6edc603c088760f32c1d8dcef69dd7a2c664eacee87f55a45913f",
+  "builtAt": "2026-11-03T13:26:42.795Z",
+  "documents": [
+    {
+      "name": "space-quote-prd.html",
+      "version": "f52ae19d84e4e2f8820ea3e32e1e5e11f9e62b0a22f6bcf5ee7320edac7c4083",
+      "contentSha256": "9c25cd191dee260bad662de18f216f9f28663bcfddf1db9d8927c68b919fd74a",
+      "businessContentUnchanged": true
+    },
+    {
+      "name": "customer-followup-prd.html",
+      "version": "10b94d64c6fc595638bb1b920ed1667d798f80313c416cb52b5c454f1058376b",
+      "contentSha256": "d7238bb26d239ca2ab71c49b885250f4cb16efdab298403dce7f3fe0c2ea5852",
+      "businessContentUnchanged": true
+    },
+    {
+      "name": "new-workflow.html",
+      "version": "9fcbaa8ea7706fb0cab219da4ab4db2ec7c86e91f93749210871422a4ddb77dc",
+      "contentSha256": "9fcbaa8ea7706fb0cab219da4ab4db2ec7c86e91f93749210871422a4ddb77dc",
+      "businessContentUnchanged": true
+    },
+    {
+      "name": "workflow-comparison.html",
+      "version": "855a4b0554151ddeea6a9e92221862e50aa097355ea07a3465ecd10209145f46",
+      "contentSha256": "855a4b0554151ddeea6a9e92221862e50aa097355ea07a3465ecd10209145f46",
+      "businessContentUnchanged": true
+    }
+  ],
+  "archiveHtmlPdfMatched": true,
+  "loaderHandshake": true,
+  "mutableMetadataBypassesAssetCache": true,
+  "runtimeSyntax": true,
+  "tests": 778,
+  "buildPassed": true,
+  "renderedBrowserVerified": false
+}

@@ -9,5 +9,6 @@
   script.async = true;
   script.dataset.releaseVersion = document.currentScript.dataset.releaseVersion || '';
   script.dataset.releaseBuiltAt = document.currentScript.dataset.releaseBuiltAt || '';
+  script.dataset.releaseDocument = document.currentScript.dataset.releaseDocument || '';
   document.head.appendChild(script);
 })();

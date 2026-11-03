@@ -8,6 +8,7 @@ import { createRequire } from "node:module";
 import { staticAssetWorker } from "./build/staticAssetCache.js";
 import { buildGosVendor } from "./build/gos-vendor.mjs";
 import { releaseVersion } from "./build/releaseVersion.mjs";
+import { prepareDocumentNotices } from "./build/documentNotices.mjs";
 const root = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
 const schedulerEntry = require.resolve("scheduler", { paths: [fs.realpathSync(path.join(root, "node_modules/react-dom"))] });
@@ -28,6 +29,7 @@ function readEngines() {
 
 export default defineConfig(async ({ command }) => {
   await buildGosVendor();
+  if (command === "build") prepareDocumentNotices(root);
   const raw = readEngines();
   const sources = Object.fromEntries(await Promise.all(Object.entries(raw).map(async ([name, source]) => [
     name, command === "build" ? (await transformWithEsbuild(source, `${name}.js`, {

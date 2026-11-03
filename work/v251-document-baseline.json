@@ -1,0 +1,22 @@
+[
+  {
+    "name": "space-quote-prd.html",
+    "priorContentSha256": "9c25cd191dee260bad662de18f216f9f28663bcfddf1db9d8927c68b919fd74a",
+    "matchesBeforeInstrumentation": true
+  },
+  {
+    "name": "customer-followup-prd.html",
+    "priorContentSha256": "d7238bb26d239ca2ab71c49b885250f4cb16efdab298403dce7f3fe0c2ea5852",
+    "matchesBeforeInstrumentation": true
+  },
+  {
+    "name": "new-workflow.html",
+    "priorContentSha256": "9fcbaa8ea7706fb0cab219da4ab4db2ec7c86e91f93749210871422a4ddb77dc",
+    "matchesBeforeInstrumentation": true
+  },
+  {
+    "name": "workflow-comparison.html",
+    "priorContentSha256": "855a4b0554151ddeea6a9e92221862e50aa097355ea07a3465ecd10209145f46",
+    "matchesBeforeInstrumentation": true
+  }
+]

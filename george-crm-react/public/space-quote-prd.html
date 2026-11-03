@@ -14,4 +14,5 @@ search.addEventListener('keydown',e=>{if(e.key==='Escape')results.hidden=true});
 $('#collapse').onclick=()=>{const modules=[...document.querySelectorAll('main .module')],close=modules.some(d=>d.open);modules.forEach(d=>d.open=!close);$('#collapse').textContent=close?'展开模块':'收起模块'};
 $('#print').onclick=()=>{document.querySelectorAll('main .module').forEach(d=>d.open=true);window.print()};window.addEventListener('beforeprint',()=>document.querySelectorAll('main .module').forEach(d=>d.open=true));
 if(location.hash)requestAnimationFrame(()=>go(decodeURIComponent(location.hash.slice(1)),false));update();})();
-</script></body></html>
+</script><script src="./release-notice-loader.js?v=f52ae19d84e4e2f8820ea3e32e1e5e11f9e62b0a22f6bcf5ee7320edac7c4083" defer data-crm-document-release data-release-document="space-quote-prd.html" data-release-version="f52ae19d84e4e2f8820ea3e32e1e5e11f9e62b0a22f6bcf5ee7320edac7c4083" data-release-built-at="2026-11-03T13:24:31.763Z"></script>
+</body></html>
