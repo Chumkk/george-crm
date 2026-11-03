@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 import { staticAssetWorker } from "./build/staticAssetCache.js";
 import { buildGosVendor } from "./build/gos-vendor.mjs";
+import { releaseVersion } from "./build/releaseVersion.mjs";
 const root = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
 const schedulerEntry = require.resolve("scheduler", { paths: [fs.realpathSync(path.join(root, "node_modules/react-dom"))] });
@@ -40,6 +41,9 @@ export default defineConfig(async ({ command }) => {
   ]));
   const legacyCss = fs.readFileSync(path.join(root, "public/prototype.css"), "utf8");
   const legacyCssName = `crm-style-${createHash("sha256").update(legacyCss).digest("hex").slice(0, 12)}.css`;
+  const release = releaseVersion(root);
+  const noticeSource = fs.readFileSync(path.join(root, "src/updates/releaseNotice.js"), "utf8")
+    .replace("__CRM_RELEASE_VERSION__", JSON.stringify(release.version)).replace("__CRM_RELEASE_TIME__", JSON.stringify(release.builtAt));
   return {
     base: "./",
     resolve: { preserveSymlinks: true, alias: { scheduler: schedulerEntry } },
@@ -50,7 +54,7 @@ export default defineConfig(async ({ command }) => {
         // Fetch business scripts while the browser is loading React and styles.
         return { html: command === "build" ? html.replace(/(["'])(?:\.\/|\/)prototype\.css\1/g, `"./${legacyCssName}"`) : html, tags: engineFiles.map((name) => ({ tag: "link", attrs: {
           rel: "preload", as: "script", href: `./${assets[name]}`,
-        }, injectTo: "head" })) };
+        }, injectTo: "head" })).concat(command === "build" ? [{tag:"script",attrs:{src:"./release-notice-loader.js?v="+release.version,defer:true,"data-release-version":release.version,"data-release-built-at":release.builtAt},injectTo:"head"}] : []) };
       },
       configureServer(server) {
         server.middlewares.use((req, res, next) => {
@@ -65,6 +69,8 @@ export default defineConfig(async ({ command }) => {
         for (const [name, source] of Object.entries(sources))
           this.emitFile({ type: "asset", fileName: assets[name], source });
         this.emitFile({ type: "asset", fileName: legacyCssName, source: legacyCss });
+        this.emitFile({ type: "asset", fileName: "app-release.json", source: JSON.stringify(release) });
+        this.emitFile({ type: "asset", fileName: "update-notice.js", source: noticeSource });
       },
       writeBundle(options) {
         // Inspect final output: Vite removes the temporary HTML entry chunks after generation.
@@ -73,7 +79,7 @@ export default defineConfig(async ({ command }) => {
         const publicAssets = files.filter(name =>
           /^(?:media-[a-f0-9]+\.(?:png|jpg|jpeg|webp)|floor-plan-[a-f0-9]+\.svg|quote-editor-[a-f0-9]+\.html)$/.test(name));
         const mainAssets = files.filter(name => /^main-[\w-]+\.(?:js|css)$/.test(name));
-        const deferredAssets = files.filter(name => /^[\w-]+-[\w-]{8,}\.(?:js|css)$/.test(name) && !name.startsWith("engine-"));
+        const deferredAssets = files.filter(name => /^[\w-]+-[\w-]{8,}\.(?:js|css)$/.test(name) && !name.startsWith("engine-") && !["release-notice-loader.js", "update-notice.js"].includes(name));
         const warm = [...new Set([...mainAssets, legacyCssName, ...engineFiles.map(name => assets[name])])];
         fs.writeFileSync(path.join(outDir, "asset-cache.js"), staticAssetWorker(
           [...new Set([...warm, ...deferredAssets, assets.three, ...publicAssets])], warm,
