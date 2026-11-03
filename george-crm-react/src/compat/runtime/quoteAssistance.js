@@ -53,7 +53,7 @@ function qaQuoteInfo(task){
  const opp=oqOpp(task.opp),codes=[task.draft,...(task.drafts||[])].filter(Boolean);
  const code=codes.find(c=>oqQuoteOpp(c)?.[0]===task.opp&&oqOrder(c)?.[15]===task.project&&!oqOrder(c)?.[18]?.legacyQuoteArchive)||Object.keys(DRAFT_DATA).find(c=>oqQuoteOpp(c)?.[0]===task.opp&&oqOrder(c)?.[15]===task.project&&!oqOrder(c)?.[18]?.legacyQuoteArchive)||'';
  const order=code&&oqOrder(code),m=code&&V3.meta[code];
- return {code,status:code?oqStatus(code):'待报价',erpStatus:order?order[3]||'未记录':'尚未创建订单',erpRequest:order?.[18]?.erpState||'',lockReason:code?oqLockReason(code):'',assistant:qaProductTask(task)&&task.quoteAssistantOwner===task.owner?task.quoteAssistant||'':'',workingSaved:!!m?.workingSaved,publishedRevision:m?.revision||0,customerStatus:m?.submitted?m.needsSpaceUpdate?'待更新，需重新确认':m.categories?.length&&m.categories.every(c=>m.confirmedCats?.includes(c))?'已确认':'未确认':'尚未发布'};
+ return {code,schemeManager:opp?.[7]||task.owner||'未记录',status:code?oqStatus(code):'待报价',erpStatus:order?order[3]||'未记录':'尚未创建订单',erpRequest:order?.[18]?.erpState||'',lockReason:code?oqLockReason(code):'',assistant:qaProductTask(task)&&task.quoteAssistantOwner===task.owner?task.quoteAssistant||'':'',workingSaved:!!m?.workingSaved,publishedRevision:m?.revision||0,customerStatus:m?.submitted?m.needsSpaceUpdate?'待更新，需重新确认':m.categories?.length&&m.categories.every(c=>m.confirmedCats?.includes(c))?'已确认':'未确认':'尚未发布'};
 }
 const qaBusinessInfoBase=mgTaskBusinessInfo;
 mgTaskBusinessInfo=function(task){const info=qaBusinessInfoBase(task),workflow=qaQuoteInfo(task);return workflow?{...info,quoteStatus:workflow.status,workflow}:info;};
@@ -70,9 +70,10 @@ handleAct=function(button){const a=button?.dataset?.act;if(a==='qaAssistant')ret
 
 /* Source records are committed snapshots, never the later working copy. */
 function qaCanReadSource(code){const opp=oqQuoteOpp(code);return !!opp&&(oqCanQuote(opp)||bs131CanMaintain(opp[4])||v21AllowedOwners().includes(opp[7]));}
+function qaQuoteRoles(code){const opp=oqQuoteOpp(code),task=qaTask(opp,code);return {schemeManager:opp?.[7]||'未记录',quoteAssistant:task?(task.quoteAssistantOwner===task.owner&&task.quoteAssistant?task.quoteAssistant:'未安排'):'未记录'};}
 function qaReuseSources(targetCode){
  const target=oqQuoteOpp(targetCode);if(!oqCanQuote(target)||oqLockReason(targetCode))throw Error('当前报价不可编辑');qaAssertFresh(targetCode);
- return Object.entries(V3.meta).filter(([code,m])=>m.submitted&&qaCanReadSource(code)&&oqQuoteOpp(code)?.[20]?.kind!=='design'&&(typeof dbDepartment==='function'&&dbDepartment(target)||oqQuoteOpp(code)?.[3]===target[3])).map(([code,m])=>({code,name:m.submitted.name||code,project:findProject(m.project)?.[1]||m.project,version:m.currentQuoteVersion||code+':'+m.revision,revision:m.revision||0,time:m.submittedAt||'未记录',author:m.submittedBy||'未记录',amount:v3DraftAmount(m.submitted),template:m.submitted.templateId||m.submitted.tpl||'',spaces:(m.submitted.spaces||[]).map(s=>({name:s.name,count:s.products?.length||0}))})).sort((a,b)=>b.time.localeCompare(a.time));
+ return Object.entries(V3.meta).filter(([code,m])=>m.submitted&&qaCanReadSource(code)&&oqQuoteOpp(code)?.[20]?.kind!=='design'&&(typeof dbDepartment==='function'&&dbDepartment(target)||oqQuoteOpp(code)?.[3]===target[3])).map(([code,m])=>({code,...qaQuoteRoles(code),name:m.submitted.name||code,project:findProject(m.project)?.[1]||m.project,version:m.currentQuoteVersion||code+':'+m.revision,revision:m.revision||0,time:m.submittedAt||'未记录',author:m.submittedBy||'未记录',amount:v3DraftAmount(m.submitted),template:m.submitted.templateId||m.submitted.tpl||'',spaces:(m.submitted.spaces||[]).map(s=>({name:s.name,count:s.products?.length||0}))})).sort((a,b)=>b.time.localeCompare(a.time));
 }
 function qaReuseSnapshot(targetCode,sourceCode,version){
  const source=qaReuseSources(targetCode).find(s=>s.code===sourceCode);if(!source)throw Error('来源报价不存在、未提交或无权查看');

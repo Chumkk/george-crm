@@ -54872,7 +54872,7 @@ openPage('projects');
 // The customer preview opens once, after all layout and locale modules are ready.
 
 /* Shared catalogue and connected workspaces. No external editor dependency. */
-const WK_EDITOR_URL='./quote-editor-f0ee1a5f00d4.html';
+const WK_EDITOR_URL='./quote-editor-c52ba792c9cf.html';
 let wkEditorTemplatePromise;
 function wkLoadEditorTemplate(){
  if(wkEditorTemplatePromise)return wkEditorTemplatePromise;
