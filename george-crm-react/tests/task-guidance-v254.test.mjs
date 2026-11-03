@@ -42,3 +42,9 @@ test('fee request handoff is system processing, while cancelled tasks have no ac
 test('confirmed and stocked quotes describe achieved results and delivery, while saved edits require the next publication confirmation',()=>{
  const {c,task,guide}=fixture();task.status='已处理';Object.assign(c.V3.meta.Q,{categories:['家具'],confirmedCats:['家具'],workingSaved:false});c.oqLockReason=()=> '订单已进入备货或后续环节，请通过商机加单新增采购';let g=guide();assert.equal(g.handoffs[1].status,'已确认');assert.match(g.handoffs[2].text,/跟进交付/);task.status='待处理';c.V3.meta.Q.workingSaved=true;g=guide();assert.equal(g.handoffs[1].status,'');assert.match(g.handoffs[1].text,/新发布/);
 });
+test('compact quote hint names only the immediate responsible person, independent of the viewer',()=>{
+ const {c,guide,actor,task}=fixture();c.PROJECTS[0][9]='李明';let line=guide().nextStep;assert.equal(line,'提交后，PM 李明跟进客户报价确认');assert.doesNotMatch(line,/财务|20%|由我|备货/);actor('Assistant');assert.equal(guide().nextStep,line);task.status='已处理';c.V3.meta.Q.workingSaved=false;assert.equal(guide().nextStep,'PM 李明跟进客户报价确认');
+});
+test('compact handoff distinguishes future acceptance from actual completion and keeps rejected-drawing responsibility',()=>{
+ const {c,task,guide}=fixture();task.type='确认商机';delete task.opp;delete task.draft;assert.equal(guide().nextStep,'接单后，报价负责人 SM办理报价');task.status='已处理';task.createdOppId='O';c.TODOS.push({id:'N',type:'报价待办',project:'PJ',opp:'O',owner:'SM',status:'已处理'});assert.equal(guide().nextStep,'');Object.assign(task,{type:'设计确认待办',status:'待处理',owner:'PM',initiator:'设计师王',drawingWorkflow185:true,drawings:[{status:'已驳回'}]});assert.equal(guide().nextStep,'设计方 设计师王重提被驳回图纸');
+});

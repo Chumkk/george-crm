@@ -30,7 +30,7 @@ function tg254Cause(task,quote){
  }
  return null;
 }
-function tg254TaskGuidance(task){
+function tg254BuildGuidance(task){
  const actor=tg254Text(v17Owner()),p=PROJECTS.find(p=>p[0]===task.project),pm=tg254Text(p?.[9]),owner=tg254Text(task.owner),quote=task.type==='报价待办'?tg254Quote(task):null;
  const result={cause:tg254Cause(task,quote),current:null,handoffs:[]};
  const pending=task.status==='待处理',closed=['已处理','已取消'].includes(task.status),rejected=task.status==='已驳回';
@@ -93,3 +93,38 @@ function tg254TaskGuidance(task){
  }else current.text=closed?'本待办已完成，可查看处理记录':'按本待办当前可用操作办理';
  return result;
 }
+function tg255NextStep(task,guide){
+ if(task.status==='已取消')return '';
+ const name=(step,fallback)=>step?.owner?step.owner===step.role?step.owner:step.role+' '+step.owner:step?.role||fallback;
+ const first=guide.handoffs[0],pending=task.status==='待处理';
+ if(task.status==='已驳回')return (guide.current.owner||'发起人')+'修改原申请并重新提交';
+ if(task.type==='项目待办'){
+  if(pending)return '分配后，由所选人员接单或审批';
+  const active=guide.handoffs.filter(s=>s.status==='待处理');
+  if(active.length===1)return name(active[0],'接单人／审批人')+(active[0].role==='接单人'?'确认接单':'审批申请');
+  return active.length?'所选人员继续接单或审批':'';
+ }
+ if(task.type==='确认商机'||['跨区域商机审批待办','转介绍商机审批待办'].includes(task.type)){
+  if(['已处理','已取消'].includes(first?.status))return '';
+  return (pending?(task.type==='确认商机'?'接单后，':'审批通过后，'):'')+name(first,'报价负责人')+'办理报价';
+ }
+ if(task.type==='报价待办'){
+  if(first?.role==='设计负责人／GDS')return ['已处理','已取消'].includes(first.status)?'':(pending?'提交后，':'')+name(first,'设计负责人／GDS')+'推进设计';
+  if(!pending&&guide.handoffs[1]?.status==='已确认')return 'PM／SM跟进订单执行';
+  return (pending?'提交后，':'')+name(first,'PM')+'跟进客户报价确认';
+ }
+ if(task.type==='设计待办'){
+  if(first?.status==='已处理')return pending?'GDS设计负责人完成设计任务':'';
+  if(first?.status==='已取消')return '';
+  return (first?.condition==='回传图纸后'?'回传图纸后，':'')+name(first,'PM')+'核对设计图纸';
+ }
+ if(task.type==='设计确认待办'){
+  const rejected=guide.handoffs.find(s=>s.role==='设计方');
+  if(rejected)return name(rejected,'设计方')+'重提被驳回图纸';
+  if(pending)return '图纸确认后，由'+(tg254Text(task.coordination?.person)||tg254Text(task.owner)||'PM')+'同步项目信息';
+  return first?.status==='待处理'?name(first,'设计负责人／GDS')+'完成设计任务':'';
+ }
+ if(task.type==='费用订单待办')return pending?'创建后，由系统记录ERP传输请求':'';
+ return '';
+}
+function tg254TaskGuidance(task){const guide=tg254BuildGuidance(task);guide.nextStep=tg255NextStep(task,guide);return guide;}

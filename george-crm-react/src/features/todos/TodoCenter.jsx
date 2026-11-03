@@ -80,14 +80,9 @@ function TaskRow({ task, api, onHistory }) {
             <FragmentHtml html={task.customerMeta} />
           ) : subtitle.showProjectMeta && <span>{subtitle.projectCode}</span>}
         </div>
-        {guidance && <div className="rx-task-guidance">
-          {guidance.cause && <div className="rx-task-cause">
-            <p><b>{guidance.cause.label}</b><span>{guidance.cause.reason}</span></p>
-            {(guidance.cause.actor || guidance.cause.at) && <small>{guidance.cause.actor ? `操作人：${guidance.cause.actor}` : "操作人未记录"} · {guidance.cause.at ? taskTimeStamp(guidance.cause.at) : "时间未记录"}</small>}
-            {guidance.cause.changes?.length > 0 && <details><summary>查看空间变更 · {guidance.cause.changes.length} 项</summary><ul>{guidance.cause.changes.map((change, index) => <li key={index}>{change}</li>)}</ul></details>}
-          </div>}
-          <p className="rx-task-current-step"><b>当前办理</b><span>{guidance.current.text}</span><small>{guidance.current.owner || "负责人未记录"} · {guidance.current.relation}</small></p>
-          {guidance.handoffs.length > 0 && <details className="rx-task-handoffs" open><summary>后续／并行衔接 · 按下列负责人办理</summary>{guidance.handoffs.map((step, index) => <p key={index}><b>{step.role}{step.owner ? ` · ${step.owner}` : ""}</b><span>{step.text}</span><small>{[step.condition, step.status, step.relation].filter(Boolean).join(" · ")}</small></p>)}</details>}
+        {guidance && (guidance.cause || guidance.nextStep) && <div className="rx-task-guidance">
+          {guidance.cause && <p className="rx-task-cause">{guidance.cause.label}：{guidance.cause.kind === 'space-change' ? '项目空间已调整' : guidance.cause.kind === 'category-change' ? '项目品类已调整' : '报价再次暂存，需重新提交'}</p>}
+          {guidance.nextStep && <p>下一步：{guidance.nextStep}</p>}
         </div>}
       </div>
       <div className="rx-task-owner">
