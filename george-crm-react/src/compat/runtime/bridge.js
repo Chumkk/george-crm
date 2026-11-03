@@ -10,6 +10,7 @@
   const displayOrderNumber=(value,project)=>typeof oqFormatOrderNumber==='function'?oqFormatOrderNumber(value,project):value||'';
   const displayQuotationNumber=(code,project)=>typeof oqQuotationNumber==='function'?oqQuotationNumber(code,project):code;
   const displayBusinessText=(value,project)=>typeof oqNumberText==='function'?oqNumberText(value,project):value;
+  const displayProjectCode=value=>typeof projectDisplayCode==='function'?projectDisplayCode(value):value;
   function quotationOrderNumber(task) {
     if (task.type !== "报价待办" || typeof ORDERS === "undefined") return "";
     const rows = ORDERS.filter(o => o[15] === task.project && o[2] !== "费用订单" && o[18]?.kind !== "fee");
@@ -315,7 +316,7 @@
           ...t,
           typeLabel: typeof crmTaskCategory === "function" ? crmTaskCategory(t) : v18Name(t.type),
           subject: t.type === '项目待办' && /可多次拉商机，结束后关闭/.test(t.title || '') ? '按区域与品类分配商机' : todoSubject(t),
-          meta: todoMeta(t),
+          meta: { ...todoMeta(t), projCode: displayProjectCode(t.project) },
           coordination: t.coordination || null,
           arrival: v21Arrival(t),
           stayLabel: todoStayLabel(t),
@@ -341,6 +342,7 @@
       if (!task || typeof th192History !== "function") return null;
       const result=th192Copy(th192History(task));
       if(!result)return result;
+      result.project=displayProjectCode(task.project);
       result.displayOrder=displayOrderNumber(result.order,task.project)||quotationOrderNumber(task);
       result.subject=displayBusinessText(result.subject,task.project);
       for(const event of result.events||[]){event.orderNumber=event.quotation?displayQuotationNumber(event.quotation,task.project):displayOrderNumber(event.order,task.project);event.detail=displayBusinessText(event.detail,task.project);event.reason=displayBusinessText(event.reason,task.project);for(const change of event.changes||[]){change.before=displayBusinessText(change.before,task.project);change.after=displayBusinessText(change.after,task.project);}}

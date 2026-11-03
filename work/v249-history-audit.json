@@ -1,0 +1,14 @@
+{
+ "scope":["task lifecycle and handling history","quotation submission and confirmation snapshots","project and customer quotation history","historical order compatibility","old project/order number presentation"],
+ "findings":[
+  {"issue":"Cancellation history and closed-task timing were incomplete","result":"Show recorded cancellation actor/time/reason; stop timing; leave missing facts unrecorded"},
+  {"issue":"Fee rejection evidence could disappear after resubmission","result":"Read immutable rejection history; retain each rejection revision and deduplicate only the exact same action"},
+  {"issue":"Old completion-to-pending state events did not reopen a handling segment","result":"Interpret the exact transition as reactivation and attribute new operations to their actual actor"},
+  {"issue":"Historical manual quote confirmation could be mistaken for the current process","result":"Label old-workflow operations while preserving original wording, actor, time and result"},
+  {"issue":"Version identity and state changes were missing from timeline presentation","result":"Show task/quotation state changes, source details and exact associated submission version"},
+  {"issue":"Initial sample import timestamps obscured earlier business times","result":"Repair only reserved sample import evidence, retain the original audit separately, preserve later user actions"},
+  {"issue":"Legacy sample project IDs were still visible","result":"Use stable collision-checked PJ plus seven-digit display codes throughout visible text and related order/history numbers; keep raw lookup keys and links"}
+ ],
+ "retainedRules":["Customer quotation approval remains a valid current action","Old retired task and order records remain historical","No historical missing actor/time is fabricated","No actual ERP delivery is inferred from an outbox request","Raw submitted snapshots and original business relationships remain intact"],
+ "verification":{"tests":766,"productionBuild":"passed","renderedBrowser":"unavailable"}
+}

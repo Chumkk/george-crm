@@ -36,9 +36,9 @@ function oqQuotationNumber(code,project=''){
  let order=oqOrder(code);
  if(!order&&meta)for(const binding of Object.values(meta.bindings||{})){const candidate=ORDERS.find(row=>row[0]===binding.orderNo&&(!wanted||row[15]===wanted)&&(!row[18]?.quoteCode||row[18].quoteCode===code));if(candidate){order=candidate;break;}}
  if(!order)return '单号未记录';if(order[15]&&wanted&&order[15]!==wanted)return '单号待核对';
- const value=oqFormatOrderNumber(order[0],wanted);return /^PJ\d{7}-\d{7}$/.test(value)&&(!wanted||value.startsWith(wanted+'-'))||/^XF\d+$/.test(value)?value:'单号待核对';
+ const value=oqFormatOrderNumber(order[0],wanted),displayProject=typeof projectDisplayCode==='function'?projectDisplayCode(wanted):wanted;return /^PJ\d{7}-\d{7}$/.test(value)&&(!wanted||value.startsWith(displayProject+'-'))||/^XF\d+$/.test(value)?value:'单号待核对';
 }
-function oqHistoryNumber(record){const live=oqQuotationNumber(record.code,record.project);if(live!=='单号未记录')return live;const saved=oqFormatOrderNumber(record.orderNo,record.project);return /^PJ\d{7}-\d{7}$/.test(saved)&&(!record.project||saved.startsWith(record.project+'-'))||/^XF\d+$/.test(saved)?saved:live;}
+function oqHistoryNumber(record){const live=oqQuotationNumber(record.code,record.project);if(live!=='单号未记录')return live;const saved=oqFormatOrderNumber(record.orderNo,record.project),displayProject=typeof projectDisplayCode==='function'?projectDisplayCode(record.project):record.project;return /^PJ\d{7}-\d{7}$/.test(saved)&&(!record.project||saved.startsWith(displayProject+'-'))||/^XF\d+$/.test(saved)?saved:live;}
 function oqNumberText(value,project=''){return typeof value==='string'?value.replace(/\bPJ\d{7}-\d{1,7}\b/g,number=>oqFormatOrderNumber(number,project)).replace(/\bDR[A-Za-z0-9_-]+\b/g,code=>V3.meta[code]&&(!project||V3.meta[code].project===project)?oqQuotationNumber(code,project):code):value;}
 function oqQuoteOpp(code) { const d=DRAFT_DATA[code]||V3.meta[code]?.submitted||{}; return oqOpp(d.oppId||d.opp||v125DraftBatch(d).oppId); }
 function oqCanQuote(opp) { return !!opp && v21CanOperate({owner:opp[7]}); }

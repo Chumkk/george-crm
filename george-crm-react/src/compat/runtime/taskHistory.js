@@ -1,7 +1,7 @@
 /* Exact-task lifecycle evidence. Local prototype persistence; production audit
  * storage must be append-only on the server. Viewing never creates an event. */
 const TH192 = { baseline: new Map(), busy: false };
-const TH192_NAMES = {created:'发起待办',arrived:'到达记录',reminded:'催办',transferred:'转派',edited:'编辑资料',rejected:'驳回',resubmitted:'重新提交',reactivated:'重新激活待办',completed:'完成待办',state:'状态变更',receipt:'GDS 回执',delivery:'回传设计图纸','drawing-confirm':'确认图纸','drawing-reject':'驳回图纸','drawing-resubmit':'重提图纸','quote-created':'创建报价','quote-submitted':'提交报价',initiator:'发起人交接'};
+const TH192_NAMES = {created:'发起待办',arrived:'到达记录',reminded:'催办',transferred:'转派',edited:'编辑资料',rejected:'驳回',resubmitted:'重新提交',reactivated:'重新激活待办',completed:'完成待办',cancelled:'取消待办',state:'状态变更',receipt:'GDS 回执',delivery:'回传设计图纸','drawing-confirm':'确认图纸','drawing-reject':'驳回图纸','drawing-resubmit':'重提图纸','quote-created':'创建报价','quote-saved':'暂存报价','quote-submitted':'提交报价','quote-confirmed':'客户确认报价','erp-request':'记录ERP请求',initiator:'发起人交接'};
 function th192Copy(value){return JSON.parse(JSON.stringify(value));}
 function th192Time(value){return typeof tfTime==='function'?tfTime(value):null;}
 function th192Text(value){return typeof value==='string'&&!['-','—'].includes(value.trim())?value.trim():'';}
@@ -17,15 +17,17 @@ function th192Evidence(t){
  for(const r of t.ownerHistory||[])add('transferred','owner:'+JSON.stringify([r.time,r.from,r.to,r.actor]),{at:r.time,actor:r.actor,fromOwner:r.from,toOwner:r.to,reason:r.reason||''});
  for(const r of t.quoteAssistHistory||[])add('quote-assistant','quote-assistant:'+r.revision,{at:r.time,actor:r.actor,title:r.to?'安排报价助理':'取消报价助理',toOwner:r.to,changes:[{label:'报价助理',before:r.from||'未安排',after:r.to||'未安排'}]});
  for(const r of t.quoteReactivations246||[]){
-  const previous=r.previous;if(previous?.status==='已处理'&&th192Time(previous.approveTime)!==null)add('completed','status:'+th192StatusKey(t,'已处理',previous.approveTime,previous.editRevision||0,previous.cycle||0),{at:previous.approveTime,actor:th192Text(previous.approver),fromStatus:'待处理',toStatus:'已处理',reason:previous.completionReason||''});
-  add('reactivated',r.id,{at:r.at,actor:r.by,fromStatus:'已处理',toStatus:'待处理',toOwner:t.owner,reason:r.reason,legacy:!!r.legacy});
+  const previous=r.previous;if(previous?.status==='已处理'&&th192Time(previous.approveTime)!==null)add('completed','status:'+th192StatusKey(t,'已处理',previous.approveTime,previous.editRevision||0,previous.cycle||0),{at:previous.approveTime,actor:th192Text(previous.approver),fromStatus:'待处理',toStatus:'已处理',reason:previous.completionReason||'',quoteVersionId:r.versionId||'',quoteRevision:r.quoteRevision||0});
+  add('reactivated',r.id,{at:r.at,actor:r.by,fromStatus:'已处理',toStatus:'待处理',toOwner:t.owner,reason:r.reason,legacy:!!r.legacy,quoteVersionId:r.versionId||'',quoteRevision:r.quoteRevision||0,toQuoteStatus:'已暂存'});
  }
  for(const r of t.initiatorHistory||[])add('initiator','initiator:'+JSON.stringify([r.time,r.from,r.to,r.by]),{at:r.time,actor:r.by,detail:(r.from||'未记录')+' → '+(r.to||'未记录'),reason:r.reason||''});
  for(const r of t.editHistory||[]){
   const resubmit=r.fromStatus==='已驳回';
   add(resubmit?'resubmitted':'edited','edit:'+JSON.stringify([r.revision,r.time,r.actor]),{at:r.time,actor:r.actor,fromStatus:r.fromStatus,toStatus:'待处理',toOwner:r.after?.owner||r.after?.sm||'',reason:r.decision?.reason||'',changes:th192Changes(r.before,r.after),detail:resubmit?'修改原待办后重新提交':'更新原待办资料'});
  }
- if(['已处理','已驳回'].includes(t.status)&&th192Time(t.approveTime)!==null)add(t.status==='已处理'?'completed':'rejected','status:'+th192StatusKey(t),{at:t.approveTime,actor:th192Text(t.approver),fromStatus:'待处理',toStatus:t.status,reason:t.status==='已驳回'?t.rejectReason||t.approvalNote||'':t.completionReason||'',source:t.gdsCompleted?'GDS':'CRM'});
+ for(const r of t.rejectHistory||[])if(th192Time(r.time)!==null)add('rejected','reject-history:'+JSON.stringify([r.revision,r.time,r.by]),{at:r.time,actor:r.by||'',handlingRevision:r.revision??0,fromStatus:'待处理',toStatus:'已驳回',reason:r.reason||'',detail:'驳回原待办，保留当次资料与驳回原因'});
+ if(t.status==='已取消'&&th192Time(t.cancelledAt)!==null)add('cancelled','cancelled:'+t.cancelledAt,{at:t.cancelledAt,actor:t.cancelledBy||'',fromStatus:t.cancelledFromStatus||'',toStatus:'已取消',reason:t.cancelReason||''});
+ if(['已处理','已驳回'].includes(t.status)&&th192Time(t.approveTime)!==null)add(t.status==='已处理'?'completed':'rejected','status:'+th192StatusKey(t),{at:t.approveTime,actor:th192Text(t.approver),fromStatus:'待处理',toStatus:t.status,reason:t.status==='已驳回'?t.rejectReason||t.approvalNote||'':t.completionReason||'',source:t.gdsCompleted?'GDS':'CRM',quoteRevision:t.type==='报价待办'?t.quoteRevision||0:0});
  for(const r of t.gds?.receipts||[])add('receipt','receipt:'+r.eventId,{at:r.time,actor:r.actor,source:'GDS',detail:({submit:'回传设计图纸',complete:'GDS 完成设计任务','payment-confirmed':'GDS 确认设计单收款',resubmit:'重新提交图纸',synchronize:'图纸同步',reject:'驳回图纸','confirm-drawing':'确认图纸回执','reject-drawing':'驳回图纸回执'})[r.action]||r.action,eventId:r.eventId});
  for(const r of t.designSubmissions||[])add('delivery','delivery:'+JSON.stringify([r.revision,r.time,r.by]),{at:r.time,actor:r.by,source:'GDS',detail:'回传第 '+r.revision+' 批设计图纸'});
  for(const d of t.drawings||[])for(const [i,r] of (d.history||[]).entries()){
@@ -33,9 +35,38 @@ function th192Evidence(t){
   add(kind,'drawing:'+d.id+':'+i+':'+r.action,{at:r.time,actor:r.by,source:r.source||((r.action==='resubmit'||t.coordination?.mode==='designer')?'GDS':'CRM'),reason:r.reason||'',detail:d.type+' · '+(r.file?.name||d.file?.name||d.id)+' · 图纸版本 '+(r.revision||1),drawingId:d.id});
  }
  const code=t.draft,meta=t.type==='报价待办'&&code&&typeof V3!=='undefined'&&V3.meta?.[code];
- if(meta&&meta.project===t.project&&(!t.opp||typeof oqQuoteOpp!=='function'||oqQuoteOpp(code)?.[0]===t.opp))for(const v of meta.quoteVersions||[])add('quote-submitted','quote:'+code+':'+v.id,{at:v.submittedAt,actor:v.submittedBy,quotation:code,detail:'已提交关联报价，保留原提交历史'});
+ if(meta&&meta.project===t.project&&(!t.opp||typeof oqQuoteOpp!=='function'||oqQuoteOpp(code)?.[0]===t.opp)){
+  for(const v of meta.quoteVersions||[]){
+   if(v.project&&v.project!==t.project)continue;
+   const context={quotation:code,quoteVersionId:v.id,quoteRevision:v.revision};
+   add('quote-submitted','quote:'+code+':'+v.id,{...context,at:v.submittedAt,actor:v.submittedBy,toQuoteStatus:'已提交',detail:'提交第 '+v.revision+' 版报价；本次提交内容和办理人独立保留'});
+   for(const [i,c]of(v.confirmations||[]).entries())if(th192Time(c.time)!==null)add('quote-confirmed','confirmation:'+v.id+':'+i,{...context,at:c.time,actor:c.by||'',source:'客户',toQuoteStatus:'已确认',detail:(c.category||'本次')+'报价已确认；确认记录属于第 '+v.revision+' 版'});
+  }
+  if(meta.workingSavedAt){const savedKey='quote-save:'+code+':'+meta.workingSavedAt,recorded=(t.lifecycle192||[]).find(e=>e.evidence===savedKey),reopened=(t.quoteReactivations246||[]).find(r=>r.at===meta.workingSavedAt),version=(meta.quoteVersions||[]).find(v=>v.id===(recorded?.quoteVersionId||reopened?.versionId||(meta.workingSaved?meta.currentQuoteVersion:'')));add('quote-saved',savedKey,{at:meta.workingSavedAt,actor:meta.workingSavedBy||'',toQuoteStatus:'已暂存',quoteVersionId:version?.id||'',quoteRevision:version?.revision||0,detail:version?'暂存基于第 '+version.revision+' 版的修改，需重新提交；原发布内容保持不变':'仅暂存工作稿，本次操作不发布报价'});}
+  const order=typeof oqOrder==='function'?oqOrder(code):null;
+  if(order&&order[15]===t.project)for(const request of order[18]?.erpRequests||[]){const version=(meta.quoteVersions||[]).find(v=>v.id===request.versionId);if(!version)continue;add('erp-request','erp-request:'+request.id,{at:request.time||request.at||'',actor:request.actor||request.by||'',quotation:code,quoteVersionId:version.id,quoteRevision:version.revision,order:order[0],detail:'已记录第 '+version.revision+' 版报价的ERP请求，等待ERP回执'});}
+ }
+ for(const event of t.seedHistoryEvents249||[])events.push({...th192Event(t,event.kind,event.evidence,event),legacy:false});
  return events;
 }
+function th249EventQuote(task,event){
+ const code=event.quotation;if(!code||typeof V3==='undefined')return event;
+ const meta=V3.meta?.[code],opp=typeof oqQuoteOpp==='function'?oqQuoteOpp(code):null;
+ if(!meta||meta.project!==task.project||task.opp&&(!opp||opp[0]!==task.opp))return {...event,quotation:'',quoteVersionId:'',quoteRevision:0};
+ const versions=(meta.quoteVersions||[]).filter(v=>!v.project||v.project===task.project);let version=event.quoteVersionId&&versions.find(v=>v.id===event.quoteVersionId);
+ if(event.kind==='quote-submitted'&&!version)version=versions.find(v=>event.evidence==='quote:'+code+':'+v.id);
+ if(event.quoteVersionId&&!version)return {...event,quoteVersionId:'',quoteRevision:0,quoteName:'',quoteSubmittedAt:''};
+ if(!version&&event.kind==='completed'){const matches=versions.filter(v=>v.submittedAt===(event.businessAt||event.at)&&(!event.actor||v.submittedBy===event.actor));if(matches.length===1)version=matches[0];}
+ if(!version&&event.quoteRevision){const matches=versions.filter(v=>v.revision===event.quoteRevision);if(matches.length===1)version=matches[0];}
+ return {...event,quoteVersionId:version?.id||'',quoteRevision:version?.revision||0,quoteName:version?.name||'',quoteSubmittedAt:version?.submittedAt||''};
+}
+function th249Presentation(event){
+ const quoteState=value=>({'已保存':'已暂存','已报价':'已提交'}[value]||value),legacyWorkflow=event.legacyWorkflow||/确认报价[^。；]*(?:ERP|传输|完成待办)|独立草稿|客户确认[^。；]*生成[^。；]*订单待办|短信验证码/.test([event.title,event.detail,event.reason].filter(Boolean).join(' '));
+ const reopened=event.kind==='state'&&event.fromStatus==='已处理'&&event.toStatus==='待处理',cancelled=event.kind==='state'&&event.toStatus==='已取消';
+ let handlingRevision=event.handlingRevision;if(event.kind==='rejected'&&handlingRevision===undefined&&event.evidence?.startsWith('status:'))try{const values=JSON.parse(event.evidence.slice(7));if(Array.isArray(values)&&Number.isInteger(values[2]))handlingRevision=values[2];}catch{/* Unknown older keys remain separate events. */}
+ return {...event,...(handlingRevision!==undefined?{handlingRevision}:{}),...(reopened?{kind:'reactivated',title:TH192_NAMES.reactivated}:cancelled?{kind:'cancelled',title:TH192_NAMES.cancelled}:{}),...(event.fromQuoteStatus?{fromQuoteStatus:quoteState(event.fromQuoteStatus)}:{}),...(event.toQuoteStatus?{toQuoteStatus:quoteState(event.toQuoteStatus)}:{}),...(legacyWorkflow?{legacyWorkflow:true}: {})};
+}
+function th249EventRank(event){return (event.quoteRevision||0)*100+({created:0,'quote-assistant':10,'quote-created':20,'quote-saved':event.quoteRevision?70:30,'quote-submitted':40,'erp-request':45,completed:50,cancelled:55,'quote-confirmed':60,reactivated:75}[event.kind]??35);}
 function th192Tracked(t){return {id:t.id,type:t.type,project:t.project,time:t.time||'',owner:t.owner,initiator:t.initiator,status:t.status,draft:t.draft||'',expectedCompletionAt:t.expectedCompletionAt||'',editRevision:t.editRevision||0,note:t.note||'',title:t.title||'',evidence:th192Evidence(t)};}
 function th192Snapshot(){return new Map(TODOS.map(t=>[t.id,th192Tracked(t)]));}
 function th192Merge(...groups){return [...new Map(groups.flat().filter(e=>e?.id&&e?.kind).map(e=>[e.evidence||e.id,e])).values()];}
@@ -55,8 +86,8 @@ function th192Delta(t,old,now,actor){
  if(t.type==='报价待办'&&current.draft&&current.draft!==old.draft)add('quote-created','quote-created:'+current.draft,{quotation:current.draft,detail:'创建并关联本商机报价'});
  if(old.owner!==t.owner&&!events.some(e=>e.kind==='transferred'))add('transferred','owner:'+JSON.stringify([now,old.owner,t.owner,actor]),{fromOwner:old.owner,toOwner:t.owner});
  if(old.status!==t.status&&!events.some(e=>e.toStatus===t.status)){
-  const kind=t.status==='已驳回'?'rejected':t.status==='已处理'?'completed':old.status==='已驳回'&&t.status==='待处理'?'resubmitted':'state';
-  add(kind,'status:'+th192StatusKey(t,t.status,t.approveTime||now),{fromStatus:old.status,toStatus:t.status,toOwner:t.owner,source:t.gdsCompleted?'GDS':'CRM',actor:th192Text(t.approver)||actor,reason:t.status==='已驳回'?t.rejectReason||t.approvalNote||'':t.completionReason||''});
+  const kind=t.status==='已驳回'?'rejected':t.status==='已处理'?'completed':t.status==='已取消'?'cancelled':old.status==='已驳回'&&t.status==='待处理'?'resubmitted':old.status==='已处理'&&t.status==='待处理'?'reactivated':'state';
+  add(kind,'status:'+th192StatusKey(t,t.status,t.approveTime||now),{fromStatus:old.status,toStatus:t.status,toOwner:t.owner,source:t.gdsCompleted?'GDS':'CRM',actor:['completed','rejected'].includes(kind)?th192Text(t.approver)||actor:kind==='cancelled'?th192Text(t.cancelledBy)||actor:actor,reason:t.status==='已驳回'?t.rejectReason||t.approvalNote||'':kind==='cancelled'?t.cancelReason||'':t.completionReason||''});
  }
  const changed=['expectedCompletionAt','note','title'].filter(k=>old[k]!==current[k]);
  if((changed.length||old.editRevision!==current.editRevision)&&!events.some(e=>['edited','resubmitted','drawing-confirm','drawing-reject','drawing-resubmit','delivery'].includes(e.kind)))add('edited','observed-edit:'+JSON.stringify([now,current.editRevision,changed]),{detail:changed.length?'更新'+changed.map(k=>({expectedCompletionAt:'期望完成时间',note:'备注',title:'业务资料'})[k]).join('、'):'更新待办资料',fromStatus:old.status,toStatus:t.status});
@@ -84,39 +115,42 @@ function th192Segments(task,events,now){
   else if(e.kind==='resubmitted'){const owner=e.toOwner||e.responsibleOwner||current?.resumeOwner;close(e.at,'已重新提交');open(owner,e.at,'负责人处理',!!e.legacy);}
   else if(e.kind==='reactivated'){close(e.at,'待重新提交');open(e.toOwner||task.owner,e.at,'负责人处理',!!e.legacy);}
   else if(e.kind==='completed')close(e.at,'已完成');
+  else if(e.kind==='cancelled')close(e.at,'已取消');
  }
  if(!current&&!segments.length)open(task.owner,'','负责人处理',true);
- if(current)segments.push({...current,end:'',result:task.status==='已处理'?'完成时间未记录':current.kind==='等待补充资料'?'等待重新提交':'处理中',duration:th192Duration(th192Time(current.start),task.status==='已处理'?null:now),firstResponse:response(current,task.status==='已处理'),active:task.status!=='已处理'});
+ if(current){const closed=['已处理','已取消'].includes(task.status);segments.push({...current,end:'',result:closed?task.status==='已取消'?'取消时间未记录':'完成时间未记录':current.kind==='等待补充资料'?'等待重新提交':'处理中',duration:th192Duration(th192Time(current.start),closed?null:now),firstResponse:response(current,closed),active:!closed});}
  return segments;
 }
 function th195CardTiming(task,now=Date.now()){
  const arrival=typeof v21Arrival==='function'?v21Arrival(task):task.time;
- const kind=task.status==='已处理'?'completed':task.status==='已驳回'?'rejected':'';
+ const kind=task.status==='已处理'?'completed':task.status==='已驳回'?'rejected':task.status==='已取消'?'cancelled':'';
  let handledAt='';
  if(kind){
-  handledAt=th192Time(task.approveTime)!==null?task.approveTime:'';
+  const recorded=kind==='cancelled'?task.cancelledAt:task.approveTime;handledAt=th192Time(recorded)!==null?recorded:'';
   if(!handledAt){const events=th192Merge(th192Evidence(task),task.lifecycle192||[],th192Archived(task));handledAt=events.filter(e=>e.kind===kind&&th192Time(e.at)!==null).sort((a,b)=>th192Time(b.at)-th192Time(a.at))[0]?.at||'';}
  }
- return {closed:!!kind,handledAt,handledLabel:kind==='rejected'?'驳回时间':'处理时间',durationLabel:kind?'响应用时':'停留时间',duration:th192Duration(th192Time(arrival),kind?th192Time(handledAt):now)};
+ return {closed:!!kind,handledAt,handledLabel:kind==='rejected'?'驳回时间':kind==='cancelled'?'取消时间':'处理时间',durationLabel:kind?'响应用时':'停留时间',duration:th192Duration(th192Time(arrival),kind?th192Time(handledAt):now)};
 }
 function th192History(t,now=Date.now()){
- const events=th192Merge(th192Evidence(t),t.lifecycle192||[],th192Archived(t));
+ const merged=th192Merge(th192Evidence(t),t.lifecycle192||[],th192Archived(t)),events=[];
+ for(const raw of merged){const event=th249Presentation(raw),at=th192Time(event.at),duplicate=event.kind==='rejected'&&event.handlingRevision!==undefined&&at!==null&&events.some(e=>e.kind==='rejected'&&e.handlingRevision===event.handlingRevision&&th192Time(e.at)===at&&e.actor===event.actor&&e.reason===event.reason);if(!duplicate)events.push(event);}
  if(!events.some(e=>e.kind==='created')){
   const arrival=typeof v21Arrival==='function'?v21Arrival(t):t.time;
   if(th192Time(arrival)!==null)events.push(th192Event(t,'arrived','arrival:'+arrival,{at:arrival,legacy:true,source:'历史字段',detail:'当前记录的到达时间；发起操作及当时处理人未记录'}));
  }
- events.sort((a,b)=>(th192Time(a.at)??Infinity)-(th192Time(b.at)??Infinity));
+ for(let i=0;i<events.length;i++)events[i]=th249EventQuote(t,events[i]);
+ events.sort((a,b)=>(th192Time(a.at)??Infinity)-(th192Time(b.at)??Infinity)||th249EventRank(a)-th249EventRank(b));
  const start=events.find(e=>e.kind==='created'&&th192Time(e.at)!==null);
  // Legacy tasks retain real arrival/handling fields even without a creation
  // audit event. Use those timestamps without inventing an actor or event.
  const saved=th192Archive()[t.id],archivedStart=saved?.type===t.type&&saved?.project===t.project?saved.startedAt:'';
  const originalArrival=th192Time(archivedStart)!==null?archivedStart:th192Time(t.time)!==null?t.time:events.find(e=>e.kind==='arrived'&&th192Time(e.at)!==null)?.at;
  const startedAt=start?.at||originalArrival||'',started=th192Time(startedAt);
- const finish=t.status==='已处理'?[...events].reverse().find(e=>e.kind==='completed'&&th192Time(e.at)!==null):null;
+ const ended=['已处理','已取消'].includes(t.status),finish=ended?[...events].reverse().find(e=>e.kind===(t.status==='已取消'?'cancelled':'completed')&&th192Time(e.at)!==null):null;
  const reminders=events.filter(e=>e.kind==='reminded');
  const segments=th192Segments(t,events,now),firsts=new Map(segments.filter(s=>s.firstEventId).map(s=>[s.firstEventId,s]));
- const timeline=events.map(e=>{const s=firsts.get(e.id);return s?{...e,firstResponse:{owner:s.owner,kind:s.kind,startedAt:s.start,duration:s.firstResponse,partial:s.partial}}:e;});
- return {id:t.id,title:typeof crmTaskCategory==='function'?crmTaskCategory(t):t.type,subject:typeof todoSubject==='function'?todoSubject(t):t.title||'',project:t.project||'',order:t.order||'',status:t.status,owner:t.owner||'',initiator:t.initiator||'',events:timeline,segments,summary:{total:th192Duration(started,t.status==='已处理'?th192Time(finish?.at):now),startedAt,basis:start?'发起记录':'已保存到达时间',reminders:reminders.length,transfers:events.filter(e=>e.kind==='transferred').length},partial:events.some(e=>e.legacy)||!start};
+ const timeline=events.map(raw=>{const e=th249EventQuote(t,raw),s=firsts.get(e.id);return s?{...e,firstResponse:{owner:s.owner,kind:s.kind,startedAt:s.start,duration:s.firstResponse,partial:s.partial}}:e;});
+ return {id:t.id,title:typeof crmTaskCategory==='function'?crmTaskCategory(t):t.type,subject:typeof todoSubject==='function'?todoSubject(t):t.title||'',project:t.project||'',order:t.order||'',status:t.status,owner:t.owner||'',initiator:t.initiator||'',legacyWorkflow:!!(t.retiredWorkflow135||t.legacyType135||t.legacyDesignArchive187),events:timeline,segments,summary:{total:th192Duration(started,ended?th192Time(finish?.at):now),startedAt,basis:start?'发起记录':'已保存到达时间',reminders:reminders.length,transfers:events.filter(e=>e.kind==='transferred').length},partial:events.some(e=>e.legacy)||!start};
 }
 TH192.baseline=th192Snapshot();
 const th192SaveBase=v3Save;
