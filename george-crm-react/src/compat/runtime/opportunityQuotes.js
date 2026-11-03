@@ -194,20 +194,28 @@ function oqSavedAmountHeading(row){
  const amount=[...row.children].find(th=>/订单金额/.test(th.textContent));
  if(amount&&!row.querySelector('[data-oq-saved-amount]')){const th=document.createElement('th');th.textContent='保存金额';th.dataset.oqSavedAmount='';th.title='最近一次保存的报价金额；订单金额来自最近一次提交';row.insertBefore(th,amount);amount.title='最近一次提交的订单金额；仅保存修改不会更新';}
 }
+function oqOrderListVisible(order){
+ const info=order[18]||{},code=info.quoteCode,m=code&&V3.meta[code];
+ if(!code||!m||!DRAFT_DATA[code]||info.legacyQuoteArchive||oqStatus(code)!=='待报价')return true;
+ // An editor-only placeholder is not a saved order-list record. Preserve real
+ // historical submissions, ERP/stocking facts and archived records.
+ return !!(info.legacySalesRecord||info.publishedQuote||info.erpRequestedRevision||info.erpRequests?.length||m.quoteVersions?.length||info.stockStartedAt||order.stockStartedAt||/执行中|备货中|已备货|生产中|已生产|发货|交付|完成/.test(order[3]||''));
+}
+function oqOrderListStatus(order){const code=order[18]?.quoteCode;if(!code)return '未记录';const state=oqStatus(code);return state==='待报价'?'未记录':state;}
 function oqCurrentRows(project,oppId){
- const rows=ORDERS.filter(r=>r[15]===project&&(!oppId||orderOppOf(r)===oppId));
- return rows.filter(r=>!((r[18]?.legacySalesRecord||r[2]==='销售订单')&&!r[18]?.quoteCode&&rows.some(q=>q!==r&&orderOppOf(q)===orderOppOf(r)&&orderOppOf(r)&&q[18]?.quoteCode&&!q[18]?.legacyQuoteArchive)));
+ const rows=ORDERS.filter(r=>r[15]===project&&(!oppId||orderOppOf(r)===oppId)&&oqOrderListVisible(r));
+ return rows.filter(r=>!((r[18]?.legacySalesRecord||r[2]==='销售订单')&&!r[18]?.quoteCode&&rows.some(q=>q!==r&&orderOppOf(q)===orderOppOf(r)&&orderOppOf(r)&&q[18]?.quoteCode&&!q[18]?.legacyQuoteArchive&&V3.meta[q[18].quoteCode]&&oqStatus(q[18].quoteCode)!=='待报价')));
 }
 orderRowsHtml=function(project,oppId){
  const list=oqCurrentRows(project,oppId);
- if(!list.length)return '<tr><td colspan="18">暂无报价单，请在本商机中创建报价单。</td></tr>';
+ if(!list.length)return '<tr><td colspan="18">暂无订单记录，报价成功保存或提交后显示。</td></tr>';
  return list.map(r=>{
   const code=r[18]?.quoteCode,opp=oqOpp(orderOppOf(r)),can=code&&oqCanQuote(opp)&&!oqLockReason(code),acts=code?[
    ...(can?[{t:'编辑报价',act:r[18].kind==='design'?'oqDesignEdit':'oqEdit',extra:`data-code="${esc(code)}" data-opp="${esc(opp?.[0]||'')}" data-proj="${esc(project)}"`}]:[]),
    ...(can&&r[18].kind==='design'&&oqStatus(code)==='已暂存'?[{t:'提交报价',act:'oqPublishDesign',extra:`data-code="${esc(code)}"`}]:[]),
    {t:'报价历史',act:'oqHistory',extra:`data-proj="${esc(project)}" data-code="${esc(code)}"`}]:r[18]?.legacySalesRecord||r[2]==='销售订单'?[]:orderActs(r);
   const archived=!!r[18]?.legacyQuoteArchive;
-  return `<tr ${archived?'data-archived-quote="true"':''}>${r.slice(0,15).map((value,i)=>(i===10?oqSavedAmountCell(r):'')+`<td>${i===0?esc(typeof oqFormatOrderNumber==='function'?oqFormatOrderNumber(value,project):value):i===2?tag(archived?'报价单（历史归档）':value==='销售订单'?'报价单':value):i===3?tag(typeof oqERPStatus==='function'?oqERPStatus(r):value):esc(value||'—')}</td>`).join('')}<td>${code?tag(archived?'历史归档':oqStatus(code)):'未记录'}</td>${ops(acts)}</tr>`;
+  return `<tr ${archived?'data-archived-quote="true"':''}>${r.slice(0,15).map((value,i)=>(i===10?oqSavedAmountCell(r):'')+`<td>${i===0?esc(typeof oqFormatOrderNumber==='function'?oqFormatOrderNumber(value,project):value):i===2?tag(archived?'报价单（历史归档）':value==='销售订单'?'报价单':value):i===3?tag(typeof oqERPStatus==='function'?oqERPStatus(r):value):esc(value||'—')}</td>`).join('')}<td>${tag(oqOrderListStatus(r))}</td>${ops(acts)}</tr>`;
  }).join('');
 };
 const oqOppPageBase=pageOppDetail;
