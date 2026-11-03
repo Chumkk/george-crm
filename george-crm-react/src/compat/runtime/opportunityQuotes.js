@@ -58,6 +58,33 @@ function oqStatus(code) {
  return m.categories?.length&&m.categories.every(c=>m.confirmedCats?.includes(c))?'已确认':'已提交';
 }
 v3Status = m => { const code=Object.keys(V3.meta).find(k=>V3.meta[k]===m); return code?oqStatus(code):m.needsSpaceUpdate||m.workingSaved?'已暂存':m.submitted?(m.categories?.every(c=>m.confirmedCats?.includes(c))?'已确认':'已提交'):'待报价'; };
+function oqTaskQuoteCode(task){
+ if(task?.type!=='报价待办')return '';
+ const opp=oqOpp(task.opp);if(!opp||opp[4]!==task.project)return '';
+ const matches=code=>oqQuoteOpp(code)?.[0]===opp[0]&&oqOrder(code)?.[15]===task.project&&(!DRAFT_DATA[code]?.todoId||DRAFT_DATA[code].todoId===task.id);
+ const declared=[...new Set([task.draft,...(task.drafts||[])].filter(Boolean))].filter(matches);
+ if(declared.length)return declared.length===1?declared[0]:'';
+ const exact=Object.keys(DRAFT_DATA).filter(code=>DRAFT_DATA[code].todoId===task.id&&matches(code));
+ return exact.length===1?exact[0]:'';
+}
+const OQ244_REPAIR={tasks:new Set()};
+function oqQuoteTaskCompletion(task){
+ if(task?.status!=='待处理'||task.retiredWorkflow135)return null;
+ const code=oqTaskQuoteCode(task),m=code&&V3.meta[code],order=code&&oqOrder(code);
+ if(!m?.submitted||!(m.revision>0)||m.needsSpaceUpdate||!order)return null;
+ const version=(m.quoteVersions||[]).find(v=>v.id===m.currentQuoteVersion)||{};
+ return {code,order:order[0],revision:m.revision,versionId:m.currentQuoteVersion||version.id||'',actor:version.submittedBy||m.submittedBy||'',time:version.submittedAt||m.submittedAt||''};
+}
+function oqApplyTaskCompletionRepair(task,evidence){
+ task.quoteCompletionLegacy244||={status:task.status,approver:task.approver||'',approveTime:task.approveTime||'',completionReason:task.completionReason||''};
+ Object.assign(task,{status:'已处理',approver:evidence.actor,approveTime:evidence.time,completionReason:'已提交报价',order:evidence.order,quoteRevision:evidence.revision,quoteCompletionRepair244:{versionId:evidence.versionId,correctedAt:new Date().toISOString(),source:'原报价提交记录'}});
+}
+function oqWithTaskRepair(ids,change){const previous=OQ244_REPAIR.tasks;OQ244_REPAIR.tasks=new Set(ids);try{return bs131Atomic(change);}finally{OQ244_REPAIR.tasks=previous;}}
+function oqReconcileSubmittedTasks(ids=null){
+ const plans=TODOS.filter(t=>!ids||ids.includes(t.id)).map(task=>({task,evidence:oqQuoteTaskCompletion(task)})).filter(x=>x.evidence);
+ if(!plans.length)return 0;
+ return oqWithTaskRepair(plans.map(p=>p.task.id),()=>{for(const {task,evidence}of plans)oqApplyTaskCompletionRepair(task,evidence);return plans.length;});
+}
 v125DraftLocked = m => { const code=Object.keys(V3.meta).find(k=>V3.meta[k]===m); return code?!!oqLockReason(code):false; };
 v126CanEditDraft = code => !oqLockReason(code) && oqCanQuote(oqQuoteOpp(code));
 function oqEnsureTodo(opp, source='') {
@@ -102,7 +129,7 @@ v3QuickSave = function(input,source) {
   source?.postMessage({type:'pimsSaveAck',draftCode:data.draftCode,durable:true},'*');markPagesDirty();
  }catch(error){source?.postMessage({type:'v3SaveError',message:error.message},'*');toast(error.message);}
 };
-function oqCommitPublished(code, data, opp, requestId='') {
+function oqStorePublishedVersion(code, data, opp, requestId='') {
  const m=v3Meta(code),order=oqOrder(code);v125EnsureBaseline(code,m);
  upsertDraftFromPims(data);m.project=opp[4];m.categories=[opp[3]];m.active=true;m.workingSaved=false;m.needsSpaceUpdate=false;
  m.revision=(m.revision||0)+1;m.confirmedCats=[];m.submitted=v3Copy(DRAFT_DATA[code]);m.submittedAt=v3Stamp();m.submittedBy=v17Owner();m.submissionRequestId=requestId;m.quoteFx=v3Copy(typeof pql144ProjectFx==='function'?pql144ProjectFx(opp[4]):QUOTE_UI.fx||{ccy:'CNY',rate:1});m.priceVersion=m.quoteFx.version||1;m.submitted.quoteFx=v3Copy(m.quoteFx);m.status='已提交';
@@ -110,19 +137,19 @@ function oqCommitPublished(code, data, opp, requestId='') {
  archiveProject=opp[4];v3RebuildDraftQuotes(code);
  for(const row of PROJECT_QUOTES[opp[4]]||[]){row.confirmedCats=(row.confirmedCats||[]).filter(c=>c!==opp[3]);row.spaceUpdateCats=(row.spaceUpdateCats||[]).filter(c=>c!==opp[3]);}
  order[6]=data.name;order[10]=qMoney(v3DraftAmount(m.submitted));order[18].publishedQuote={revision:m.revision,submittedAt:m.submittedAt,submittedBy:m.submittedBy,contents:v3Copy(m.submitted),versionId:version.id};opp[13]=order[10];
- // Publication, ERP outbox, exact-task completion and design handoff share the
- // caller's durable transaction. Saving a working copy never reaches this path.
- const task=oqEnsureTodo(opp);task.draft=code;task.drafts=[code];
- // Reserved notification fixtures only restore a local historical snapshot on
- // opening; this is not a new user submission or permission to dispatch it.
- if(!(data.notificationSample&&String(opp[4]).startsWith('PJ-NOTICE-')&&requestId.startsWith('notification-confirmation:')))oqFinalizePublished(code);
+ const task=TODOS.find(t=>oqTaskQuoteCode(t)===code)||oqEnsureTodo(opp);task.draft=code;task.drafts=[code];
  return code;
+}
+function oqCommitPublished(code,data,opp,requestId=''){
+ // Every actual submission includes the exact task and ERP outbox in the
+ // caller's durable transaction. Historical fixture restoration is separate.
+ oqStorePublishedVersion(code,data,opp,requestId);oqFinalizePublished(code);return code;
 }
 applyDraftSaved = function(input) {
  const source=document.getElementById('pimsFrame')?.contentWindow,requestId=String(input.submissionRequestId||'');
  try {
   const {data,opp}=oqValidateInput(input),m=v3Meta(data.draftCode);
-  if(requestId){const previous=m.quoteVersions?.find(v=>v.requestId===requestId);if(previous){const info=oqOrder(data.draftCode)?.[18]||{};if(!(info.erpRequests||[]).some(r=>r.versionId===previous.id||!r.versionId&&r.revision===previous.revision)&&info.erpRequestedRevision!==previous.revision)throw Error('该历史提交未记录ERP请求，请核对报价后重新提交');source?.postMessage({type:'pimsSaveAck',draftCode:data.draftCode,durable:true,submissionRequestId:requestId},'*');return data.draftCode;}}
+  if(requestId){const previous=m.quoteVersions?.find(v=>v.requestId===requestId);if(previous){const info=oqOrder(data.draftCode)?.[18]||{};if(!(info.erpRequests||[]).some(r=>r.versionId===previous.id||!r.versionId&&r.revision===previous.revision)&&info.erpRequestedRevision!==previous.revision)throw Error('该历史提交未记录ERP请求，请核对报价后重新提交');if(m.needsSpaceUpdate)throw Error('项目空间已变更，请重新提交当前报价');if(previous.id===m.currentQuoteVersion)oqReconcileSubmittedTasks(TODOS.filter(t=>oqTaskQuoteCode(t)===data.draftCode).map(t=>t.id));source?.postMessage({type:'pimsSaveAck',draftCode:data.draftCode,durable:true,submissionRequestId:requestId},'*');return data.draftCode;}}
   if(!v3Cats(data).length)throw Error('请填写报价产品');const error=v125SpaceValidation(data);if(error)throw Error(error.replaceAll('草稿','报价单'));
   const code=bs131Atomic(()=>oqCommitPublished(data.draftCode,data,opp,requestId));
   source?.postMessage({type:'pimsSaveAck',draftCode:code,durable:true,submissionRequestId:requestId},'*');
@@ -140,10 +167,12 @@ function oqQueueERP(order,m,operation) {
 function oqFinalizePublished(code){
  const opp=oqQuoteOpp(code),order=oqOrder(code),m=V3.meta[code];
  if(!order||!m?.submitted||!oqCanQuote(opp))throw Error('请由当前商机负责人提交报价');
+ const tasks=TODOS.filter(task=>['待处理','已处理'].includes(task.status)&&oqTaskQuoteCode(task)===code);
+ if(!tasks.length)throw Error('报价关联待办不明确，请核对原报价待办后重新提交');
  oqQueueERP(order,m,order[18].erpRequestedRevision?'更新报价':'提交报价');
  order[18].submittedERPAt=v3Stamp();order[18].submittedERPBy=v17Owner();
  opp[12]='已录单';opp[15]=order[10];
- for(const task of TODOS)if(task.type==='报价待办'&&task.project===opp[4]&&task.opp===opp[0]&&task.status==='待处理'&&(task.draft===code||task.drafts?.includes(code)))Object.assign(task,{status:'已处理',approver:v17Owner(),approveTime:v3Stamp(),completionReason:'已提交报价',order:order[0],quoteRevision:m.revision});
+ for(const task of tasks)if(task.status==='待处理')Object.assign(task,{status:'已处理',approver:v17Owner(),approveTime:v3Stamp(),completionReason:'已提交报价',order:order[0],quoteRevision:m.revision});
  return order;
 }
 function oqNormalizeExecutionStates() {
@@ -175,8 +204,8 @@ todoActs=function(task){
  if(!crmTodoEnabled(task))return [{t:'查看历史流程',act:'viewDealFlow',extra:`data-id="${esc(task.id)}"`}];
  if(task.type==='确认商机'&&task.designOpportunity)return dw132OldActs(task);
  if(task.type==='报价待办'){
-  const opp=oqOpp(task.opp),code=(task.draft&&!oqOrder(task.draft)?.[18]?.legacyQuoteArchive?task.draft:null)||Object.keys(DRAFT_DATA).find(c=>oqQuoteOpp(c)?.[0]===task.opp&&!oqOrder(c)?.[18]?.legacyQuoteArchive),acts=[];
-  if(task.status==='待处理'&&oqCanQuote(opp)){
+  const opp=oqOpp(task.opp),code=oqTaskQuoteCode(task),acts=[];
+  if(task.status==='待处理'&&oqCanQuote(opp)&&(code||![task.draft,...(task.drafts||[])].some(Boolean))){
    acts.push({t:opp?.[20]?.kind==='design'?code?'编辑设计单':'创建设计单':code?'编辑报价单':'创建报价单',act:opp?.[20]?.kind==='design'?'dw132Fee':'oqEdit',extra:`data-id="${esc(task.id)}" data-opp="${esc(task.opp||'')}" data-code="${esc(code||'')}" data-proj="${esc(task.project)}"`});
   }
   acts.push({t:'查看商机',act:'oqOpenOpp',extra:`data-opp="${esc(task.opp||'')}"`},{t:'查看流程图',act:'viewDealFlow',extra:`data-id="${esc(task.id)}"`});return acts;
@@ -378,7 +407,7 @@ function oqMigrate(){
   if(!opp)continue;
   let order=oqOrder(code);if(!order){const m=V3.meta[code],bound=m?.bindings?.[opp[3]],existing=bound&&ORDERS.find(o=>o[0]===bound.orderNo);if(existing){existing[18]={...(existing[18]||{}),quoteCode:code,erpRequestedRevision:bound.revision||m.revision,stockStatus:existing[3]};order=existing;}else order=oqNewOrder(opp,code,opp[20]?.kind==='design'?'design':'product');}
   const m=V3.meta[code];if(m?.submitted&&!order[18].publishedQuote){order[10]=qMoney(v3DraftAmount(m.submitted));order[18].publishedQuote={revision:m.revision,contents:v3Copy(m.submitted),submittedAt:m.submittedAt,submittedBy:m.submittedBy};}
-  const task=TODOS.find(t=>t.type==='报价待办'&&(t.draft===code||t.drafts?.includes(code)));if(task){task.opp=opp[0];d.todoId=task.id;if(task.status==='已处理'&&!order[18].erpRequestedRevision&&!m?.needsSpaceUpdate)Object.assign(task,{status:'待处理',completionReason:'',approver:'-',approveTime:'-'});}
+  const task=TODOS.find(t=>t.type==='报价待办'&&(t.draft===code||t.drafts?.includes(code)));if(task){task.opp=opp[0];d.todoId=task.id;}
  }
  for(const opp of OPPS){const codes=Object.keys(DRAFT_DATA).filter(c=>oqQuoteOpp(c)?.[0]===opp[0]&&oqOrder(c)).sort((a,b)=>String(V3.meta[b]?.submittedAt||DRAFT_DATA[b]?.savedAt||'').localeCompare(String(V3.meta[a]?.submittedAt||DRAFT_DATA[a]?.savedAt||'')));for(const code of codes.slice(1)){oqOrder(code)[18].legacyQuoteArchive=true;const meta=V3.meta[code];if(meta){v125EnsureBaseline(code,meta);meta.legacyQuoteArchive=true;meta.active=false;}}}
  for(const extra of Object.values(PROJECT_EXTRA))if(extra.formData?.designType)extra.formData.designType=oqDesignType(extra.formData.designType);
@@ -429,7 +458,7 @@ const oqWaitingBase=v16QuoteWaiting;
 v16QuoteWaiting=function(task){return task.type==='报价待办'&&task.opp?false:oqWaitingBase(task);};
 
 const oqTodoSubjectBase=todoSubject;
-todoSubject=function(task){if(task.type==='报价待办'&&task.opp){const code=task.draft||(task.drafts||[])[0],state=code?oqStatus(code):'待报价';if(state==='已提交'||state==='已确认')return task.status==='已处理'?(state==='已确认'?'客户已确认报价':'报价已提交'):state+'，请核对并重新提交';}return oqTodoSubjectBase(task);};
+todoSubject=function(task){if(task.type==='报价待办'&&task.opp){const code=oqTaskQuoteCode(task),state=code?oqStatus(code):'待报价';if(state==='已提交'||state==='已确认')return state==='已确认'?'客户已确认报价':'报价已提交';}return oqTodoSubjectBase(task);};
 
 // The task-center source and navigation counts use the same current-workflow policy.
 if(typeof v21Rows==='function'){const oqVisibleRowsBase=v21Rows;v21Rows=(...args)=>oqVisibleRowsBase(...args).filter(crmTodoEnabled);}
@@ -461,17 +490,18 @@ function oqPrepareConfirmedSample(task,message=task?.sourceMessage){
  if(!message?.sample||!oqIsCustomerConfirmation(message)||!task?.notificationSample||task.type!=='报价待办'||!String(task.project||'').startsWith('PJ-NOTICE-'))return task;
  const opp=oqOpp(task.opp);if(!opp||opp[4]!==task.project)return task;
  const existing=task.draft||Object.keys(DRAFT_DATA).find(code=>oqQuoteOpp(code)?.[0]===opp[0]);
- if(existing)return task;
- return bs131Atomic(()=>{
+ if(existing){oqReconcileSubmittedTasks([task.id]);return task;}
+ return oqWithTaskRepair([task.id],()=>{
   const cat=opp[3],requiresSpaces=oqRequiresSpaces(opp[4]),scope=requiresSpaces?v125ProjectSpaces(opp[4]).filter(s=>s.cats?.includes(cat)).map(s=>s.name):['不分空间'];
   if(!scope.length)throw Error('演示项目尚未指定对应品类空间');
   const seed=v3FromQuote(cat,'',cat+'报价单'),product=v3Copy(seed.spaces?.flatMap(s=>s.products||[])[0]||{name:'演示'+cat+'产品',cat,sku:'DEMO-'+cat,qty:1,price:1000,amt:1000,type:cat});
   const input={name:opp[1]+' · 报价单',project:opp[4],customer:opp[6],tpl:cat,sm:opp[7],oppId:opp[0],todoId:task.id,requiresSpaces,categoryManagers:{[cat]:opp[7]},spaces:scope.map(name=>({name,products:[v3Copy(product)]})),rows:[],notificationSample:true};
   const code=upsertDraftFromPims(input);task.draft=code;task.drafts=[code];oqNewOrder(opp,code);
-  oqCommitPublished(code,DRAFT_DATA[code],opp,'notification-confirmation:'+task.id);
+  oqStorePublishedVersion(code,DRAFT_DATA[code],opp,'notification-confirmation:'+task.id);
   const m=v3Meta(code),at=v3Stamp(),by=(task.customer||opp[6])+'（客户）';
   Object.assign(m,{confirmedCats:[cat],confirmedAt:at,confirmedBy:by,status:'已确认',notificationConfirmationSeed135:true});
   const version=m.quoteVersions.find(v=>v.id===m.currentQuoteVersion);if(version)Object.assign(version,{confirmedCats:[cat],confirmations:[{category:cat,time:at,by,phone:''}]});
+  const completion=oqQuoteTaskCompletion(task);if(completion)oqApplyTaskCompletionRepair(task,completion);
   v3RebuildDraftQuotes(code);if(typeof V75!=='undefined')V75.dirty=true;return task;
  });
 }

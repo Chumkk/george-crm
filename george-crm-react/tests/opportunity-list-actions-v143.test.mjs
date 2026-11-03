@@ -19,6 +19,7 @@ function setup(kind='product'){
   section(read('managementMonitoring.js'),'function mmFeeOrders(','function mmProjectMoney('),
   section(management,'function mgOpportunityState(','function mgLose('),
   section(crm,'function pageOpps(){','function pageCustomers(){'),
+  section(opportunity,'function oqTaskQuoteCode(','const OQ244_REPAIR'),
   section(opportunity,'const oqActsBase=todoActs;','const oqRowsBase=orderRowsHtml;'),
  ].join('\n'),c);
  return c;
@@ -46,10 +47,10 @@ test('项目详情报价和方案经理交接保持原权限，输单商机仍�
  opp[20].lostAt='2026-10-11';assert.deepEqual(Array.from(c.mgOppActions(opp,true),action=>action.act),['go:oppDetail']);
 });
 
-test('报价待办继续保留创建、编辑和确认报价功能，普通用户权限不扩大',()=>{
+test('报价待办保留创建编辑并移除独立确认报价，普通用户权限不扩大',()=>{
  const c=setup(),task={id:'QT',type:'报价待办',project:'P',opp:'BU',owner:'负责人',status:'待处理'};
  let actions=c.todoActs(task);assert.equal(actions.find(action=>action.act==='oqEdit').t,'创建报价单');
- const order=quote(c);task.draft='Q';c.V3.meta.Q={revision:1};c.quoteStatus='已报价';actions=c.todoActs(task);assert.equal(actions.find(action=>action.act==='oqEdit').t,'编辑报价单');assert.ok(actions.some(action=>action.act==='oqReview'));
+ const order=quote(c);task.draft='Q';c.V3.meta.Q={revision:1};c.quoteStatus='已报价';actions=c.todoActs(task);assert.equal(actions.find(action=>action.act==='oqEdit').t,'编辑报价单');assert.ok(!actions.some(action=>action.act==='oqReview'));
  c.actor='无权限';actions=c.todoActs(task);assert.ok(!actions.some(action=>action.act==='oqEdit'||action.act==='oqReview'));assert.ok(actions.some(action=>action.act==='oqOpenOpp'));
  c.actor='负责人';order[18].erpRequestedRevision=1;assert.ok(!c.todoActs(task).some(action=>action.act==='oqReview'));
 });
@@ -59,4 +60,3 @@ test('前置待接受及拒绝邀请仍只提供原关联待办操作',()=>{
  const task={id:'PRE',type:'确认商机',project:'P',status:'待处理',owner:'负责人',cat:'家具',title:'住宅项目-家具'};c.TODOS.push(task);
  const preliminary=c.mgOppRows().find(row=>row[20]?.preliminaryTask);assert.deepEqual(Array.from(c.mgOppActions(preliminary),action=>action.act),['viewDealFlow','todoAccept','todoReject']);assert.ok(!c.pageOpps().includes('创建报价'));
 });
-

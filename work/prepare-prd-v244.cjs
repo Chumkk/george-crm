@@ -1,0 +1,11 @@
+const fs=require('fs'),path=require('path'),root=path.resolve(__dirname,'..'),stamp='2026-11-03 11:40';
+const d=JSON.parse(fs.readFileSync(path.join(__dirname,'space-prd-v243-content.json'),'utf8'));d.version='V2.00';d.updatedAt=stamp;
+const item=d.modules.flatMap(m=>m.items).find(i=>i.title==='提交报价与 ERP 传输');
+item.bullets[item.bullets.length-1]='切换新规则后保留历史工作稿、提交、客户确认、ERP请求及任务结果。已存在成功提交记录且未因项目空间或品类变更失效的报价，其精确关联报价待办应为已处理；不因ERP请求缺失、等待回执、发送失败、客户确认或普通暂存重新激活。历史状态不一致时，依据同一报价版本的原提交人及时间校正任务结果；缺失字段显示未记录，不以当前查看人或校正时间代替，不补造ERP请求、重复提交或通知。缺少ERP请求的历史版本独立提示核对，由负责人按需重新提交。';
+const tasks=d.modules.flatMap(m=>m.items).find(i=>i.title==='分类、范围、筛选与列表')||d.modules.flatMap(m=>m.items).find(i=>i.bullets?.some(b=>b.includes('产品报价待办直接展示')));
+if(tasks)tasks.bullets.push('报价待办只显示精确关联报价的状态，不按同项目、同商机或同品类借用其他报价。有效已提交或已确认报价对应的报价待办为已处理。项目空间或品类变更导致原报价失效并重新激活任务时，当前报价显示已暂存、需重新提交；历史发布及确认版本继续独立保留。');
+const rev=d.revisions.rows.find(r=>r.module.includes('保存、提交与客户确认'));
+rev.changes[0]='产品及设计报价取消内部独立确认：提交成功即发布同版报价、记录ERP传输请求并完成精确关联报价任务；设计报价同时生成GDS设计中任务，客户确认继续独立记录。历史提交与任务状态按同一报价版本校正，不因ERP回执或客户确认恢复待处理，不重复发起请求或通知；空间变更失效后才重新提交。失败不留下部分结果，同次重试不重复版本、请求、任务或通知。';
+fs.writeFileSync(path.join(__dirname,'space-prd-v244-content.json'),JSON.stringify(d,null,2)+'\n');
+fs.writeFileSync(path.join(__dirname,'render-prd-v244.py'),fs.readFileSync(path.join(__dirname,'render-prd-v243.py'),'utf8').replaceAll('space-prd-v243-content.json','space-prd-v244-content.json').replaceAll('V1.99','V2.00').replaceAll('2026-11-03 11:24',stamp));
+const updates=path.join(root,'george-crm-react/src/features/prd/document-updates.json'),u=JSON.parse(fs.readFileSync(updates,'utf8'));u['space-quote']=stamp;fs.writeFileSync(updates,JSON.stringify(u,null,2)+'\n');

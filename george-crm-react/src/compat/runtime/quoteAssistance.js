@@ -50,8 +50,7 @@ function qaOpenAssistant(id){
 }
 function qaQuoteInfo(task){
  if(task?.type!=='报价待办')return null;
- const opp=oqOpp(task.opp),codes=[task.draft,...(task.drafts||[])].filter(Boolean);
- const code=codes.find(c=>oqQuoteOpp(c)?.[0]===task.opp&&oqOrder(c)?.[15]===task.project&&!oqOrder(c)?.[18]?.legacyQuoteArchive)||Object.keys(DRAFT_DATA).find(c=>oqQuoteOpp(c)?.[0]===task.opp&&oqOrder(c)?.[15]===task.project&&!oqOrder(c)?.[18]?.legacyQuoteArchive)||'';
+ const opp=oqOpp(task.opp),code=oqTaskQuoteCode(task);
  const order=code&&oqOrder(code),m=code&&V3.meta[code];
  const erp=oqERPRequestInfo(order,m),hasERPContext=!!(m?.submitted||order?.[18]?.erpRequestedRevision||order?.[18]?.legacySalesRecord);
  return {code,schemeManager:opp?.[7]||task.owner||'未记录',status:code?oqStatus(code):'待报价',erpStatus:order&&hasERPContext?oqERPStatus(order):'—',erpRequest:erp.state,erpNotice:erp.notice,erpRequestCurrent:erp.current,lockReason:code?oqLockReason(code):'',assistant:qaProductTask(task)&&task.quoteAssistantOwner===task.owner?task.quoteAssistant||'':'',workingSaved:!!m?.workingSaved,publishedRevision:m?.revision||0,customerStatus:m?.submitted?m.needsSpaceUpdate?'待更新，需重新确认':m.categories?.length&&m.categories.every(c=>m.confirmedCats?.includes(c))?'已确认':'未确认':'尚未发布'};
@@ -89,3 +88,10 @@ window.addEventListener('message',event=>{
  try{const target=draftEditorCtx?.draftCode;if(!target||msg.target!==target)throw Error('报价编辑上下文已变化，请重新打开');const payload=msg.type==='qaReuseList'?qaReuseSources(target):qaReuseSnapshot(target,msg.code,msg.version);event.source.postMessage({type:'qaReuseResult',request:msg.request,payload},'*');}
  catch(error){event.source.postMessage({type:'qaReuseResult',request:msg.request,error:error.message},'*');}
 });
+// Repair only proven historical task results. Do not dispatch ERP or generate
+// new submission/result notifications while reconciling an existing record.
+if(typeof v72NotificationEvents==='function'){
+ const qaNotificationBase=v72NotificationEvents;
+ v72NotificationEvents=function(...args){return qaNotificationBase(...args).filter(event=>!OQ244_REPAIR.tasks.has(event.task));};
+}
+if(typeof document==='undefined'||document.documentElement?.dataset?.entry!=='client')try{oqReconcileSubmittedTasks();}catch(error){toast('报价待办状态未能同步，请刷新重试：'+error.message);}

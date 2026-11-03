@@ -10,7 +10,7 @@ function fixture(){
  c.ORDERS.push(['XF00000001','设计甲','设计单','未传输','设计服务','','设计报价','','','','¥1000','','','','','P','','BU1',{kind:'design',quoteCode:'Q'}]);
  c.V3.meta.Q={revision:1,currentQuoteVersion:'V1',submitted:{designFields:{attachments:[{id:'REF',name:'参考作品.pdf'}],gdsRemark:'全屋设计'}}};
  c.TODOS.push({id:'QT',type:'报价待办',opp:'BU1',project:'P',draft:'Q',status:'待处理',owner:'设计甲',initiator:'PM'});
- vm.runInContext(slice(read('opportunityQuotes.js'),'function oqQueueERP(','function oqNormalizeExecutionStates(')+slice(read('opportunityQuotes.js'),'function oqConfirmQuote(','function oqReviewConfirm('),c);
+ vm.runInContext(slice(read('opportunityQuotes.js'),'function oqTaskQuoteCode(','const OQ244_REPAIR')+slice(read('opportunityQuotes.js'),'function oqQueueERP(','function oqNormalizeExecutionStates(')+slice(read('opportunityQuotes.js'),'function oqConfirmQuote(','function oqReviewConfirm('),c);
  vm.runInContext(read('designOrderDelivery.js'),c);c.submitDesign=()=>c.bs131Atomic(()=>c.oqFinalizePublished('Q'));return c;
 }
 function deliver(c){c.actor='设计甲';c.submitDesign();const t=c.TODOS.find(t=>t.type==='设计待办');return c.dr185Submit(t,{drawings:[{id:'A',type:'平面设计图',file:{name:'平面.pdf'}},{id:'B',type:'全屋3D图',file:{name:'三维.jpg'}}]});}

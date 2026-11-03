@@ -39,6 +39,10 @@ function th192Archive(){try{return JSON.parse(localStorage.getItem('crm-task-his
 function th192Archived(t,archive=th192Archive()){const saved=archive[t.id];return saved?.type===t.type&&saved?.project===t.project?saved.events||[]:[];}
 function th192Delta(t,old,now,actor){
  const current=th192Tracked(t),events=[];
+ if(old&&typeof OQ244_REPAIR!=='undefined'&&OQ244_REPAIR.tasks.has(t.id)){
+  const known=new Set(old.evidence.map(e=>e.evidence));
+  return [...current.evidence.filter(e=>!known.has(e.evidence)).map(e=>({...e,legacy:true,source:'历史记录校正'})),th192Event(t,'state','quote-completion-repair:'+t.quoteCompletionRepair244?.versionId,{at:now,actor:'',source:'历史记录校正',fromStatus:old.status,toStatus:t.status,reason:'依据原报价提交记录校正待办状态，未重新提交或传输ERP'})];
+ }
  if(!old)return [th192Event(t,'created','created',{at:now,actor,source:t.type==='设计确认待办'?'GDS':'CRM',toStatus:t.status,toOwner:t.owner,detail:'关联原业务生成待办，发起人 · '+(t.initiator||'未记录')}),...current.evidence.map(e=>({...e,legacy:false,businessAt:e.at,at:now,actor:e.actor||actor}))];
  const known=new Set(old.evidence.map(e=>e.evidence));
  for(const evidence of current.evidence)if(!known.has(evidence.evidence))events.push({...evidence,legacy:false,businessAt:evidence.at,at:now,actor:evidence.actor||actor,responsibleOwner:t.owner});
