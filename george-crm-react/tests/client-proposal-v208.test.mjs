@@ -21,16 +21,16 @@ test('Summary includes current product submissions once; design and historical v
 test('fees read exact project orders once and do not double-count design quotation in products',()=>{
  const {c,config}=fixture();c.ORDERS.push(clone(c.ORDERS[0]));const unrelated=clone(c.ORDERS[0]);unrelated[0]='OTHER';unrelated[15]='PJ-OTHER';c.ORDERS.push(unrelated);
  const f=c.cxp208FeeSources('PJ');assert.equal(f.items.length,3);assert.deepEqual(clone(f.fees),{tradeFee:0,designFee:200,designReduction:0,otherFee:50});
- config.fees.designReduction=20;const total=c.cxp208Totals(c.cxp208Products('PJ'),config);assert.deepEqual(clone(total),{products:1000,deposit:500,total:1330,balance:830,domestic:855});
+ config.fees.designReduction=20;const total=c.cxp208Totals(c.cxp208Products('PJ'),config);assert.deepEqual(clone(total),{products:1000,deposit:500,total:1280,balance:780,domestic:855});
 });
 test('all 16 currency options include two independent USD receiving profiles; rate CNY per unit',()=>{
  const {c,config}=fixture();assert.equal(vm.runInContext('CXP208_CURRENCIES.length',c),16);assert.equal(c.cxp208Code('USD_US'),'USD');assert.equal(c.cxp208Code('USD_GLOBAL'),'USD');assert.equal(c.cxp208Currency('USD_US')[2],c.cxp208Currency('USD_GLOBAL')[2]);
  config.currencyOption='THB';config.rate=.21;assert.equal(c.cxp208Fx(config).ccy,'THB');c.V3.client=true;c.location.search='?project=PJ&currency=USD&rate=7.2&currencyOption=USD_GLOBAL';assert.equal(c.cxp208Defaults('PJ').currencyOption,'USD_GLOBAL');
  c.location.search='?project=PJ&currency=THB&rate=.21&currencyOption=THB';assert.equal(c.cxp208Defaults('PJ').rate,.21);assert.equal(c.cxp208Defaults('PJ').currencyOption,'THB');c.location.search='?project=PJ&currency=USD&rate=.21&currencyOption=THB';assert.equal(c.cxp208UrlFx('PJ'),null);
 });
-test('preview contacts do not write back customer data and fee overrides are replaced by source orders',()=>{
+test('preview contacts and manually agreed design/other fees save without changing source orders',()=>{
  const {c,config}=fixture(),before=JSON.stringify([c.CUSTOMERS,c.V69_CUSTOMERS,c.ORDERS]);config.customerName='展示名称';config.fees.designFee=999;
- const saved=c.cxp208Save('PJ',config,c.cxp208Token('PJ'));assert.equal(saved.revision,1);assert.equal(saved.path,'A');assert.equal(saved.fees.designFee,200);assert.equal(JSON.stringify([c.CUSTOMERS,c.V69_CUSTOMERS,c.ORDERS]),before);
+ const saved=c.cxp208Save('PJ',config,c.cxp208Token('PJ'));assert.equal(saved.revision,1);assert.equal(saved.path,'A');assert.equal(saved.fees.designFee,999);assert.equal(JSON.stringify([c.CUSTOMERS,c.V69_CUSTOMERS,c.ORDERS]),before);
  const again=c.cxp208Save('PJ',saved,c.cxp208Token('PJ'));assert.equal(again.revision,1);assert.equal(again.history.length,0);
 });
 test('invalid fields, stale revisions, unauthorized and failed saves preserve prior proposal',()=>{
@@ -58,7 +58,7 @@ test('contract maps trade and delivery period only at their variable fields, ret
 test('new setup requires an explicit manual trade fee and permits deliberate zero',()=>{
  const {c,config}=fixture(),fresh=c.cxp208Defaults('PJ');assert.equal(fresh.account,'');assert.equal(fresh.deposit,'');assert.equal(fresh.fees.tradeFee,null);
  for(const [key,value,pattern] of [['account','',/收款账号/],['deposit','',/定金/]]){const bad=clone(config);bad[key]=value;assert.throws(()=>c.cxp208Validate(bad,c.cxp208Products('PJ')),pattern);}
- config.fees.tradeFee=null;assert.throws(()=>c.cxp208Save('PJ',config,c.cxp208Token('PJ')),/外贸费用/);config.fees.tradeFee=0;c.ORDERS=[];const saved=c.cxp208Save('PJ',config,c.cxp208Token('PJ'));assert.equal(saved.fees.tradeFee,0);assert.equal(saved.fees.designFee,0);assert.equal(saved.fees.otherFee,0);
+ config.fees.tradeFee=null;assert.throws(()=>c.cxp208Save('PJ',config,c.cxp208Token('PJ')),/外贸费用/);config.fees.tradeFee=0;c.ORDERS=[];config.fees.designFee=c.cxp208Defaults('PJ').fees.designFee;const saved=c.cxp208Save('PJ',config,c.cxp208Token('PJ'));assert.equal(saved.fees.tradeFee,0);assert.equal(saved.fees.designFee,0);assert.equal(saved.fees.otherFee,0);
 });
 test('B price follows workbook H22 including selected editable rate and excluding other fees',()=>{
  const {c,config}=fixture();config.currencyOption='USD_GLOBAL';config.rate=6.722;config.deposit=50;
@@ -80,30 +80,32 @@ test('correcting a cleared design reduction to explicit zero preserves zero with
  elements.rate.value='7.25';c.cxp208Capture();assert.equal(vm.runInContext('CXP208.draft.rate',c),7.25);
 });
 
-test('manual trade fee and design reduction use the displayed rate while source-fee fields are ignored',()=>{
+test('all four editable fees use the displayed rate and unchanged values retain their stored precision',()=>{
  const {c,config}=fixture();config.rate=7.2;const elements={rate:{value:'7.25'}};
  for(const key of ['tradeFee','designFee','designReduction','otherFee'])elements['fee-'+key]={value:String(config.fees[key]/7.2),defaultValue:String(config.fees[key]/7.2)};
- elements['fee-designReduction'].value='12.34';elements['fee-tradeFee'].value='123.45';c.document={getElementById:()=>({elements})};vm.runInContext('CXP208.draft='+JSON.stringify(config),c);
+ elements['fee-designReduction'].value='12.34';elements['fee-tradeFee'].value='123.45';elements['fee-otherFee'].value='56.78';c.document={getElementById:()=>({elements})};vm.runInContext('CXP208.draft='+JSON.stringify(config),c);
  vm.runInContext(source.slice(source.indexOf('function cxp208Capture'),source.indexOf('function cxp208RenderForm')),c);c.cxp208Capture();
  assert.equal(vm.runInContext('CXP208.draft.rate',c),7.25);assert.equal(vm.runInContext('cxp208Round(CXP208.draft.fees.designReduction/CXP208.draft.rate)',c),12.34);assert.equal(vm.runInContext('cxp208Round(CXP208.draft.fees.tradeFee/CXP208.draft.rate)',c),123.45);
- assert.equal(vm.runInContext('CXP208.draft.fees.designFee',c),config.fees.designFee);
+ assert.equal(vm.runInContext('CXP208.draft.fees.designFee',c),config.fees.designFee);assert.equal(vm.runInContext('cxp208Round(CXP208.draft.fees.otherFee/CXP208.draft.rate)',c),56.78);
 });
 
-test('legacy active fee overrides are corrected on read without rewriting saved audit or source orders',()=>{
+test('legacy manually saved fees survive reopening and preserve raw history and source orders',()=>{
  const {c,config,storage}=fixture();const old={...config,revision:4,contentKey:'legacy',fees:{tradeFee:999,designFee:888,otherFee:777,designReduction:20},history:[],signatures:[]};storage.set('crm-client-proposals-v208',{PJ:clone(old)});const before=JSON.stringify([...storage]),orders=JSON.stringify(c.ORDERS);
- const effective=c.cxp208Saved('PJ');assert.deepEqual(clone(effective.fees),{tradeFee:999,designFee:200,otherFee:50,designReduction:20});assert.equal(JSON.stringify([...storage]),before);assert.equal(JSON.stringify(c.ORDERS),orders);
+ const effective=c.cxp208Saved('PJ');assert.deepEqual(clone(effective.fees),{tradeFee:999,designFee:888,otherFee:777,designReduction:20});assert.equal(JSON.stringify([...storage]),before);assert.equal(JSON.stringify(c.ORDERS),orders);
  const saved=c.cxp208Save('PJ',effective,c.cxp208Token('PJ'));assert.equal(saved.revision,5);assert.equal(saved.history[0].config.fees.designFee,888);assert.equal(saved.fees.designReduction,20);assert.equal(JSON.stringify(c.ORDERS),orders);
 });
 
-test('source order changes require rereading before delivery and retain the manually agreed reduction',()=>{
- const {c,config,storage}=fixture();let draft=c.cxp253SourceFees('PJ',config);draft.fees.designReduction=20;const token=c.cxp208Token('PJ');c.ORDERS.find(o=>o[0]==='F2')[10]='75';
- assert.throws(()=>c.cxp208Save('PJ',draft,token),/来源订单费用已更新/);assert.equal(storage.size,0);
- draft=c.cxp253SourceFees('PJ',draft);draft.fees.tradeFee=12345;draft.fees.designFee=98765;draft.fees.otherFee=99999;const saved=c.cxp208Save('PJ',draft,token);assert.deepEqual(clone(saved.fees),{tradeFee:12345,designFee:200,otherFee:75,designReduction:20});
+test('source changes never overwrite saved manual fees; explicit reread updates design only and retains notes',()=>{
+ const {c,config}=fixture();let draft=c.cxp253SourceFees('PJ',config);draft.fees={tradeFee:123,designFee:345,designReduction:20,otherFee:67};draft.feeNotes={tradeFee:'运输范围',designFee:'按约定调整',designReduction:'抵扣',otherFee:'安装说明'};
+ c.ORDERS.find(o=>o[0]==='F2')[10]='75';c.ORDERS.find(o=>o[0]==='D1')[10]='250';
+ const saved=c.cxp208Save('PJ',draft,c.cxp208Token('PJ'));assert.deepEqual(clone(saved.fees),draft.fees);assert.deepEqual(clone(c.cxp208Saved('PJ').fees),draft.fees);
+ draft=c.cxp259ReloadDesignFee('PJ',saved);assert.deepEqual(clone(draft.fees),{tradeFee:123,designFee:250,designReduction:20,otherFee:67});assert.deepEqual(clone(draft.feeNotes),clone(saved.feeNotes));
+ const reread=c.cxp208Save('PJ',draft,c.cxp208Token('PJ'));assert.equal(reread.history.at(-1).config.fees.designFee,345);assert.deepEqual(clone(reread.history.at(-1).config.feeNotes),clone(saved.feeNotes));
 });
 
 test('design fee uses its published version while working edits, duplicate and other-project orders cannot inflate fees',()=>{
  const {c,config}=fixture(),design=c.ORDERS.find(o=>o[0]==='D1');design[18].quoteCode='QD';design[10]='999';c.V3.meta.QD.submitted={amount:180};c.V3.meta.QD.workingSaved=true;c.V3.meta.QD.currentQuoteVersion='QD:3';c.DRAFT_DATA={QD:{amount:999}};c.ORDERS.push(clone(design));const other=clone(design);other[0]='D2';other[15]='OTHER';c.ORDERS.push(other);
- const saved=c.cxp208Save('PJ',config,c.cxp208Token('PJ'));assert.equal(saved.fees.designFee,180);assert.match(saved.feeSourceKey,/QD:3/);assert.equal(c.V3.meta.QD.submitted.amount,180);assert.equal(design[10],'999');
+ config.fees.designFee=c.cxp208Defaults('PJ').fees.designFee;const saved=c.cxp208Save('PJ',config,c.cxp208Token('PJ'));assert.equal(saved.fees.designFee,180);assert.match(saved.feeSourceKey,/QD:3/);assert.equal(c.V3.meta.QD.submitted.amount,180);assert.equal(design[10],'999');
 });
 
 test('an already delivered customer snapshot retains its original historical fees independently of local CRM orders',()=>{
@@ -122,4 +124,24 @@ test('shipping reference order changes do not supply or overwrite the manually e
 
 test('legacy project trade values are inherited, custom logistics are retained and missing trade never defaults to CIF',()=>{
  const {c,config,storage}=fixture();c.PROJECT_EXTRA.PJ={logistics:'DDP'};assert.equal(c.cxp253SourceFees('PJ',config).trade,'DDP');c.PROJECT_EXTRA.PJ.formData={logisticsMethod:'其他',logisticsOther:'CIP'};assert.equal(c.cxp253SourceFees('PJ',config).trade,'CIP');c.PROJECT_EXTRA.PJ={logisticsMethod:'其他',logistics:'CIP'};assert.equal(c.cxp253SourceFees('PJ',config).trade,'CIP');c.PROJECT_EXTRA.PJ.formData={logisticsMethod:null};assert.equal(c.cxp208Config('PJ').trade,'');assert.throws(()=>c.cxp208Save('PJ',config,c.cxp208Token('PJ')),/项目详情.*物流方式/);assert.equal(storage.size,0);
+});
+
+test('fee remarks survive capture, currency changes, save/reopen and immutable proposal history',()=>{
+ const {c,config}=fixture();const elements={rate:{value:'1'}};
+ for(const key of ['tradeFee','designFee','designReduction','otherFee']){elements['fee-'+key]={value:String(config.fees[key]),defaultValue:String(config.fees[key])};elements['fee-note-'+key]={value:key+'说明\n第二行'};}
+ c.document={getElementById:()=>({elements})};vm.runInContext('CXP208.draft='+JSON.stringify(config),c);vm.runInContext(source.slice(source.indexOf('function cxp208Capture'),source.indexOf('function cxp208RenderForm')),c);c.cxp208Capture();
+ let draft=vm.runInContext('CXP208.draft',c),saved=c.cxp208Save('PJ',draft,c.cxp208Token('PJ'));assert.equal(c.cxp208Saved('PJ').feeNotes.otherFee,'otherFee说明\n第二行');
+ const prior=c.cxp208Fingerprint('PJ',saved);draft=c.cxp208Saved('PJ');draft.feeNotes.designFee='新约定';draft.currencyOption='USD_GLOBAL';draft.rate=7.2;
+ const next=c.cxp208Save('PJ',draft,c.cxp208Token('PJ'));assert.notEqual(c.cxp208Fingerprint('PJ',next),prior);assert.equal(next.history.at(-1).config.feeNotes.designFee,'designFee说明\n第二行');assert.equal(next.feeNotes.otherFee,saved.feeNotes.otherFee);
+ assert.equal(next.fees.designFee,saved.fees.designFee);
+});
+
+test('customer Summary escapes plain-text fee remarks, shows each with its fee and omits empty remarks',()=>{
+ const {c,config}=fixture();c.SKY={lang:'en'};c.companyLogo=()=>'';c.esc=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+ vm.runInContext(source.slice(source.indexOf('function cxp208Money'),source.indexOf('function cxp208OpenSign')),c);
+ config.feeNotes={tradeFee:'Shipping <img src=x onerror=alert(1)>',designFee:'Design scope\nRoom plans',designReduction:'',otherFee:'Installation'};
+ const html=c.cxp208Summary('PJ',config);assert.doesNotMatch(html,/<img src=x/);assert.match(html,/&lt;img src=x/);assert.equal((html.match(/class="cxp-fee-note"/g)||[]).length,3);
+ assert.match(html,/Design Fee<\/dt><dd>[^<]+<\/dd><p class="cxp-fee-note">Design scope\nRoom plans/);assert.match(html,/Other Fee<\/dt><dd>[^<]+<\/dd><p class="cxp-fee-note">Installation/);
+ for(const feeNotes of [{otherFee:123},{unknown:'x'},{designFee:'x'.repeat(1001)},[]])assert.throws(()=>c.cxp208Validate({...config,feeNotes},c.cxp208Products('PJ')),/备注/);
+ delete config.feeNotes;assert.doesNotThrow(()=>c.cxp208Validate(config,c.cxp208Products('PJ')));
 });

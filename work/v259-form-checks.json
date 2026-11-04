@@ -1,0 +1,9 @@
+{
+  "tradeSelectorRemoved": true,
+  "tradeFeeEditable": true,
+  "designReductionEditable": true,
+  "allFeesEditable": true,
+  "fourNoteInputs": true,
+  "clientVisibilityLabel": true,
+  "projectTradeHint": true
+}

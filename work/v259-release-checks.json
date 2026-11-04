@@ -1,0 +1,14 @@
+{
+  "testsPassed":799,
+  "buildPassed":true,
+  "feesEditable":true,
+  "designFeeInitiallyReadsPublishedSources":true,
+  "savedManualAmountsPreserved":true,
+  "fourOptionalCustomerVisibleFeeNotes":true,
+  "notesPreservedInProposalHistoryAndSnapshot":true,
+  "shortFixedDemoLinksPreserved":true,
+  "demoNotesAdded":true,
+  "workbookModifiedOrPublished":false,
+  "restoredFeeRulesExcludedFromNewRevision":true,
+  "renderedBrowserVerified":false
+}

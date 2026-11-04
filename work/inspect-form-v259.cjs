@@ -1,0 +1,9 @@
+const fs=require('fs'),vm=require('vm'),path=require('path'),root=path.resolve(__dirname,'..');
+const read=p=>fs.readFileSync(path.join(root,p),'utf8'),source=read('george-crm-react/src/compat/runtime/clientProposal.js'),ref=read('george-crm-react/src/compat/runtime/clientProposalData.js'),test=read('george-crm-react/tests/client-proposal-v208.test.mjs');
+const box={vm,source,ref,URLSearchParams,clone:value=>JSON.parse(JSON.stringify(value))};vm.createContext(box);vm.runInContext(test.slice(test.indexOf('function fixture(){'),test.indexOf('\ntest('))+'\nglobalThis.built=fixture();',box);
+const {c,config}=box.built;c.SKY={lang:'zh'};c.esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+vm.runInContext(source.slice(source.indexOf('function cxp208Money'),source.indexOf('function cxp208Capture'))+'\nCXP208.draft='+JSON.stringify(config)+';globalThis.markup259=cxp208FormBody();',c);
+const html=c.markup259,input=key=>html.match(new RegExp('<input\\b[^>]*name="fee-'+key+'"[^>]*>'))?.[0]||'';
+const result={tradeSelectorRemoved:!/<select\b[^>]*name="trade"/.test(html),tradeFeeEditable:!!input('tradeFee')&&!/readonly/.test(input('tradeFee')),designReductionEditable:!!input('designReduction')&&!/readonly/.test(input('designReduction')),allFeesEditable:['tradeFee','designFee','designReduction','otherFee'].every(key=>input(key)&&!/readonly/.test(input(key))),fourNoteInputs:['tradeFee','designFee','designReduction','otherFee'].every(key=>html.includes('name="fee-note-'+key+'"')),clientVisibilityLabel:html.includes('备注（客户可见，选填）'),projectTradeHint:html.includes('外贸方式：CIF')&&html.includes('项目详情 → 编辑项目 → 物流方式')};
+if(Object.values(result).some(value=>!value))throw Error(JSON.stringify(result));
+fs.writeFileSync(path.join(__dirname,'v259-form-checks.json'),JSON.stringify(result,null,2));console.log(JSON.stringify(result));

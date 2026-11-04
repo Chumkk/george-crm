@@ -2061,3 +2061,13 @@ html[data-entry=client] .app,html[data-entry=client] .cq-close{display:none!impo
 #clientQuoteView .v50-workspace.cql128-workspace.q66-sidebar-collapsed #v50Sidebar.cqu211-panel{align-self:start;justify-self:end;width:44px!important;min-width:44px!important;max-width:44px!important;height:44px!important;min-height:44px!important;max-height:44px!important;overflow:hidden;border-radius:8px}
 #clientQuoteView .v50-workspace.cql128-workspace.q66-sidebar-collapsed #v50Sidebar.cqu211-panel>.q66-sidebar-tools{display:flex!important;height:42px;min-height:42px;justify-content:center;padding:6px!important}
 @media(min-width:851px){#clientQuoteView.cxp209-quotation>.v50-workspace.cql128-workspace{column-gap:12px!important}#clientQuoteView.cxp209-quotation>.v50-workspace.cql143-quote-only>.v28-client-layout{scrollbar-gutter:auto}}
+
+/* Fee remarks remain readable in the form, customer Summary and print. */
+.cxp-field .cxp-fee-note-title{font-size:12px;color:#64748b;margin-top:4px}
+.cxp-field textarea{width:100%;box-sizing:border-box;min-height:64px;padding:9px 11px;border:1px solid #d7e0e8;border-radius:6px;font:inherit;line-height:1.5;resize:vertical;background:#fff;color:#243c50}
+.cxp-field textarea:focus{outline:2px solid #9ac9ef;outline-offset:1px}
+.cxp-settlement dl>div{flex-wrap:wrap}
+.cxp-settlement .cxp-fee-note{flex:0 0 100%;grid-column:1 / -1;margin:5px 0 0;font-size:12px;font-weight:400;line-height:1.6;color:#64748b;white-space:pre-line;overflow-wrap:anywhere;min-width:0}
+@media print{.cxp-settlement .cxp-fee-note{display:block;color:#444;break-inside:avoid}}
+
+.cxp-fee-amount-label,.cxp-fee-note-label{display:flex;flex-direction:column;gap:8px;min-width:0}

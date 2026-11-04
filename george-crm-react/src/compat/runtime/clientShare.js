@@ -50,7 +50,7 @@ function cs212Validate(s,project){
 function cs212Snapshot(project){
   const config=cxp208Saved(project);if(!config)throw Error('请先保存客户预览信息');
   const p=PROJECTS.find(p=>p[0]===project);if(!p)throw Error('项目不存在');
-  const fields=cs212Pick(config,['project','customerName','country','phone','email','passport','representative','address','trade','loadingPort','destinationPort','deliveryDays','shippingDate','deadline','currencyOption','rate','rateDate','deposit','account','fees','invoiceDate','path','revision']);
+  const fields=cs212Pick(config,['project','customerName','country','phone','email','passport','representative','address','trade','loadingPort','destinationPort','deliveryDays','shippingDate','deadline','currencyOption','rate','rateDate','deposit','account','fees','feeNotes','invoiceDate','path','revision']);
   const versions=v146ScopedQuoteHistory(project).map(cs212Public),products=cxp208Products(project).map(p=>cs212Pick(p,['code','version','revision','order','category','owner','amount','original','production','weight','cbm']));
   const orders=Object.fromEntries([...new Set(versions.map(v=>v.code))].map(code=>{const batch=v125DraftBatch(V3.meta[code]?.submitted||{}),opp=OPPS.find(o=>o[0]===batch.oppId),extra=opp?.[20]||{};return [code,{number:typeof oqQuotationNumber==='function'?oqQuotationNumber(code,project):oqOrder(code)?.[0]||code,addon:!!batch.addon,addonNumber:extra.addonNumber||'',sourceOrderId:extra.sourceOrderId||''}];}));
   const spaceOrder=typeof pw173ProjectSpaces==='function'?pw173ProjectSpaces(project).map(s=>s.name):undefined;
