@@ -66,7 +66,7 @@ function tg254BuildGuidance(task){
    step('设计负责人／GDS',next?.owner||owner,'按关联设计中任务推进交付；图纸审核独立办理',next?'关联设计中待办':'提交成功后',next);
    step('财务','','在ERP登记本设计单的实际收款','按实际收款');
   }else{
-   step('PM',pm,'查看已提交结果，按业务需要交付客户报价',pending?'提交成功后':'报价已提交');
+   step('SM',quote?.opp?.[7]||owner,'跟进客户反馈',pending?'提交成功后':'报价已提交');
    const confirmed=!pending&&m?.submitted&&!m.needsSpaceUpdate&&m.categories?.length&&m.categories.every(cat=>m.confirmedCats?.includes(cat));
    step('客户','',confirmed?'当前发布版本已由客户确认，确认记录保留':pending&&m?.submitted?'重新提交后，核对并确认新发布的报价版本':'核对并确认当前报价版本',confirmed?'当前确认结果':'通过客户链接',null,'customer');
    if(confirmed)Object.assign(result.handoffs.at(-1),{status:'已确认',relation:'已确认'});
@@ -111,7 +111,7 @@ function tg255NextStep(task,guide){
  if(task.type==='报价待办'){
   if(first?.role==='设计负责人／GDS')return ['已处理','已取消'].includes(first.status)?'':(pending?'提交后，':'')+name(first,'设计负责人／GDS')+'推进设计';
   if(!pending&&guide.handoffs[1]?.status==='已确认')return 'PM／SM跟进订单执行';
-  return (pending?'提交后，':'')+name(first,'PM')+'跟进客户报价确认';
+  return (pending?'提交后，':'')+name(first,'SM')+'跟进客户反馈';
  }
  if(task.type==='设计待办'){
   if(first?.status==='已处理')return pending?'GDS设计负责人完成设计任务':'';

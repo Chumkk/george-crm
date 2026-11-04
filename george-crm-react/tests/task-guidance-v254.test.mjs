@@ -12,8 +12,8 @@ function fixture(){
 }
 test('quote reopening identifies actual saved actor and separates the SM, assistant, PM, customer and external handoffs without changing business',()=>{
  const {c,task,actor,guide}=fixture();task.quoteAssistant='Assistant';task.quoteReactivations246=[{versionId:'Q:2',at:'2026-11-03 19:59',by:'Assistant'}];const before=JSON.stringify([c.TODOS,c.V3,c.PROJECT_EXTRA]);
- let g=guide();assert.equal(g.current.relation,'由我办理');assert.equal(g.cause.actor,'Assistant');assert.equal(g.cause.at,'2026-11-03 19:59');assert.equal(g.cause.label,'重新激活原因');assert.equal(g.handoffs[0].owner,'PM');assert.equal(g.handoffs[0].relation,'由他人办理');assert.equal(g.handoffs[1].relation,'客户办理');assert.match(g.handoffs[2].text,/本单实收≥20%/);
- actor('Assistant');assert.equal(guide().current.relation,'我可协助办理');actor('PM');g=guide();assert.equal(g.current.relation,'由他人办理');assert.equal(g.handoffs[0].relation,'由我办理');assert.equal(JSON.stringify([c.TODOS,c.V3,c.PROJECT_EXTRA]),before);
+ let g=guide();assert.equal(g.current.relation,'由我办理');assert.equal(g.cause.actor,'Assistant');assert.equal(g.cause.at,'2026-11-03 19:59');assert.equal(g.cause.label,'重新激活原因');assert.equal(g.handoffs[0].owner,'SM');assert.equal(g.handoffs[0].relation,'由我办理');assert.equal(g.handoffs[1].relation,'客户办理');assert.match(g.handoffs[2].text,/本单实收≥20%/);
+ actor('Assistant');assert.equal(guide().current.relation,'我可协助办理');actor('PM');g=guide();assert.equal(g.current.relation,'由他人办理');assert.equal(g.handoffs[0].relation,'由他人办理');assert.equal(JSON.stringify([c.TODOS,c.V3,c.PROJECT_EXTRA]),before);
 });
 test('first working save is not a reopened submission and unrelated quotation context supplies no cause',()=>{
  const {c,task,guide}=fixture();delete c.V3.meta.Q.submitted;assert.equal(guide().cause,null);c.V3.meta.Q.submitted={};c.V3.meta.Q.project='OTHER';assert.equal(guide().cause,null);c.V3.meta.Q.project='PJ';c.oqQuoteOpp=()=>['OTHER'];assert.equal(guide().cause,null);task.status='已处理';assert.equal(guide().cause,null);
@@ -43,7 +43,7 @@ test('confirmed and stocked quotes describe achieved results and delivery, while
  const {c,task,guide}=fixture();task.status='已处理';Object.assign(c.V3.meta.Q,{categories:['家具'],confirmedCats:['家具'],workingSaved:false});c.oqLockReason=()=> '订单已进入备货或后续环节，请通过商机加单新增采购';let g=guide();assert.equal(g.handoffs[1].status,'已确认');assert.match(g.handoffs[2].text,/跟进交付/);task.status='待处理';c.V3.meta.Q.workingSaved=true;g=guide();assert.equal(g.handoffs[1].status,'');assert.match(g.handoffs[1].text,/新发布/);
 });
 test('compact quote hint names only the immediate responsible person, independent of the viewer',()=>{
- const {c,guide,actor,task}=fixture();c.PROJECTS[0][9]='李明';let line=guide().nextStep;assert.equal(line,'提交后，PM 李明跟进客户报价确认');assert.doesNotMatch(line,/财务|20%|由我|备货/);actor('Assistant');assert.equal(guide().nextStep,line);task.status='已处理';c.V3.meta.Q.workingSaved=false;assert.equal(guide().nextStep,'PM 李明跟进客户报价确认');
+ const {c,guide,actor,task}=fixture();c.PROJECTS[0][9]='李明';c.OPPS[0][7]='林晓';let line=guide().nextStep;assert.equal(line,'提交后，SM 林晓跟进客户反馈');assert.doesNotMatch(line,/PM|李明|确认|WhatsApp|群|20%|由我|备货/);actor('Assistant');assert.equal(guide().nextStep,line);task.status='已处理';c.V3.meta.Q.workingSaved=false;assert.equal(guide().nextStep,'SM 林晓跟进客户反馈');
 });
 test('compact handoff distinguishes future acceptance from actual completion and keeps rejected-drawing responsibility',()=>{
  const {c,task,guide}=fixture();task.type='确认商机';delete task.opp;delete task.draft;assert.equal(guide().nextStep,'接单后，报价负责人 SM办理报价');task.status='已处理';task.createdOppId='O';c.TODOS.push({id:'N',type:'报价待办',project:'PJ',opp:'O',owner:'SM',status:'已处理'});assert.equal(guide().nextStep,'');Object.assign(task,{type:'设计确认待办',status:'待处理',owner:'PM',initiator:'设计师王',drawingWorkflow185:true,drawings:[{status:'已驳回'}]});assert.equal(guide().nextStep,'设计方 设计师王重提被驳回图纸');
