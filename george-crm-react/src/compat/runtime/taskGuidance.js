@@ -111,7 +111,7 @@ function tg255NextStep(task,guide){
  if(task.type==='报价待办'){
   if(first?.role==='设计负责人／GDS')return ['已处理','已取消'].includes(first.status)?'':(pending?'提交后，':'')+name(first,'设计负责人／GDS')+'推进设计';
   if(!pending&&guide.handoffs[1]?.status==='已确认')return 'PM／SM跟进订单执行';
-  return (pending?'提交后，':'')+name(first,'SM')+'跟进客户反馈';
+  return pending?'提交后，报价将更新至客户链接并发起ERP传输；备货前须由客户确认报价。（保存仅暂存，不发布、不传ERP）':'报价已提交；备货前须由客户确认报价';
  }
  if(task.type==='设计待办'){
   if(first?.status==='已处理')return pending?'GDS设计负责人完成设计任务':'';
