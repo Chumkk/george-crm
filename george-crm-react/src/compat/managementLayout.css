@@ -33,16 +33,6 @@
 }
 .rx-management-header[hidden] { display: none; }
 @media print { .rx-management-header { display: none !important; } }
-body > .pt-progress-mask > .pt-progress-drawer {
-  width: min(920px, 76vw);
-  max-width: calc(100vw - 48px);
-}
 .pt-progress-drawer .pt-matrix-scroll {
   overflow-x: auto;
-}
-@media (max-width: 600px) {
-  body > .pt-progress-mask > .pt-progress-drawer {
-    width: 100vw;
-    max-width: 100vw;
-  }
 }

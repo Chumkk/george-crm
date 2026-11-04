@@ -1,0 +1,7 @@
+{
+  "tradeSelectorRemoved": true,
+  "tradeFeeEditable": true,
+  "designReductionEditable": true,
+  "sourceFeesReadonly": true,
+  "projectTradeHint": true
+}
