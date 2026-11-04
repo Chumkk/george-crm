@@ -95,12 +95,11 @@ test('legacy manually saved fees survive reopening and preserve raw history and 
  const saved=c.cxp208Save('PJ',effective,c.cxp208Token('PJ'));assert.equal(saved.revision,5);assert.equal(saved.history[0].config.fees.designFee,888);assert.equal(saved.fees.designReduction,20);assert.equal(JSON.stringify(c.ORDERS),orders);
 });
 
-test('source changes never overwrite saved manual fees; explicit reread updates design only and retains notes',()=>{
+test('source changes never overwrite saved manual fees or notes and new setup still reads current design sources',()=>{
  const {c,config}=fixture();let draft=c.cxp253SourceFees('PJ',config);draft.fees={tradeFee:123,designFee:345,designReduction:20,otherFee:67};draft.feeNotes={tradeFee:'运输范围',designFee:'按约定调整',designReduction:'抵扣',otherFee:'安装说明'};
  c.ORDERS.find(o=>o[0]==='F2')[10]='75';c.ORDERS.find(o=>o[0]==='D1')[10]='250';
  const saved=c.cxp208Save('PJ',draft,c.cxp208Token('PJ'));assert.deepEqual(clone(saved.fees),draft.fees);assert.deepEqual(clone(c.cxp208Saved('PJ').fees),draft.fees);
- draft=c.cxp259ReloadDesignFee('PJ',saved);assert.deepEqual(clone(draft.fees),{tradeFee:123,designFee:250,designReduction:20,otherFee:67});assert.deepEqual(clone(draft.feeNotes),clone(saved.feeNotes));
- const reread=c.cxp208Save('PJ',draft,c.cxp208Token('PJ'));assert.equal(reread.history.at(-1).config.fees.designFee,345);assert.deepEqual(clone(reread.history.at(-1).config.feeNotes),clone(saved.feeNotes));
+ assert.equal(c.cxp208Defaults('PJ').fees.designFee,250);assert.deepEqual(clone(c.cxp208Saved('PJ').feeNotes),clone(saved.feeNotes));
 });
 
 test('design fee uses its published version while working edits, duplicate and other-project orders cannot inflate fees',()=>{
@@ -144,4 +143,11 @@ test('customer Summary escapes plain-text fee remarks, shows each with its fee a
  assert.match(html,/Design Fee<\/dt><dd>[^<]+<\/dd><p class="cxp-fee-note">Design scope\nRoom plans/);assert.match(html,/Other Fee<\/dt><dd>[^<]+<\/dd><p class="cxp-fee-note">Installation/);
  for(const feeNotes of [{otherFee:123},{unknown:'x'},{designFee:'x'.repeat(1001)},[]])assert.throws(()=>c.cxp208Validate({...config,feeNotes},c.cxp208Products('PJ')),/备注/);
  delete config.feeNotes;assert.doesNotThrow(()=>c.cxp208Validate(config,c.cxp208Products('PJ')));
+});
+
+test('manual foreign exchange rates survive save and reopen and retain fees, notes and historical pricing',()=>{
+ const {c,config}=fixture();config.currencyOption='USD_GLOBAL';config.rate=7.123456;config.feeNotes.otherFee='包含安装';
+ let saved=c.cxp208Save('PJ',config,c.cxp208Token('PJ'));assert.equal(c.cxp208Saved('PJ').rate,7.123456);const before=JSON.stringify([c.ORDERS,c.V3]),fees=clone(saved.fees);
+ saved.rate=7.234567;const revised=c.cxp208Save('PJ',saved,c.cxp208Token('PJ'));assert.equal(revised.rate,7.234567);assert.equal(revised.history.at(-1).config.rate,7.123456);assert.deepEqual(clone(revised.fees),fees);assert.equal(revised.feeNotes.otherFee,'包含安装');assert.equal(JSON.stringify([c.ORDERS,c.V3]),before);
+ for(const rate of [0,-1,Infinity,NaN,''])assert.throws(()=>c.cxp208Save('PJ',{...revised,rate},c.cxp208Token('PJ')),/汇率/);
 });

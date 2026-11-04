@@ -1,0 +1,14 @@
+{
+  "testsPassed":800,
+  "buildPassed":true,
+  "designSourcePanelRemoved":true,
+  "designFeeInitialSourceReadPreserved":true,
+  "tradeMethodHintUnderTradeFee":true,
+  "feeNoteGridRowsExplicit":true,
+  "feesRightAlignedAndNotesBelow":true,
+  "foreignRatesEditableAndManualSaveVerified":true,
+  "CNYRateRemainsOnePendingClarification":true,
+  "shortDemoLinksPreservedAsExplicitlyReconfirmed":true,
+  "noNewPrdRevisionEntries":true,
+  "renderedBrowserVerified":false
+}
