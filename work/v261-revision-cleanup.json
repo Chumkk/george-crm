@@ -1,0 +1,11 @@
+{
+  "removedChanges": [
+    "外贸费用和设计减免费保留手填；设计费首次读取CRM来源后可修改，其他费用手填；保存保留手填金额。",
+    "设计费首次读取CRM来源后允许修改，其他费人工填写；不回写来源订单。",
+    "设计减免费保留人工填写并单独抵扣；已有手填金额及历史交付快照继续保留。"
+  ],
+  "requirementsUnchanged": true,
+  "noNewRevisionEntries": true,
+  "notesEntryRetained": true,
+  "originalFeeEntryRetained": true
+}

@@ -1,0 +1,16 @@
+{
+  "revision": "V2.07",
+  "pages": 46,
+  "reviewPages": [
+    1,
+    3
+  ],
+  "anchorsValid": true,
+  "archiveMatched": true,
+  "releaseMatched": true,
+  "removedChanges": 3,
+  "removedRows": 1,
+  "requirementsUnchanged": true,
+  "noNewRevisionEntries": true,
+  "renderedBrowserVerified": false
+}
