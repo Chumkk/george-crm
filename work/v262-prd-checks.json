@@ -1,0 +1,19 @@
+{
+  "revision": "V2.08",
+  "pages": 46,
+  "reviewPages": [
+    1,
+    13
+  ],
+  "revisionColumns": 3,
+  "tradeRevisionSummaryReferenceRemoved": true,
+  "nextStepAndCauseDocumented": true,
+  "notificationRulesUnchanged": true,
+  "legacyNotificationRoleCopyCorrected": true,
+  "otherRequirementModulesUnchanged": true,
+  "anchorsValid": true,
+  "archiveMatched": true,
+  "releaseMatched": true,
+  "focusedTestsPassed": 101,
+  "renderedBrowserVerified": false
+}

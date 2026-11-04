@@ -1,0 +1,18 @@
+const fs=require('fs'),vm=require('vm'),path=require('path'),root=path.resolve(__dirname,'..');
+const read=p=>fs.readFileSync(path.join(root,p),'utf8'),source=read('george-crm-react/src/compat/runtime/workflows.js'),monitoring=read('george-crm-react/src/compat/runtime/managementMonitoring.js');
+const section=(s,a,b)=>{const start=s.indexOf(a),end=s.indexOf(b,start);if(start<0||end<0)throw Error(a);return s.slice(start,end);},copy=v=>JSON.parse(JSON.stringify(v));
+const project=[];project[0]='PJ';project[1]='测试项目';project[7]='测试客户';project[9]='PM';
+const order=[];order[0]='ORDER';order[15]='PJ';order[17]='OPP';order[18]={quoteCode:'Q'};
+const box={PROJECTS:[project],ORDERS:[order],V68_APPROVALS:[],v72Person:v=>v||'',v17Owner:()=> 'SM',todoCatKey:t=>t.cat||'',quoteSmOf:()=> 'SM',v18Name:t=>typeof t==='string'?t:t.type,v82TodoRejectionReason:t=>t.rejectReason||'',orderOppOf:o=>o[17]};vm.createContext(box);
+vm.runInContext(section(source,'function v72NotificationEvents(','/* Local notification demonstration;')+'\n'+section(monitoring,'function mmQuotationResultEvents(','function mmRejectionEvents('),box);
+const task={id:'TASK',type:'报价待办',status:'待处理',project:'PJ',opp:'OPP',order:'ORDER',customer:'测试客户',cat:'家具',owner:'SM',initiator:'PM',draft:'Q',editRevision:0};
+const snapshot=t=>({todos:{TASK:copy(t)},quotes:{}}),events=(before,after)=>box.mmQuotationResultEvents(before,after,box.v72NotificationEvents(before,after));
+const assignment=events(snapshot(task),snapshot({...task,quoteAssistant:'Assistant',quoteAssistantOwner:'SM',quoteAssistRevision:1}));
+const closed={...task,status:'已处理',completionReason:'已提交报价',quoteRevision:1},reactivated={...task,quoteResubmitPending:true,quoteReactivations246:[{reason:'报价已暂存，需重新提交'}]};
+const saveReactivation=events(snapshot(closed),snapshot(reactivated));
+const spaceChange=events(snapshot(closed),snapshot({...task,title:'项目空间已修改，请核对空间并重新提交报价',statusHistory:[{status:'已处理',reason:'项目空间已修改'}]}));
+const before=snapshot(task),after=snapshot(closed);after.quotes.Q={project:'PJ',revision:1,categories:['家具'],confirmedCats:[],bindings:{},submittedBy:'SM'};
+const publication=events(before,after).filter(e=>e.recipient==='PM');
+const roles=JSON.parse(read('george-crm-react/src/features/notifications/roles.json'));
+const result={evidenceScope:'Current product-quotation event paths; isolated snapshots, no messages sent',assistantAssignmentEvents:assignment.map(e=>e.event),workingSaveReactivationEvents:saveReactivation.map(e=>e.event),projectSpaceReactivationEvents:spaceChange.map(e=>e.event),sameSubmissionMessagesToPM:publication.map(e=>e.event),legacyManualConfirmationCopyInRoleGuide:roles.filter(row=>/设计单确认报价后|不代替负责人确认报价/.test(row.events+' '+row.entry)).map(row=>row.role),nextStepPrototypeImplemented:read('george-crm-react/src/features/todos/TodoCenter.jsx').includes('下一步：{guidance.nextStep}'),previousPrdHadNextStep:read('work/space-prd-v261-content.json').includes('下一步'),recommendationsOnly:true,notificationsChanged:false};
+fs.writeFileSync(path.join(__dirname,'v262-notification-audit.json'),JSON.stringify(result,null,2));console.log(JSON.stringify(result));

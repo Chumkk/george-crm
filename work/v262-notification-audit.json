@@ -1,0 +1,18 @@
+{
+  "evidenceScope": "Current product-quotation event paths; isolated snapshots, no messages sent",
+  "assistantAssignmentEvents": [],
+  "workingSaveReactivationEvents": [],
+  "projectSpaceReactivationEvents": [],
+  "sameSubmissionMessagesToPM": [
+    "quote-submitted",
+    "quote-erp-requested"
+  ],
+  "legacyManualConfirmationCopyInRoleGuide": [
+    "设计师主管 / 设计师",
+    "客户"
+  ],
+  "nextStepPrototypeImplemented": true,
+  "previousPrdHadNextStep": false,
+  "recommendationsOnly": true,
+  "notificationsChanged": false
+}
