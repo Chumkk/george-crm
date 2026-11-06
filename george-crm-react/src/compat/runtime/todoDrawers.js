@@ -73,7 +73,7 @@
   }
   function requestClose(proceed) {
     if (guard) return;
-    if (!dirty()) { proceed(); return; }
+    if (body.querySelector('#ua176Form') || !dirty()) { proceed(); return; }
     const previous = document.activeElement;
     guard = document.createElement('div'); guard.className = 'todo-drawer-leave';
     guard.innerHTML = '<section role="alertdialog" aria-modal="true" aria-labelledby="todoDrawerLeaveTitle" aria-describedby="todoDrawerLeaveText"><h3 id="todoDrawerLeaveTitle">当前内容尚未提交</h3><p id="todoDrawerLeaveText">关闭后，本次填写的内容将不予保留。</p><div><button type="button" class="btn default" data-continue>继续填写</button><button type="button" class="btn" data-discard>放弃并关闭</button></div></section>';

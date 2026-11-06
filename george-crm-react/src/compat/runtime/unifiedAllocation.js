@@ -101,7 +101,7 @@ dw132CreateOpportunities=function(project,names,sourceTodoId='',token='',options
 };
 function ua176PickerHtml(project,mode,selected=[]){
  const design=mode==='design',people=design?ua176Supervisors().map(name=>({name,cat:'设计服务',regions:[]})):v68Candidates(project,'',mode),label=design?'设计师主管':'方案经理';
- return `<div class="v68-field full allocation-batch" id="ua176People"><div class="allocation-label"><strong>${label}<span>可多选</span></strong><b data-ua-count></b></div><div class="allocation-select"><div class="allocation-control"><div class="allocation-tags" data-ua-tags></div><button type="button" class="allocation-trigger" data-act="ua176Toggle" aria-expanded="false"><span data-ua-placeholder>请选择${label}</span><span class="allocation-chevron">⌄</span></button></div><div class="allocation-menu" data-ua-menu hidden><input type="search" data-ua-search aria-label="搜索${label}" placeholder="搜索姓名或品类"><div class="allocation-people">${people.map(p=>{const conflict=design?(OPPS.some(o=>o[4]===project&&o[20]?.kind==='design'&&o[7]===p.name)||TODOS.some(t=>t.project===project&&t.designOpportunity&&t.owner===p.name&&t.status==='待处理')?'已分配或申请中':''):v68AllocationConflict(project,p.cat,p.name);return `<label class="allocation-person" data-ua-row data-search="${esc((p.name+' '+p.cat).toLowerCase())}"><input type="checkbox" data-ua-person data-cat="${esc(p.cat)}" value="${esc(p.name)}" ${selected.includes(p.name)?'checked':''} ${conflict?'disabled':''}><span><strong>${esc(p.name)}</strong><small>${esc(p.cat)}${p.regions.length?' · '+esc(p.regions.join(' / ')):''}</small><small data-ua-reason>${esc(conflict)}</small></span></label>`;}).join('')}</div><div class="allocation-menu-foot"><span>${design?'可选择多位设计师主管':'每个品类选择一位方案经理'}</span><button type="button" data-act="ua176Toggle">完成选择</button></div></div></div></div>`;
+ return `<div class="v68-field full allocation-batch" id="ua176People"><div class="allocation-label"><strong>${label}<span>可多选</span></strong><b data-ua-count></b></div><div class="allocation-select"><div class="allocation-control"><div class="allocation-tags" data-ua-tags></div><button type="button" class="allocation-trigger" data-act="ua176Toggle" aria-controls="ua176Options" aria-expanded="false"><span data-ua-placeholder>请选择${label}</span><span class="allocation-chevron">⌄</span></button></div><div class="allocation-menu" id="ua176Options" data-ua-menu hidden><input type="search" data-ua-search aria-label="搜索${label}" placeholder="搜索姓名或品类"><div class="allocation-people">${people.map(p=>{const conflict=design?(OPPS.some(o=>o[4]===project&&o[20]?.kind==='design'&&o[7]===p.name)||TODOS.some(t=>t.project===project&&t.designOpportunity&&t.owner===p.name&&t.status==='待处理')?'已分配或申请中':''):v68AllocationConflict(project,p.cat,p.name);return `<label class="allocation-person" data-ua-row data-search="${esc((p.name+' '+p.cat).toLowerCase())}"><input type="checkbox" data-ua-person data-cat="${esc(p.cat)}" value="${esc(p.name)}" ${selected.includes(p.name)?'checked':''} ${conflict?'disabled':''}><span><strong>${esc(p.name)}</strong><small>${esc(p.cat)}${p.regions.length?' · '+esc(p.regions.join(' / ')):''}</small><small data-ua-reason>${esc(conflict)}</small></span></label>`;}).join('')}</div><div class="allocation-menu-foot"><span>${design?'可选择多位设计师主管':'每个品类选择一位方案经理'}</span></div></div></div></div>`;
 }
 function ua176RefreshPicker(){const root=document.getElementById('ua176People');if(!root)return;const inputs=[...root.querySelectorAll('[data-ua-person]')],chosen=inputs.filter(n=>n.checked);const design=V68.allocation.mode==='design';root.querySelector('[data-ua-tags]').innerHTML=chosen.map(n=>`<span class="allocation-tag"><span>${esc(n.value)}<small>${esc(n.dataset.cat)}</small></span><button type="button" data-act="ua176Remove" data-name="${esc(n.value)}">×</button></span>`).join('');root.querySelector('[data-ua-placeholder]').hidden=chosen.length>0;root.querySelector('[data-ua-count]').textContent='已选择 '+chosen.length+' 位';const query=root.querySelector('[data-ua-search]').value.toLowerCase();for(const n of inputs){const conflict=design?(OPPS.some(o=>o[4]===V68.allocation.project&&o[20]?.kind==='design'&&o[7]===n.value)||TODOS.some(t=>t.project===V68.allocation.project&&t.designOpportunity&&t.owner===n.value&&t.status==='待处理')?'已分配或申请中':''):v68AllocationConflict(V68.allocation.project,n.dataset.cat,n.value);const occupied=!design&&chosen.some(p=>p!==n&&p.dataset.cat===n.dataset.cat);n.disabled=!!conflict||occupied;n.closest('[data-ua-row]').hidden=!!query&&!n.closest('[data-ua-row]').dataset.search.includes(query);n.closest('label').classList.toggle('selected',n.checked);n.closest('label').querySelector('[data-ua-reason]').textContent=conflict||(occupied?'本品类已选择其他方案经理':'');}}
 function ua176ReadAllocationSpaces(){return pw173Spaces([...document.querySelectorAll('[data-ua-space]')].map(n=>({id:n.dataset.spaceId,name:n.querySelector('input').value.trim()}))).filter(s=>s.name);}
@@ -168,6 +168,22 @@ function ua207EditorActions(){
 }
 const ua207HintBase=updateWizardHint;
 updateWizardHint=function(...args){const result=ua207HintBase(...args);ua207EditorActions();return result;};
+function ua176SetPickerOpen(root, open) {
+ const trigger = root.querySelector('[data-act="ua176Toggle"]');
+ root.querySelector('[data-ua-menu]').hidden = !open;
+ root.classList.toggle('is-open', open);
+ trigger.setAttribute('aria-expanded', String(open));
+ if (open) root.querySelector('[data-ua-search]').focus({ preventScroll: true });
+}
+window.addEventListener('click', event => {
+ const root = document.querySelector('#mask.on #ua176People.is-open');
+ if (!root || root.contains(event.target)) return;
+ ua176SetPickerOpen(root, false);
+ if (event.target.id === 'mask') {
+  event.stopImmediatePropagation();
+  root.querySelector('[data-act="ua176Toggle"]').focus({ preventScroll: true });
+ }
+}, true);
 const ua176HandleBase=handleAct;
 handleAct=function(button){const a=button?.dataset?.act;
  if(a==='ua176Submit')return ua176Submit();
@@ -175,7 +191,7 @@ handleAct=function(button){const a=button?.dataset?.act;
  if(a==='ua206ProjectSpaces')return ua207EditProjectSpaces(button);
  if(a==='closeModal'&&UA206.returnAllocation&&wizardEdit==='project'){if(v69UploadsBusy())return toast('附件正在上传，请稍候');return ua207ResumeAllocation(archiveProject);}
  if(a==='ua206ReturnAllocation')return ua207ResumeAllocation(archiveProject);
- if(a==='ua176Toggle'){const root=document.getElementById('ua176People'),menu=root?.querySelector('[data-ua-menu]');if(menu){menu.hidden=!menu.hidden;root.classList.toggle('is-open',!menu.hidden);root.querySelector('.allocation-trigger').setAttribute('aria-expanded',String(!menu.hidden));if(!menu.hidden)root.querySelector('input[type="search"]').focus();}return;}
+ if(a==='ua176Toggle'){const root=document.getElementById('ua176People');if(root)ua176SetPickerOpen(root,!root.classList.contains('is-open'));return;}
  if(a==='ua176Remove'){document.querySelectorAll('[data-ua-person]').forEach(n=>{if(n.value===button.dataset.name)n.checked=false;});ua176RefreshPicker();return;}
  if(a==='ua176EditProject'){const task=TODOS.find(t=>t.id===button.dataset.id&&t.project===button.dataset.proj&&t.type==='项目待办');if(!task||!bs131CanMaintain(task.project))return toast('请由当前项目经理编辑项目');archiveProject=task.project;UA176.returnProjectTask=task.id;return openEditProject();}
  return ua176HandleBase(button);
