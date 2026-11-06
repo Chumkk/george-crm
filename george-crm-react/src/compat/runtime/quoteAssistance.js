@@ -9,6 +9,67 @@ function qaTask(opp,code='') {
 function qaAssistant(task,actor=v17Owner()) {
  return qaProductTask(task)&&task.quoteAssistant===actor&&task.quoteAssistantOwner===task.owner;
 }
+function qaNotificationEvents(before,after) {
+ const messages=[];
+ for(const task of Object.values(after.todos||{})){
+  const old=before.todos?.[task.id];
+  if(!old||task.type!=='报价待办'||task.status!=='待处理'||old.project!==task.project||old.opp!==task.opp||!crmTodoEnabled(task))continue;
+  const project=PROJECTS.find(p=>p[0]===task.project),opp=oqOpp(task.opp);
+  if(!project||!opp||opp[4]!==task.project||opp[7]!==task.owner)continue;
+  const quote=oqTaskQuoteCode(task),meta=V3.meta[quote];
+  const base={task:task.id,type:task.type,target:'todo',project:task.project,projectName:project[1],opp:task.opp,quote,customer:task.customer,category:task.cat||task.smDept||'',status:task.status,localOnly:true};
+  const assistant=qaAssistant(task,task.quoteAssistant)?task.quoteAssistant:'';
+  if(qaProductTask(task)&&(task.quoteAssistRevision||0)>(old.quoteAssistRevision||0)){
+   const change=task.quoteAssistHistory?.at(-1);
+   const previous=old.quoteAssistantOwner===old.owner?old.quoteAssistant:'';
+   if(change?.revision===task.quoteAssistRevision&&previous!==assistant){
+    const info={...base,role:'assistant',initiator:change.actor,assignmentRevision:change.revision,revision:meta?.submitted?meta.revision:undefined};
+    if(previous)messages.push({...info,recipient:previous,event:'quote-assistant-removed',target:'info',title:'报价协助已取消',body:'你已无需处理这条报价待办。'});
+    if(assistant)messages.push({...info,recipient:assistant,event:'quote-assistant-assigned',title:'请协助完成报价',body:'方案经理已安排你协助报价。请打开对应待办，核对并提交报价。'});
+   }
+  }
+  if(old.status!=='已处理'||!meta?.submitted||meta.project!==task.project||meta.legacyQuoteArchive||oqLockReason(quote))continue;
+  const save=task.quoteReactivations246?.at(-1),scope=meta.pendingCause254;
+  let cause,actor;
+  if(meta.needsSpaceUpdate&&scope?.at===task.v21ArrivedAt&&scope.actor){
+   cause=scope.kind==='category-change'?'项目采购品类已调整，请核对后重新提交报价。':'项目空间已调整，请核对空间和产品后重新提交报价。';
+   actor=scope.actor;
+  }else if(save?.id&&save.id!==old.quoteReactivations246?.at(-1)?.id&&!save.legacy&&save.by){
+   cause='已提交的报价再次暂存，请核对修改后重新提交。';
+   actor=save.by;
+  }else continue;
+  for(const recipient of new Set([task.owner,assistant].filter(Boolean))){
+   if(recipient===actor)continue;
+   const role=recipient===assistant?'assistant':task.designOpportunity?'designer':'sm';
+   messages.push({...base,event:'quote-task-reactivated',role,recipient,initiator:actor,revision:meta.revision,title:'报价待办需重新提交',body:cause});
+  }
+ }
+ return messages;
+}
+if(typeof v72NotificationEvents==='function'){
+ const base=v72NotificationEvents;
+ v72NotificationEvents=(before,after)=>[...base(before,after),...qaNotificationEvents(before,after)];
+}
+if(typeof v73TextCard==='function'){
+ const base=v73TextCard;
+ v73TextCard=message=>{
+  const card=base(message);
+  if(message.event==='quote-assistant-removed')return {...card,btntxt:''};
+  return ['quote-assistant-assigned','quote-task-reactivated'].includes(message.event)?{...card,btntxt:'查看报价待办'}:card;
+ };
+}
+if(typeof v72Go==='function'){
+ const base=v72Go;
+ v72Go=function(id){
+  const message=V72.messages.find(m=>m.id===id);
+  if(message?.event==='quote-assistant-removed')return;
+  if(!['quote-assistant-assigned','quote-task-reactivated'].includes(message?.event))return base(id);
+  const task=TODOS.find(t=>t.id===message.task&&t.type==='报价待办'&&t.project===message.project&&t.opp===message.opp);
+  if(!task||!crmTodoEnabled(task))return toast('对应报价待办不存在');
+  if(!v21FlowAllowed(task)&&!v21CanOperate(task))return toast('当前账号无权查看这条报价待办');
+  return v75SearchTask(task);
+ };
+}
 const qaOperateBase=v21CanOperate;
 v21CanOperate=function(task){return qaOperateBase(task)||qaAssistant(task);};
 const qaQuoteBase=oqCanQuote;

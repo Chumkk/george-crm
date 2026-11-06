@@ -6,6 +6,14 @@ function UpdatedAt({ id }) {
   return <small className="rx-prd-updated">更新时间：{documentUpdates[id]}（北京时间）</small>;
 }
 
+function readerUrl(url) {
+  const refresh = new URLSearchParams(window.location.search).get("crmRefresh");
+  if (!refresh) return url;
+  const reader = new URL(url, window.location.href);
+  reader.searchParams.set("crmRefresh", refresh);
+  return reader.href;
+}
+
 // Keep stable document URLs so later publications update the same library entry.
 const documents = [
   {
@@ -25,7 +33,7 @@ export function FlowComparison() {
       <div><h1>旧流程图</h1><UpdatedAt id="old-workflow" /></div>
       <a className="rx-btn" href="./workflow-comparison.html" target="_blank" rel="noopener noreferrer">独立窗口阅读 ↗</a>
     </header>
-    <iframe src="./workflow-comparison.html?embedded=1" title="旧流程图" />
+    <iframe src={readerUrl("./workflow-comparison.html?embedded=1")} title="旧流程图" />
   </section>;
 }
 
@@ -35,7 +43,7 @@ export function NewWorkflow() {
       <div><h1>新流程图</h1><UpdatedAt id="new-workflow" /></div>
       <a className="rx-btn" href="./new-workflow.html" target="_blank" rel="noopener noreferrer">独立窗口阅读 ↗</a>
     </header>
-    <iframe src="./new-workflow.html?embedded=1" title="新流程图" />
+    <iframe src={readerUrl("./new-workflow.html?embedded=1")} title="新流程图" />
   </section>;
 }
 
@@ -65,7 +73,7 @@ export function PrdLibrary({ api }) {
             独立窗口阅读 ↗
           </a>
         </header>
-        <iframe src={selected.url} title={selected.title} />
+        <iframe src={readerUrl(selected.url)} title={selected.title} />
       </section>
     );
   }

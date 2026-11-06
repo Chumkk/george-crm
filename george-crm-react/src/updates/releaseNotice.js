@@ -46,13 +46,29 @@
   }
   function showNotice(doc, win, options = {}) {
     if (doc.getElementById('crm-release-notice')) return;
-    const box = doc.createElement('aside'); box.id = 'crm-release-notice'; box.setAttribute('role', 'status'); box.setAttribute('aria-live', 'polite');
-    box.innerHTML = '<strong>页面已更新</strong><p>刷新后查看最新内容，编辑中的内容请先保存。</p><p data-release-warning hidden role="alert"></p><div><button type="button" data-release-later>稍后</button><button type="button" data-release-refresh>刷新</button></div>';
-    if (options.documentKey) { box.querySelector('strong').textContent = '文档已更新'; box.querySelector('p').textContent = '刷新后查看最新文档内容。'; }
+    const box = doc.createElement('dialog'); box.id = 'crm-release-notice';
+    box.setAttribute('aria-labelledby', 'crm-release-title');
+    box.setAttribute('aria-describedby', 'crm-release-description');
+    const title = options.documentKey ? '文档有新版本' : '页面有新版本';
+    const description = options.documentKey ? '点击「立即刷新」查看最新文档。' : '点击「立即刷新」加载最新版。正在编辑的内容请先保存。';
+    box.innerHTML = '<h2 id="crm-release-title">' + title + '</h2><p id="crm-release-description">' + description + '</p><p data-release-warning hidden role="alert"></p><div><button type="button" data-release-later autofocus>稍后</button><button type="button" data-release-refresh>立即刷新</button></div>';
     const style = doc.createElement('style');
-    style.textContent = '#crm-release-notice{position:fixed;right:24px;bottom:24px;width:min(390px,calc(100vw - 48px));box-sizing:border-box;background:#fff;border:1px solid #c8def0;border-radius:10px;box-shadow:0 8px 28px #173d5c20;padding:18px;z-index:18000;color:#29445b;font:14px/1.6 system-ui,sans-serif}#crm-release-notice strong{font-size:16px}#crm-release-notice p{margin:6px 0 12px;color:#6b8194}#crm-release-notice div{display:flex;justify-content:flex-end;gap:8px}#crm-release-notice button{cursor:pointer;border:1px solid #d8e2eb;background:white;border-radius:5px;padding:6px 18px;font:inherit;color:#526b80}#crm-release-notice [data-release-refresh]{background:#1677ff;border-color:#1677ff;color:white}#crm-release-notice [data-release-warning]{color:#a56819}@media print{#crm-release-notice{display:none!important}}';
+    style.textContent = `
+      #crm-release-notice{position:fixed;inset:0;margin:auto;box-sizing:border-box;width:min(480px,calc(100vw - 32px));max-height:calc(100vh - 32px);padding:clamp(20px,5vw,32px);border:0;border-top:5px solid #1677ff;border-radius:14px;background:white;color:#233b53;box-shadow:0 18px 70px #10233755;font:15px/1.65 system-ui,sans-serif}
+      #crm-release-notice::backdrop{background:#152b43a3}
+      #crm-release-notice h2{margin:0 0 8px;font-size:25px;line-height:1.3}
+      #crm-release-notice p{margin:0 0 20px;color:#4e6479}
+      #crm-release-notice div{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:10px}
+      #crm-release-notice button{min-height:44px;padding:8px 20px;border:1px solid #ccd9e5;border-radius:8px;background:white;color:#334c64;font:inherit;font-weight:600;cursor:pointer}
+      #crm-release-notice button:focus-visible{outline:2px solid #1677ff;outline-offset:3px}
+      #crm-release-notice [data-release-refresh]{background:#0969da;border-color:#0969da;color:white}
+      #crm-release-notice [data-release-warning]{padding:10px 12px;border-radius:6px;background:#fff4df;color:#81510d}
+      @media print{#crm-release-notice,#crm-release-notice::backdrop{display:none!important}}
+    `;
     box.appendChild(style);
-    box.querySelector('[data-release-later]').onclick = () => box.remove();
+    box.addEventListener('keydown', event => event.stopPropagation());
+    box.addEventListener('close', () => box.remove(), { once: true });
+    box.querySelector('[data-release-later]').onclick = () => box.close();
     box.querySelector('[data-release-refresh]').onclick = () => {
       if (quotationNeedsSave(doc)) {
         const warning = box.querySelector('[data-release-warning]'); warning.hidden = false;
@@ -60,9 +76,15 @@
       }
       rememberReading(doc, win, options.documentKey);
       for (const frame of doc.querySelectorAll?.('iframe') || []) try { const reader = frame.contentWindow.CRMReleaseNotice; if (reader?.documentKey) reader.rememberReading(frame.contentDocument, frame.contentWindow, reader.documentKey); } catch { /* Only same-origin readers share reading position. */ }
-      if (options.version && win.location.href && win.location.replace) { const target = new URL(win.location.href); target.searchParams.set('crmRelease', options.version); win.location.replace(target.href); } else win.location.reload();
+      if (options.version && win.location.href && win.location.replace) {
+        const target = new URL(win.location.href);
+        target.searchParams.set('crmRelease', options.version);
+        target.searchParams.set('crmRefresh', String(Date.now()));
+        win.location.replace(target.href);
+      } else win.location.reload();
     };
     doc.body.appendChild(box);
+    box.showModal();
   }
   root.CRMReleaseNotice = { createReleaseWatcher, quotationNeedsSave, showNotice, rememberReading, restoreReading };
   if (root.document?.body && root.document.documentElement?.dataset?.entry !== 'client') {

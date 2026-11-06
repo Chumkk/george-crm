@@ -137,6 +137,7 @@
   // Existing overlay-click handling calls handleAct('closeModal'), so every exit shares the same guard.
   window.addEventListener('keydown', event => {
     if (!active || !isOpen()) return;
+    if (document.getElementById('crm-release-notice')?.open) return;
     if (document.activeElement?.closest('[data-tutorial-root]')) return;
     if (document.querySelector('.v69-file-view, #archPreview.on, #v3Dialog, #q63ImageViewer')) return;
     if (event.key === 'Escape') {

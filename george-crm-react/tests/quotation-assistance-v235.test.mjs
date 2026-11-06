@@ -11,6 +11,47 @@ test('普通品类后续分配也不能与已有部门自定义品类重名，�
 function runtime(){const c=setup();Object.assign(c,{V21:{view:'team'},V68_SMS:[],mgOpportunityState:()=> '报价中',v21Rows:()=>[],v21FlowAllowed:()=>false,visibleTodos:()=>c.TODOS,bindPimsFrame:()=>{},mgTaskBusinessInfo:()=>({}),v21AllowedOwners:()=>[c.actor],window:{addEventListener(){}},tfStoredTasks:()=>c.stored||[],v3CloseDialog(){}});vm.runInContext(assistance,c);return c;}
 function addQuote(c,id='C',cat='家具'){c.OPPS.push([id,id+'商机','',''+cat,'P','北美','客户','SM']);const code=c.oqCreateQuote(id);return {code,data:{...clone(c.DRAFT_DATA[code]),rows:[{kind:'space',space:'客厅',type:'客厅'},{kind:'item',space:'客厅',sku:'CH',qty:1,price:100,amt:100}],spaces:[{name:'客厅',products:[{name:'来源椅子',cat:cat==='Sourcing'?'家具':cat,sku:'CH',qty:1,price:100,amt:100}]}]}};}
 
+function notify(c, action) {
+ const snapshot=()=>({todos:Object.fromEntries(c.TODOS.map(t=>[t.id,clone(t)]))});
+ const before=snapshot();
+ action();
+ return clone(c.qaNotificationEvents(before,snapshot()));
+}
+test('报价助理安排、重选及取消按实际变更通知，新旧人员接收不同结果',()=>{
+ const c=runtime();
+ quote(c);
+ c.actor='SM';
+ const assign=(person,revision)=>notify(c,()=>c.qaSetAssistant('T1',person,revision));
+ assert.deepEqual(assign('助理A',0).map(m=>[m.event,m.recipient,m.initiator,m.task,m.revision]),[['quote-assistant-assigned','助理A','SM','T1',undefined]]);
+ assert.deepEqual(assign('助理A',1),[]);
+ assert.deepEqual(assign('助理B',1).map(m=>[m.event,m.recipient,m.target]),[['quote-assistant-removed','助理A','info'],['quote-assistant-assigned','助理B','todo']]);
+ assert.deepEqual(assign('',2).map(m=>m.recipient),['助理B']);
+});
+test('只提醒他人造成的报价重新激活，首次或重复暂存均无通知',()=>{
+ const c=runtime(),{code,data}=quote(c);
+ c.actor='SM';
+ c.qaSetAssistant('T1','助理A',0);
+ assert.deepEqual(notify(c,()=>c.v3QuickSave(data)),[]);
+ c.applyDraftSaved({...data,submissionRequestId:'notice-submit-1'});
+ let messages=notify(c,()=>c.v3QuickSave(data));
+ assert.deepEqual(messages.map(m=>[m.event,m.recipient,m.initiator,m.task,m.quote]),[['quote-task-reactivated','助理A','SM','T1',code]]);
+ assert.match(messages[0].body,/再次暂存/);
+ assert.deepEqual(notify(c,()=>c.v3QuickSave(data)),[]);
+ c.applyDraftSaved({...data,submissionRequestId:'notice-submit-2'});
+ c.actor='助理A';
+ messages=notify(c,()=>c.v3QuickSave(data));
+ assert.deepEqual(messages.map(m=>m.recipient),['SM']);
+ c.applyDraftSaved({...data,submissionRequestId:'notice-submit-3'});
+ c.actor='PM';
+ const revision=fs.readFileSync(new URL('../src/compat/runtime/quoteRevision.js',import.meta.url),'utf8');
+ c.v125SpaceImpact=()=>({affected:['家具'],removed:[],editable:[code],protected:[]});
+ c.qNum=Number;
+ vm.runInContext(revision.slice(revision.indexOf('function v125ApplySpaceImpact('),revision.indexOf('// Category-only projects')),c);
+ messages=notify(c,()=>c.v125ApplySpaceImpact('P',[{id:'S',name:'客厅',cats:['家具']}],[{id:'S',name:'起居室',cats:['家具']}]));
+ assert.deepEqual(messages.map(m=>[m.recipient,m.initiator,m.revision]),[['SM','PM',3],['助理A','PM',3]]);
+ assert.ok(messages.every(m=>/项目空间已调整/.test(m.body)));
+});
+
 test('复用展示关联产品订单号并补齐7位序号，保留内部报价标识及历史关联，缺失时不伪造单号',()=>{const c=runtime(),a=quote(c);c.actor='SM';c.applyDraftSaved(a.data);const m=c.V3.meta[a.code],order=c.oqOrder(a.code),opp=c.oqQuoteOpp(a.code);m.project=order[15]=opp[4]='PJ0072456';order[0]='PJ0072456-3434872';assert.equal(c.qaReuseOrderNumber(a.code),'PJ0072456-3434872');order[0]='PJ0072456-71244';const before=JSON.stringify({order,meta:m});assert.equal(c.qaReuseOrderNumber(a.code),'PJ0072456-0071244');assert.equal(JSON.stringify({order,meta:m}),before);const source=c.qaReuseSources(a.code).find(s=>s.code===a.code);assert.equal(source.code,a.code);assert.equal(source.orderNo,'PJ0072456-0071244');assert.equal(source.projectCode,'PJ0072456');order[0]='PJ0099999-3434872';assert.equal(c.qaReuseOrderNumber(a.code),'单号待核对');order[15]='OTHER';assert.equal(c.qaReuseOrderNumber(a.code),'单号未记录');});
 
 test('复用来源分别标明当前方案经理、精确报价助理及历史提交人，取消和交接不借用旧助理',()=>{const c=runtime(),a=quote(c),b=addQuote(c);c.actor='SM';const task=c.TODOS.find(t=>t.draft===b.code);c.qaSetAssistant(task.id,'助理A',0);c.actor='助理A';c.applyDraftSaved(b.data);c.actor='SM';let source=c.qaReuseSources(a.code).find(s=>s.code===b.code);assert.equal(source.schemeManager,'SM');assert.equal(source.quoteAssistant,'助理A');assert.equal(source.author,'助理A');c.actor='SM';c.oqOpp('C')[7]='新SM';task.owner='新SM';source=c.qaReuseSources(a.code).find(s=>s.code===b.code);assert.equal(source.schemeManager,'新SM');assert.equal(source.quoteAssistant,'未安排');assert.equal(source.author,'助理A');c.TODOS.splice(c.TODOS.indexOf(task),1);source=c.qaReuseSources(a.code).find(s=>s.code===b.code);assert.equal(source.quoteAssistant,'未记录');assert.equal(source.author,'助理A');});
