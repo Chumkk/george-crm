@@ -1,0 +1,434 @@
+{
+  "verification": "Actual product mutations + runtime-ordered current notification wrappers + real collector/card renderer and React visibility predicate; no browser or external messages",
+  "assistantAssignment": [
+    {
+      "person": "助理A",
+      "events": []
+    },
+    {
+      "person": "助理B",
+      "events": []
+    },
+    {
+      "person": "",
+      "events": []
+    }
+  ],
+  "submittedQuoteMessages": [
+    {
+      "event": "quote-erp-requested",
+      "recipient": "PM",
+      "title": "报价已提交",
+      "task": "T1",
+      "button": "查看报价待办",
+      "body": "报价已提交，报价待办已完成。ERP传输请求已记录。"
+    }
+  ],
+  "directResubmission": [
+    {
+      "event": "quote-erp-requested",
+      "recipient": "PM",
+      "title": "报价已提交",
+      "task": "T1",
+      "button": "查看报价待办",
+      "body": "报价已提交，报价待办已完成。ERP传输请求已记录。"
+    }
+  ],
+  "sameRequestRetry": [],
+  "resubmissionAfterSave": [
+    {
+      "event": "quote-erp-requested",
+      "recipient": "PM",
+      "title": "报价已提交",
+      "task": "T1",
+      "button": "查看报价待办",
+      "body": "报价已提交，报价待办已完成。ERP传输请求已记录。"
+    }
+  ],
+  "savedReactivation": [],
+  "repeatSave": [],
+  "pmSpaceReactivation": [],
+  "cases": [
+    {
+      "name": "到达：项目待办",
+      "messages": [
+        {
+          "event": "todo-arrived",
+          "recipient": "PM",
+          "title": "分配商机已到达",
+          "task": "TASK",
+          "button": "查看待办",
+          "body": "你有一项新的业务待办，请查看资料并处理。"
+        }
+      ]
+    },
+    {
+      "name": "到达：确认商机",
+      "messages": [
+        {
+          "event": "todo-arrived",
+          "recipient": "SM",
+          "title": "采购商机接单已到达",
+          "task": "TASK",
+          "button": "查看待办",
+          "body": "你有一项新的业务待办，请查看资料并处理。"
+        }
+      ]
+    },
+    {
+      "name": "到达：报价待办",
+      "messages": [
+        {
+          "event": "todo-arrived",
+          "recipient": "SM",
+          "title": "产品报价已到达",
+          "task": "TASK",
+          "button": "查看待办",
+          "body": "商机已生成，请从待办进入线上报价，自动带入本品类全部相关空间。"
+        }
+      ]
+    },
+    {
+      "name": "到达：设计待办",
+      "messages": [
+        {
+          "event": "todo-arrived",
+          "recipient": "Designer",
+          "title": "设计中已到达",
+          "task": "TASK",
+          "button": "查看待办",
+          "body": "你有一项新的业务待办，请查看资料并处理。"
+        }
+      ]
+    },
+    {
+      "name": "到达：设计确认待办",
+      "messages": [
+        {
+          "event": "coordinator-todo-arrived",
+          "recipient": "Coordinator",
+          "title": "设计定稿已到达",
+          "task": "TASK",
+          "button": "查看待办",
+          "body": "你有一项新的业务待办，请查看资料并处理。"
+        },
+        {
+          "event": "todo-arrived",
+          "recipient": "PM",
+          "title": "设计定稿已到达",
+          "task": "TASK",
+          "button": "查看待办",
+          "body": "你有一项新的业务待办，请查看资料并处理。"
+        }
+      ]
+    },
+    {
+      "name": "到达：跨区域商机审批待办",
+      "messages": [
+        {
+          "event": "todo-arrived",
+          "recipient": "Office",
+          "title": "跨区域商机审批已到达",
+          "task": "TASK",
+          "button": "查看待办",
+          "body": "请核对项目、接收 SM 及申请附件。通过后直接生成商机和报价待办。"
+        }
+      ]
+    },
+    {
+      "name": "到达：转介绍商机审批待办",
+      "messages": [
+        {
+          "event": "todo-arrived",
+          "recipient": "Office",
+          "title": "转介绍商机审批已到达",
+          "task": "TASK",
+          "button": "查看待办",
+          "body": "请核对项目、接收 SM 及申请附件。通过后直接生成商机和报价待办。"
+        }
+      ]
+    },
+    {
+      "name": "到达：费用订单待办",
+      "messages": [
+        {
+          "event": "todo-arrived",
+          "recipient": "FeeHandler",
+          "title": "费用订单已到达",
+          "task": "TASK",
+          "button": "查看待办",
+          "body": "你有一项新的业务待办，请查看资料并处理。"
+        }
+      ]
+    },
+    {
+      "name": "设计商机接单到达",
+      "messages": [
+        {
+          "event": "todo-arrived",
+          "recipient": "Designer",
+          "title": "设计商机接单已到达",
+          "task": "TASK",
+          "button": "查看待办",
+          "body": "你有一项新的业务待办，请查看资料并处理。"
+        }
+      ]
+    },
+    {
+      "name": "设计报价到达",
+      "messages": [
+        {
+          "event": "todo-arrived",
+          "recipient": "Designer",
+          "title": "设计报价已到达",
+          "task": "TASK",
+          "button": "查看待办",
+          "body": "商机已生成，请从待办进入线上报价，自动带入本品类全部相关空间。"
+        }
+      ]
+    },
+    {
+      "name": "待办资料更新",
+      "messages": [
+        {
+          "event": "todo-updated",
+          "recipient": "SM",
+          "title": "采购商机接单已更新",
+          "task": "TASK",
+          "button": "查看待办",
+          "body": "发起人已修改这条待办，请查看最新资料并继续处理。"
+        }
+      ]
+    },
+    {
+      "name": "驳回后编辑原待办重提",
+      "messages": [
+        {
+          "event": "todo-resubmitted",
+          "recipient": "SM",
+          "title": "采购商机接单已重新提交",
+          "task": "TASK",
+          "button": "查看待办",
+          "body": "发起人已修改并重新提交这条待办，请查看最新资料并处理。"
+        }
+      ]
+    },
+    {
+      "name": "待办移交",
+      "messages": [
+        {
+          "event": "owner-released",
+          "recipient": "SM",
+          "title": "待办已移交",
+          "task": "TASK",
+          "button": "查看结果",
+          "body": "此待办已移交给 NewSM，请以当前业务归属为准。"
+        },
+        {
+          "event": "owner-changed",
+          "recipient": "NewSM",
+          "title": "待办已移交给你",
+          "task": "TASK",
+          "button": "查看待办",
+          "body": "负责人调整后，此待办已从 SM 移交给你，请继续跟进。"
+        }
+      ]
+    },
+    {
+      "name": "接单完成结果",
+      "messages": [
+        {
+          "event": "todo-result",
+          "recipient": "PM",
+          "title": "采购商机接单已完成",
+          "task": "TASK",
+          "button": "查看结果",
+          "body": "事项已完成，可查看本次需求的后续流转进度。"
+        }
+      ]
+    },
+    {
+      "name": "拒绝或驳回结果",
+      "messages": [
+        {
+          "event": "todo-result",
+          "recipient": "PM",
+          "title": "商机接单已驳回",
+          "task": "TASK",
+          "button": "查看待办",
+          "body": "请查看驳回原因，编辑这条原待办并重新提交。"
+        }
+      ]
+    },
+    {
+      "name": "跨区域商机审批待办：已处理",
+      "messages": [
+        {
+          "event": "todo-result",
+          "recipient": "PM",
+          "title": "商机申请已通过",
+          "task": "TASK",
+          "button": "查看结果",
+          "body": "总经办已审批通过，已直接生成商机和对应 SM 的报价待办。"
+        }
+      ]
+    },
+    {
+      "name": "跨区域商机审批待办：已驳回",
+      "messages": [
+        {
+          "event": "todo-result",
+          "recipient": "PM",
+          "title": "跨区域商机审批已驳回",
+          "task": "TASK",
+          "button": "查看待办",
+          "body": "请查看驳回原因，编辑这条原待办并重新提交。"
+        }
+      ]
+    },
+    {
+      "name": "转介绍商机审批待办：已处理",
+      "messages": [
+        {
+          "event": "todo-result",
+          "recipient": "PM",
+          "title": "商机申请已通过",
+          "task": "TASK",
+          "button": "查看结果",
+          "body": "总经办已审批通过，已直接生成商机和对应 SM 的报价待办。"
+        }
+      ]
+    },
+    {
+      "name": "转介绍商机审批待办：已驳回",
+      "messages": [
+        {
+          "event": "todo-result",
+          "recipient": "PM",
+          "title": "转介绍商机审批已驳回",
+          "task": "TASK",
+          "button": "查看待办",
+          "body": "请查看驳回原因，编辑这条原待办并重新提交。"
+        }
+      ]
+    },
+    {
+      "name": "费用办理：已处理",
+      "messages": [
+        {
+          "event": "todo-result",
+          "recipient": "PM",
+          "title": "费用订单已完成",
+          "task": "TASK",
+          "button": "查看待办",
+          "body": "事项已完成，可查看本次需求的后续流转进度。"
+        }
+      ]
+    },
+    {
+      "name": "费用办理：已驳回",
+      "messages": [
+        {
+          "event": "todo-result",
+          "recipient": "PM",
+          "title": "费用订单已驳回",
+          "task": "TASK",
+          "button": "查看待办",
+          "body": "请查看驳回原因，编辑这条原待办并重新提交。"
+        }
+      ]
+    },
+    {
+      "name": "单张图纸：confirm",
+      "messages": []
+    },
+    {
+      "name": "单张图纸：reject",
+      "messages": [
+        {
+          "event": "design-drawing-reject",
+          "recipient": "Designer",
+          "title": "设计图纸已驳回",
+          "task": "TASK",
+          "button": "查看待办",
+          "body": "客厅平面图 · 第 2 版 · 请补尺寸"
+        }
+      ]
+    },
+    {
+      "name": "单张图纸：resubmit",
+      "messages": [
+        {
+          "event": "coordinator-design-drawing-resubmit",
+          "recipient": "Coordinator",
+          "title": "设计图纸已重新提交",
+          "task": "TASK",
+          "button": "查看待办",
+          "body": "客厅平面图 · 第 2 版"
+        },
+        {
+          "event": "design-drawing-resubmit",
+          "recipient": "PM",
+          "title": "设计图纸已重新提交",
+          "task": "TASK",
+          "button": "查看待办",
+          "body": "客厅平面图 · 第 2 版"
+        }
+      ]
+    },
+    {
+      "name": "设计定稿同步完成",
+      "messages": [
+        {
+          "event": "todo-result",
+          "recipient": "Designer",
+          "title": "设计定稿已完成",
+          "task": "TASK",
+          "button": "查看结果",
+          "body": "事项已完成，可查看本次需求的后续流转进度。"
+        }
+      ]
+    },
+    {
+      "name": "GDS完成设计中任务",
+      "messages": [
+        {
+          "event": "todo-result",
+          "recipient": "PM",
+          "title": "设计中已完成",
+          "task": "TASK",
+          "button": "查看结果",
+          "body": "事项已完成，可查看本次需求的后续流转进度。"
+        }
+      ]
+    },
+    {
+      "name": "客户确认报价",
+      "messages": [
+        {
+          "event": "quote-confirmed",
+          "recipient": "PM",
+          "title": "客户已确认品类报价",
+          "task": "TASK",
+          "button": "查看报价待办",
+          "body": "客户已确认本次报价，确认时间及对应版本已记录。可查看对应报价与处理记录。客户确认不重复传输 ERP。"
+        },
+        {
+          "event": "quote-confirmed",
+          "recipient": "SM",
+          "title": "客户已确认品类报价",
+          "task": "TASK",
+          "button": "查看报价待办",
+          "body": "客户已确认本次报价，确认时间及对应版本已记录。可查看对应报价与处理记录。客户确认不重复传输 ERP。"
+        }
+      ]
+    },
+    {
+      "name": "已退休订单待办到达",
+      "messages": []
+    }
+  ],
+  "submissionAndErpHistoriesRetained": true,
+  "singleDrawingConfirmationNotice": false,
+  "applicationFilesModified": true
+}

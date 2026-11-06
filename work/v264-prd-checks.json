@@ -1,0 +1,21 @@
+{
+  "revision": "V2.09",
+  "pages": 46,
+  "reviewPages": [
+    1,
+    44,
+    45,
+    46
+  ],
+  "revisionColumns": 3,
+  "onePmSubmissionRequirement": true,
+  "duplicateEventTableRowRemoved": true,
+  "customerAndErpReceiptEventsSeparate": true,
+  "businessHistoriesPreserved": true,
+  "otherRequirementModulesUnchanged": true,
+  "anchorsValid": true,
+  "archiveMatched": true,
+  "releaseMatched": true,
+  "prototypeMergedNotificationVerified": true,
+  "renderedBrowserVerified": false
+}

@@ -69,15 +69,23 @@ document.addEventListener('change',event=>{
  if(event.target.matches?.('[data-mg-opp-filter]')){MM164.filters.opps=null;mmRefreshCards(event.target.closest('.page'),'opps',event.target.value);}
 });
 
-/* Completion is distinct from publication and customer confirmation. */
+/* Successful submission completes the exact task; customer approval is independent. */
 function mmQuotationResultEvents(before,after,events) {
- const result=events.slice();
+ const result=events.slice(),merged=new Set();
  for(const task of Object.values(after.todos||{})){
-  const old=before.todos?.[task.id];if(task.type!=='报价待办'||!old||old.status!=='待处理'||task.status!=='已处理'||task.completionReason!=='已确认报价')continue;
+  if(task.type!=='报价待办'||task.status!=='已处理'||!crmTodoEnabled(task)||!['已提交报价','已确认报价'].includes(task.completionReason))continue;
   const project=PROJECTS.find(p=>p[0]===task.project),order=ORDERS.find(o=>o[0]===task.order&&o[15]===task.project&&orderOppOf(o)===task.opp),quote=order?.[18]?.quoteCode;
-  if(!project?.[9]||project[9]==='-'||!quote||!task.quoteRevision)continue;
-  for(let i=result.length-1;i>=0;i--)if(result[i].task===task.id&&result[i].event==='todo-result'&&result[i].recipient===project[9])result.splice(i,1);
-  result.push({event:'quote-erp-requested',role:'pm',recipient:project[9],initiator:task.approver||v17Owner(),type:'报价待办',target:'todo',task:task.id,project:task.project,projectName:project[1],customer:task.customer,opp:task.opp,quote,revision:task.quoteRevision,category:task.designOpportunity?'设计服务':task.cat||task.smDept||'',status:'已处理',title:'报价待办已完成',body:'商机负责人已确认报价，报价待办已完成。已保存本版本 ERP 传输请求；请跟进实际回执、收款与履行。',localOnly:true});
+  const recipient=project?.[9],publication=after.quotes?.[quote],revision=Number(publication?.revision||task.quoteRevision);
+  if(!recipient||recipient==='-'||!quote||!Number.isInteger(revision)||revision<=0||order[18]?.legacyQuoteArchive||publication&&publication.project!==task.project||task.draft&&task.draft!==quote&&!task.drafts?.includes(quote))continue;
+  const sameSubmission=m=>m.event==='quote-submitted'&&m.recipient===recipient&&m.project===task.project&&m.quote===quote&&Number(m.revision)===Number(revision);
+  const submitted=result.find(sameSubmission),justCompleted=before.todos?.[task.id]?.status==='待处理';
+  // Revisions can be submitted directly while the original task is already
+  // complete. Use the new publication's actor/version, not the earlier cycle.
+  if(!submitted&&!justCompleted)continue;
+  const key=JSON.stringify([task.project,quote,revision,recipient]);if(merged.has(key))continue;merged.add(key);
+  for(let i=result.length-1;i>=0;i--){const m=result[i];if(sameSubmission(m)||m.task===task.id&&m.event==='todo-result'&&m.recipient===recipient)result.splice(i,1);}
+  const reconfirm=submitted&&before.quotes?.[quote]?.confirmedCats?.length&&!publication?.confirmedCats?.length;
+  result.push({event:'quote-erp-requested',role:'pm',recipient,initiator:submitted?.initiator||task.approver||v17Owner(),type:'报价待办',target:'todo',task:task.id,project:task.project,projectName:project[1],customer:task.customer,opp:task.opp,quote,revision,category:task.designOpportunity?'设计服务':task.cat||task.smDept||'',status:'已处理',title:'报价已提交',body:'报价已提交，报价待办已完成。ERP传输请求已记录。'+(reconfirm?'新版本需由客户重新确认报价。':''),localOnly:true});
  }
  return result;
 }

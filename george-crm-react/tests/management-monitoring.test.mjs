@@ -16,15 +16,24 @@ test('过程卡片包含关联费用金额，当前范围筛选不修改原数�
  const html=c.mmProjectCards();assert.match(html,/暂无设计/);assert.match(html,/洗图报价/);assert.match(html,/项目金额[\s\S]*?¥9000/);assert.match(html,/成单金额[\s\S]*?¥8600/);assert.doesNotMatch(html,/¥8000/);assert.equal(c.mmScope([]).amount,0);assert.equal(JSON.stringify([c.PROJECTS,c.OPPS,c.ORDERS,c.TODOS]),before);
 });
 function quotation(c){const row=Array(19).fill('');Object.assign(row,{0:'ORDER',15:'P',17:'O',18:{quoteCode:'QUOTE'}});c.ORDERS.push(row);return {id:'TASK',type:'报价待办',project:'P',opp:'O',customer:'客户',owner:'当前PM',initiator:'旧PM',cat:'家具',status:'待处理',draft:'QUOTE'};}
-test('同人办理及客户确认同次发生时仍单独通知当前 PM 完成，关联原报价待办和真实版本',()=>{
- const c=boot(),t=quotation(c),after={...t,status:'已处理',completionReason:'已确认报价',order:'ORDER',quoteRevision:3,approver:'实际SM'};
- const events=c.mmQuotationResultEvents({todos:{TASK:t}},{todos:{TASK:after}},[{event:'todo-result',task:'TASK',recipient:'当前PM'},{event:'quote-confirmed',task:'TASK',recipient:'当前PM'}]);
- assert.equal(events.filter(m=>m.event==='quote-erp-requested').length,1);const m=events.find(m=>m.event==='quote-erp-requested');assert.equal(m.recipient,'当前PM');assert.equal(m.initiator,'实际SM');assert.equal(m.revision,3);assert.equal(m.task,'TASK');assert.equal(m.target,'todo');assert.match(m.body,/请求/);assert.equal(events.filter(m=>m.event==='quote-confirmed').length,1);
+test('同次提交给PM合并为一条，保留实际提交人、对应待办、客户确认和其他范围的消息',()=>{
+ const c=boot(),t=quotation(c),after={...t,status:'已处理',completionReason:'已提交报价',order:'ORDER',quoteRevision:3,approver:'实际助理'};
+ const submitted={event:'quote-submitted',project:'P',quote:'QUOTE',revision:3,recipient:'当前PM',initiator:'实际助理'},independent=[{event:'quote-confirmed',task:'TASK',recipient:'当前PM'},{...submitted,quote:'OTHER'},{...submitted,revision:2},{...submitted,recipient:'SM'}],input=[submitted,{event:'todo-result',task:'TASK',recipient:'当前PM'},...independent],snapshot=JSON.stringify(input);
+ const events=c.mmQuotationResultEvents({todos:{TASK:t}},{todos:{TASK:after}},input);
+ assert.equal(events.length,5);for(const other of independent)assert.ok(events.includes(other));assert.equal(JSON.stringify(input),snapshot);
+ const m=events.find(m=>m.event==='quote-erp-requested');assert.equal(m.recipient,'当前PM');assert.equal(m.initiator,'实际助理');assert.equal(m.revision,3);assert.equal(m.task,'TASK');assert.equal(m.target,'todo');assert.equal(m.title,'报价已提交');assert.match(m.body,/报价待办已完成.*ERP传输请求已记录/);
  assert.equal(c.mmQuotationResultEvents({todos:{TASK:after}},{todos:{TASK:after}},[]).length,0);
 });
-test('保存或发布不发完成通知，关联错误不发送，重新报价确认按新版本通知',()=>{
+test('原待办已完成时直接重新提交，仍只发送新版结果并记录本次实际提交人',()=>{
+ const c=boot(),t={...quotation(c),status:'已处理',completionReason:'已提交报价',order:'ORDER',quoteRevision:3,approver:'上次提交人'};
+ const before={todos:{TASK:t},quotes:{QUOTE:{project:'P',revision:3,confirmedCats:['家具']}}},after={todos:{TASK:t},quotes:{QUOTE:{project:'P',revision:4,confirmedCats:[]}}};
+ const events=c.mmQuotationResultEvents(before,after,[{event:'quote-submitted',project:'P',quote:'QUOTE',revision:4,recipient:'当前PM',initiator:'本次助理'}]);
+ assert.equal(events.length,1);assert.equal(events[0].event,'quote-erp-requested');assert.equal(events[0].revision,4);assert.equal(events[0].initiator,'本次助理');assert.equal(events[0].task,'TASK');assert.match(events[0].body,/新版本需由客户重新确认报价/);assert.equal(t.quoteRevision,3);
+ assert.equal(c.mmQuotationResultEvents(after,after,[]).length,0);
+});
+test('仅保存不发完成通知，关联错误不发送，提交完成按新版本通知',()=>{
  const c=boot(),t=quotation(c);assert.equal(c.mmQuotationResultEvents({todos:{TASK:t}},{todos:{TASK:t}},[]).length,0);
- const done={...t,status:'已处理',completionReason:'已确认报价',order:'ORDER',quoteRevision:4};assert.equal(c.mmQuotationResultEvents({todos:{TASK:t}},{todos:{TASK:done}},[])[0].revision,4);
+ const done={...t,status:'已处理',completionReason:'已提交报价',order:'ORDER',quoteRevision:4};assert.equal(c.mmQuotationResultEvents({todos:{TASK:t}},{todos:{TASK:done}},[])[0].revision,4);
  c.ORDERS[0][17]='OTHER';assert.equal(c.mmQuotationResultEvents({todos:{TASK:t}},{todos:{TASK:done}},[]).length,0);
 });
 test('完成通知定位同一报价待办且保留权限校验，不进入订单或其他商机',()=>{
