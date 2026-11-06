@@ -73,6 +73,10 @@ function cxp208Defaults(project) {
 }
 function cxp208Config(project) { return cxp208Saved(project) || cxp253SourceFees(project,cxp208Defaults(project)); }
 function cxp208Fx(config) { return {ccy:cxp208Code(config.currencyOption),rate:Number(config.rate),date:config.rateDate,source:'preview'}; }
+function cxp208StoredFx(project) {
+  const config = cxp208Store()[project];
+  return cxp208Currency(config?.currencyOption) ? { ...cxp208Fx(config), version: config.priceVersion } : null;
+}
 function cxp208Totals(rows, config) {
   // Sum rounded display rows, then compute deposit and balance in that currency.
   const rate=Number(config.rate),products=cxp208Round(rows.reduce((n,r)=>n+cxp208Round(r.amount/rate),0));
@@ -102,7 +106,7 @@ function cxp208Validate(config, rows) {
   return config;
 }
 function cxp208Payload(project,config) {
-  const {revision,signatures,history,savedAt,savedBy,contentKey,...fields}=config;
+  const {revision,signatures,history,savedAt,savedBy,contentKey,priceVersion,...fields}=config;
   return { presentationSchema:209, project, fields, quotes:cxp208Products(project), seller:cxp208Account(config.account), terms:cxp208ContractParagraphs(config), summaryTerms:CXP208_REF.summaryTerms };
 }
 function cxp208Fingerprint(project,config) { return JSON.stringify(cxp208Payload(project,config)); }
@@ -125,10 +129,14 @@ function cxp208Save(project,input,token) {
   cxp208Validate(config,cxp208Products(project));
   const changed = !previous || cxp208Fingerprint(project,config) !== previous.contentKey;
   const next = {...config,project,path:'A',revision:(previous?.revision || 0)+(changed?1:0),savedAt:v3Stamp(),savedBy:v17Owner(),signatures:previous?.signatures || [],history:[...(previous?.history || []),...(previous && changed ? [{revision:previous.revision,savedAt:previous.savedAt,savedBy:previous.savedBy,config:((({history,signatures,...c})=>c)(v3Copy(previous)))}] : [])]};
+  const previousFx = pql144ProjectFx(project);
+  const priceChanged = pql144FxToken(previousFx) !== pql144FxToken(cxp208Fx(next));
+  next.priceVersion = (previousFx.version || 1) + (priceChanged ? 1 : 0);
   next.contentKey = cxp208Fingerprint(project,next);
-  const oldFx = QUOTE_UI.fx;
-  try { bs131Atomic(() => { pql144SavePricing(project,cxp208Fx(next)); if (!wkWrite(CXP208_KEY,{...cxp208Store(),[project]:next})) throw Error('客户预览未保存，请重试'); }); }
-  catch (error) { QUOTE_UI.fx=oldFx; throw error; }
+  bs131Atomic(() => {
+    if (!wkWrite(CXP208_KEY, { ...cxp208Store(), [project]: next })) throw Error('客户预览未保存，请重试');
+    if (priceChanged) pql144InvalidateConfirmations(project, previousFx, next.priceVersion, next.savedAt);
+  });
   return next;
 }
 function cxp208CurrentSignature(project,config) { const key=cxp208Fingerprint(project,config); return (config.signatures || []).find(s => s.contentKey===key) || null; }

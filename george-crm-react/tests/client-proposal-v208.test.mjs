@@ -2,8 +2,11 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
+import { webcrypto } from 'node:crypto';
 const source=fs.readFileSync(new URL('../src/compat/runtime/clientProposal.js',import.meta.url),'utf8');
 const ref=fs.readFileSync(new URL('../src/compat/runtime/clientProposalData.js',import.meta.url),'utf8');
+const pricing=fs.readFileSync(new URL('../src/compat/runtime/projectQuoteList.js',import.meta.url),'utf8');
+const delivery=fs.readFileSync(new URL('../src/compat/runtime/quotationDelivery.js',import.meta.url),'utf8');
 const clone=v=>JSON.parse(JSON.stringify(v));
 function fixture(){
  const storage=new Map();let maintain=true,fail=false;
@@ -11,7 +14,8 @@ function fixture(){
  const product={code:'Q1',id:'Q1:2',revision:2,current:true,submittedBy:'SM',categories:['家具'],amount:1000,spaces:[{name:'客厅',products:[{unitPrice:600,quantity:2,weight:3,cbm:.2}]}]};
  const order=(id,type,amount,kind='')=>{const a=[];a[0]=id;a[2]=type;a[10]=String(amount);a[15]='PJ';a[16]=kind;a[18]={};return a;};
  const c={location:{pathname:'/client.html',search:'?project=PJ&currencyOption=USD_GLOBAL'},URLSearchParams,Date,Intl,Number,Map,JSON,PROJECTS:[p],PROJECT_EXTRA:{PJ:{formData:{logisticsMethod:"CIF"}}},CUSTOMERS:[['CU','客户','','','','','','','','英国','123']],V69_CUSTOMERS:{CU:{address:'客户地址',email:'a@example.test'}},V3:{client:false,meta:{Q1:{submitted:{},opp:'BU1'},QD:{kind:'design',submitted:{}}}},OPPS:[['BU1','','','','PJ','','','SM']],ORDERS:[order('F1','费用订单',100,'海运费'),order('F2','费用订单',50,'安装费'),order('D1','设计单',200)],QUOTE_UI:{fx:{ccy:'CNY',rate:1}},v125QuoteHistory:()=>[clone(product),{...clone(product),id:'Q1:1',current:false,amount:900},{...clone(product),code:'QD',id:'QD:1',amount:200}],oqOrder:code=>[code+'-order'],dqDesign:o=>o?.[20]?.kind==='design',qNum:Number,v3DraftAmount:d=>d.amount??200,pql144NormalizeFx:v=>v,pql144ProjectFx:()=>({ccy:'CNY',rate:1}),wkRead:(k,f)=>clone(storage.has(k)?storage.get(k):f),wkWrite:(k,v)=>{if(fail)return false;storage.set(k,clone(v));return true;},v3Copy:clone,v3Stamp:()=> '2026-10-27 12:01',v17Owner:()=> 'PM',pql144CanSetPricing:()=>maintain,pql144SavePricing:()=>{},bs131Atomic:fn=>{const backup=new Map(storage);try{return fn();}catch(e){storage.clear();for(const [k,v]of backup)storage.set(k,v);throw e;}}};
- vm.createContext(c);vm.runInContext(ref+'\n'+source.slice(0,source.indexOf('function cxp208Money')),c);
+ Object.assign(c,{bs131CanMaintain:()=>maintain,PROJECT_QUOTES:{},v3Status:m=>m.confirmedCats.length?'已确认':'已提交'});
+ vm.createContext(c);vm.runInContext(pricing.slice(pricing.indexOf('const PQL144_PRICING_KEY'),pricing.indexOf('function pql144PricingControls'))+ref+'\n'+source.slice(0,source.indexOf('function cxp208Money')),c);
  c.cxp208Defaults('PJ');const config=c.cxp208Defaults('PJ');config.deadline='2099-01-01';config.passport='test';config.deposit=50;config.account='gbuilder';config.fees.tradeFee=100;
  return {c,config,storage,fail:()=>fail=true,deny:()=>maintain=false};
 }
@@ -32,6 +36,48 @@ test('preview contacts and manually agreed design/other fees save without changi
  const {c,config}=fixture(),before=JSON.stringify([c.CUSTOMERS,c.V69_CUSTOMERS,c.ORDERS]);config.customerName='展示名称';config.fees.designFee=999;
  const saved=c.cxp208Save('PJ',config,c.cxp208Token('PJ'));assert.equal(saved.revision,1);assert.equal(saved.path,'A');assert.equal(saved.fees.designFee,999);assert.equal(JSON.stringify([c.CUSTOMERS,c.V69_CUSTOMERS,c.ORDERS]),before);
  const again=c.cxp208Save('PJ',saved,c.cxp208Token('PJ'));assert.equal(again.revision,1);assert.equal(again.history.length,0);
+});
+test('旧计价存储拒绝写入时，报价预览仍能保存并生成客户短链接',async()=>{
+ const {c,config,storage}=fixture(),legacyKey='crm-project-quote-pricing-v144';
+ const legacy={PJ:{ccy:'USD',rate:7.2,version:4,history:[{rate:7}]}};
+ storage.set(legacyKey,clone(legacy));
+ const write=c.wkWrite;
+ c.wkWrite=(key,value)=>key!==legacyKey && write(key,value);
+ const meta=Object.assign(c.V3.meta.Q1,{project:'PJ',categories:['家具'],confirmedCats:['家具'],revision:2,currentQuoteVersion:'Q1:2'});
+ const stocked={...clone(meta),categories:['灯饰'],confirmedCats:['灯饰']};
+ c.V3.meta.STOCK=stocked;
+ c.oqLockReason=code=>code==='STOCK'?'已备货':'';
+ Object.assign(c,{URL,btoa,atob,crypto:webcrypto,TextEncoder,esc:String});
+ c.location.href='https://example.test/george-crm/';
+ const part=(start,end)=>delivery.slice(delivery.indexOf(start),delivery.indexOf(end,delivery.indexOf(start)));
+ vm.runInContext(
+  part('const QD225=','function qd225Password')+
+  part('function qd225ValidatePassword','async function qd225Key')+
+  part('function qd229ShareMessage','async function qd229CopyMessage')+
+  part('function qd234DemoToken','async function qd234DemoSnapshot')+
+  part('const qd225Save=','async function qd225CopyText')+
+  part('async function qd230PrepareLink','function qd230ManualCopy'),
+  c,
+ );
+ vm.runInContext("QD225.password='DemoPrice2026'",c);
+ Object.assign(config,{currencyOption:'USD_GLOBAL',rate:7.2});
+ const first=c.cxp208Save('PJ',config,c.cxp208Token('PJ'),'copy');
+ assert.equal(first.priceVersion,4);
+ assert.deepEqual(meta.confirmedCats,['家具']);
+ const updated=c.cxp208Save('PJ',{...first,rate:7.4},c.cxp208Token('PJ'),'copy');
+ assert.equal(updated.priceVersion,5);
+ assert.equal(c.cxp208Saved('PJ').rate,7.4);
+ assert.equal(c.pql144ProjectFx('PJ').rate,7.4);
+ assert.equal(c.pql144ProjectFx('PJ').version,5);
+ assert.equal(meta.confirmedCats.length,0);
+ assert.equal(meta.confirmationHistory[0].fx.rate,7.2);
+ assert.deepEqual(stocked.confirmedCats,['灯饰']);
+ assert.deepEqual(storage.get(legacyKey),legacy);
+ const share=await c.qd230PrepareLink('PJ','customer');
+ const url=new URL(vm.runInContext('QD225.link',c));
+ assert.match(share.plain,/演示数据/);
+ assert.equal(url.search,'');
+ assert.equal(c.qd234DemoToken(new URLSearchParams(url.hash.slice(1)).get('demo')).mode,'customer');
 });
 test('invalid fields, stale revisions, unauthorized and failed saves preserve prior proposal',()=>{
  const {c,config,deny,storage}=fixture();const token=c.cxp208Token('PJ');config.deadline='2026-02-31';assert.throws(()=>c.cxp208Save('PJ',config,token),/截止时间/);assert.equal(storage.size,0);

@@ -283,7 +283,7 @@ if(typeof v8ReviewVersion==='function'){
 }
 v3ConfirmCategory=function(){
  const project=archiveProject,cat=ensureClientCat(projectQuoteRows(project));
- if(typeof pql144ProjectFx==='function'&&(!V3.client||pql144StoredPricing()[project])&&pql144FxToken(QUOTE_UI.fx)!==pql144FxToken(pql144ProjectFx(project))){openClientQuoteView();return toast('计价设置已更新，请核对最新币种、汇率和金额后重新确认');}
+ if(typeof pql144ProjectFx==='function'&&(!V3.client||pql144SavedPricing(project))&&pql144FxToken(QUOTE_UI.fx)!==pql144FxToken(pql144ProjectFx(project))){openClientQuoteView();return toast('计价设置已更新，请核对最新币种、汇率和金额后重新确认');}
  if(!cat||cat==='全部品类')return toast('请先选择一个品类');
  if(bs131BatchSelect(project)&&(!BS131_BATCH[project]||BS131_BATCH[project]==='all'))return toast('请选择原始报价或某次加单');
  const records=bs131BatchRecords(project,cat).filter(([,m])=>!m.confirmedCats.includes(cat));if(!records.length)return toast('本批次没有待确认的报价');

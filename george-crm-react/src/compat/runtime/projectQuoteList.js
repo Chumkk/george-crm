@@ -11,8 +11,14 @@ function pql144StoredPricing() {
   const value = typeof wkRead === 'function' ? wkRead(PQL144_PRICING_KEY, {}) : {};
   return value && typeof value === 'object' && !Array.isArray(value) ? value : {};
 }
+function pql144SavedPricing(project) {
+  const proposal = typeof cxp208StoredFx === 'function' ? pql144NormalizeFx(cxp208StoredFx(project)) : null;
+  if (proposal?.version) return proposal;
+  const legacy = pql144NormalizeFx(pql144StoredPricing()[project]);
+  return proposal ? { ...proposal, version: legacy?.version || 1 } : legacy;
+}
 function pql144ProjectFx(project = archiveProject) {
-  const stored = pql144NormalizeFx(pql144StoredPricing()[project]); if (stored) return stored;
+  const stored = pql144SavedPricing(project); if (stored) return stored;
   const extra = typeof PROJECT_EXTRA !== 'undefined' ? PROJECT_EXTRA[project] : null;
   const saved = pql144NormalizeFx(extra?.quotePricing || extra?.quoteFx || extra?.formData?.quoteFx); if (saved) return { version: 1, ...saved };
   // Previously saved submission currency is evidence of that project's settings;
@@ -24,10 +30,21 @@ function pql144FxToken(fx) { const value = pql144NormalizeFx(fx); return JSON.st
 function pql144CurrentToken(project) { const fx = pql144ProjectFx(project); return JSON.stringify([fx.version || 1, fx.ccy, fx.rate]); }
 function pql144CanSetPricing(project) { return typeof bs131CanMaintain === 'function' && bs131CanMaintain(project); }
 function pql144ApplyClientFx() {
-  const saved = pql144StoredPricing()[archiveProject];
-  if (typeof V3 === 'undefined' || !V3.client || pql144NormalizeFx(saved)) QUOTE_UI.fx = pql144ProjectFx(archiveProject);
+  const saved = pql144SavedPricing(archiveProject);
+  if (typeof V3 === 'undefined' || !V3.client || saved) QUOTE_UI.fx = pql144ProjectFx(archiveProject);
   // Shared URLs remain usable in another browser, carrying the saved settings.
   else if (!pql144NormalizeFx(QUOTE_UI.fx)) QUOTE_UI.fx = pql144ProjectFx(archiveProject);
+}
+function pql144InvalidateConfirmations(project, previous, version, stamp) {
+  for (const [code, meta] of Object.entries(V3.meta)) {
+    if (meta.project !== project || !meta.submitted || meta.active === false || meta.needsSpaceUpdate || (typeof oqLockReason === 'function' && oqLockReason(code))) continue;
+    if (meta.confirmedCats?.length) meta.confirmationHistory = [...(meta.confirmationHistory || []), { revision: meta.revision, versionId: meta.currentQuoteVersion, confirmedCats: [...meta.confirmedCats], confirmedAt: meta.confirmedAt || '', confirmedBy: meta.confirmedBy || '', fx: { ccy: previous.ccy, rate: previous.rate }, priceVersion: previous.version || 1, reason: '项目报价计价设置已修改', time: stamp }];
+    meta.confirmedCats = []; meta.priceVersion = version; meta.status = v3Status(meta);
+  }
+  for (const row of PROJECT_QUOTES[project] || []) row.confirmedCats = (row.confirmedCats || []).filter(cat => {
+    const records = Object.values(V3.meta).filter(meta => meta.project === project && meta.submitted && meta.active !== false && !meta.needsSpaceUpdate && meta.categories?.includes(cat));
+    return records.length && records.every(meta => meta.confirmedCats?.includes(cat));
+  });
 }
 function pql144SavePricing(project, input) {
   if (!pql144CanSetPricing(project)) throw Error('请由当前项目经理设置报价币种和汇率');
@@ -36,16 +53,7 @@ function pql144SavePricing(project, input) {
   const value = { ...next, version: (previous.version || 1) + (changed ? 1 : 0), savedAt: stamp, savedBy: v17Owner(), history: [...(previous.history || []), ...(changed ? [{ ccy: previous.ccy, rate: previous.rate, version: previous.version || 1, changedAt: stamp }] : [])] };
   bs131Atomic(() => {
     if (!wkWrite(PQL144_PRICING_KEY, { ...pql144StoredPricing(), [project]: value })) throw Error('报价计价设置未保存，请重试');
-    if (!changed) return;
-    for (const [code, meta] of Object.entries(V3.meta)) {
-      if (meta.project !== project || !meta.submitted || meta.active === false || meta.needsSpaceUpdate || (typeof oqLockReason === 'function' && oqLockReason(code))) continue;
-      if (meta.confirmedCats?.length) meta.confirmationHistory = [...(meta.confirmationHistory || []), { revision: meta.revision, versionId: meta.currentQuoteVersion, confirmedCats: [...meta.confirmedCats], confirmedAt: meta.confirmedAt || '', confirmedBy: meta.confirmedBy || '', fx: { ccy: previous.ccy, rate: previous.rate }, priceVersion: previous.version || 1, reason: '项目报价计价设置已修改', time: stamp }];
-      meta.confirmedCats = []; meta.priceVersion = value.version; meta.status = v3Status(meta);
-    }
-    for (const row of PROJECT_QUOTES[project] || []) row.confirmedCats = (row.confirmedCats || []).filter(cat => {
-      const records = Object.values(V3.meta).filter(meta => meta.project === project && meta.submitted && meta.active !== false && !meta.needsSpaceUpdate && meta.categories?.includes(cat));
-      return records.length && records.every(meta => meta.confirmedCats?.includes(cat));
-    });
+    if (changed) pql144InvalidateConfirmations(project, previous, value.version, stamp);
   });
   if (archiveProject === project) QUOTE_UI.fx = { ...value };
   return value;
