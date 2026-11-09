@@ -3,8 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>敬城 · CRM 业务旅程</title>
+<title>新版流程图 · 敬城 CRM</title>
+<script>if(new URLSearchParams(location.search).get("embedded")==="1")document.documentElement.classList.add("embedded");</script>
 <style>
+  .embedded .topbar,.embedded .hero h1{display:none}
   :root{color-scheme:light;--blue:#1673ff;--deep:#1555ab;--soft:#eaf4ff;--line:#e2e8f0;--ink:#111f32;--text:#405168;--muted:#617087;--paper:#fff;--bg:#f7f9fc;--amber:#9b5800;--amber-bg:#fff6e5;--green:#147448;--green-bg:#e7f7ef}
   *{box-sizing:border-box}html{scroll-padding-top:80px}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.6 "Microsoft YaHei","PingFang SC",system-ui,sans-serif}h1,h2,h3,h4,p{margin:0}h1,h2,h3,h4{color:var(--ink);line-height:1.4}h1{font-size:clamp(27px,3.15vw,42px);letter-spacing:-.035em}h2{font-size:22px}h3{font-size:17px}a{color:var(--deep);text-underline-offset:3px}button,input,select{font:inherit;color:inherit}button{cursor:pointer}button:disabled{cursor:default;opacity:.45}:focus-visible{outline:2px solid var(--blue);outline-offset:3px}[hidden]{display:none!important}
   .frame{max-width:1580px;margin:auto;padding-inline:clamp(16px,3vw,44px)}.topbar,.nav,.brand,.top-meta{display:flex;align-items:center}.topbar{min-height:69px;justify-content:space-between;gap:14px}.brand{gap:14px;color:var(--ink)}.wordmark{font-size:27px;font-weight:750;white-space:nowrap}.brand-en{border-left:1px solid var(--line);padding-left:14px;font-size:11px;font-weight:700;letter-spacing:.15em}.top-meta{gap:12px;font-size:12px}.badge{display:inline-block;padding:3px 9px;background:var(--soft);color:var(--deep);border:1px solid #d5e7ff;border-radius:5px;font-size:12px;line-height:1.5}.nav-wrap{position:sticky;top:0;z-index:10;background:var(--paper);border-block:1px solid var(--line)}.nav{gap:24px;min-height:58px}.tab{align-self:stretch;min-height:58px;background:none;border:0;border-bottom:3px solid transparent;font-weight:600;padding:0 4px;white-space:nowrap}.tab[aria-selected=true]{color:var(--deep);border-color:var(--blue)}.tab span{margin-right:6px;font:12px system-ui;color:var(--muted)}.nav-end{margin-left:auto}.button{display:inline-flex;align-items:center;gap:5px;min-height:36px;padding:5px 12px;border:1px solid #cedbed;border-radius:6px;background:white;color:var(--deep);text-decoration:none;font-weight:600}.button:hover{background:var(--soft)}.primary{background:var(--blue);border-color:var(--blue);color:#fff}.primary:hover{background:#1064e2}
@@ -68,7 +70,7 @@
 </style>
 </head>
 <body>
-<header class="frame topbar"><div class="brand"><span class="wordmark">敬城</span><span class="brand-en">GEORGE GROUP</span></div><div class="top-meta"><time datetime="2026-11-06">2026.11.08</time><span class="badge">业务流程 · V1.1</span></div></header>
+<header class="frame topbar"><div class="brand"><span class="wordmark">敬城</span><span class="brand-en">GEORGE GROUP</span></div><div class="top-meta"><time datetime="2026-11-09">2026.11.09</time><span class="badge">新版业务旅程</span></div></header>
 <div class="nav-wrap"><nav class="frame nav" aria-label="流程视图">
   <button class="tab" data-view="journey" aria-selected="true"><span>01</span>业务旅程</button>
   <button class="tab" data-view="lanes" aria-selected="false"><span>02</span>角色泳道</button>
@@ -81,7 +83,7 @@
 </nav></div>
 <div class="frame">
   <section class="hero">
-    <div><span class="eyebrow">CRM JOURNEY · 从客户建档到订单履行</span><h1>一笔业务，在敬城 CRM 的旅程</h1><p>按节点查看谁来做、在哪做、交付什么，以及怎样交到下一位手上。</p></div>
+    <div><span class="eyebrow">CRM JOURNEY · 从客户建档到订单履行</span><h1>新版流程图</h1><p>按节点查看谁来做、在哪做、交付什么，以及怎样交到下一位手上。</p></div>
     <div class="hero-aside"><div class="milestones" aria-hidden="true"><b>客</b><i></i><b>商</b><i></i><b>价</b><i></i><b>单</b></div><strong id="count"></strong><p>产品与设计可在同一项目并行</p></div>
   </section>
   <div id="stageRail" class="stage-rail" aria-label="阶段导航"></div>
@@ -111,10 +113,10 @@
       </tbody></table>
       <h3>范围与资料</h3>
       <ul>
-        <li>本图从客户建档画到产品或设计履行完成。ERP 后续采购、仓库、物流及售后的岗位级流程，可衔接《敬城订单完整旅程》参考图。</li>
+        <li>按产品、设计两条路线查看。跨系统箭头标明办理人、接收系统和流转条件。</li>
         <li>ERP、GDS 和企业微信的跨系统节点按现有业务口径绘制。原型中的请求记录与模拟通知用于展示，真实处理结果取对应系统回执。</li>
         <li>本图纳入新版产品与设计收款流程：CRM 发起，FSSC 绑定流水；产品满足条件后通知 PM 备货，设计确认实收后通知 GDS 开始设计。新增的跨系统收款和待办目前仅在流程图中说明。</li>
-        <li>业务规则以 <a href="https://chumkk.github.io/george-crm/space-quote-prd.html">空间报价 PRD V2.12</a> 和 <a href="https://chumkk.github.io/george-crm/new-workflow.html">现有新流程图</a> 为基础。销售订单生成时点按本次确认。</li>
+        <li>现行项目、商机、报价与待办规则见<a href="./space-quote-prd.html">空间报价 PRD</a>。收款单及备货待办为新版流程图中的衔接说明。</li>
       </ul>
     </section>
   </main>
@@ -124,7 +126,7 @@
 <script>
 const stages = [
   { name:'客户与项目', short:'建立项目档案', output:'客户、项目与分配商机待办', note:'客户可对应多个独立项目。PM 创建项目后，系统生成该项目的分配商机待办。' },
-  { name:'分配与承接', short:'按业务选择接收人', output:'有效商机与报价待办', note:'区域内采购由 SM 接单。跨区域或转介绍审批通过即生成商机。设计服务由主管接单，和采购可并行。' },
+  { name:'分配与承接', short:'按业务选择接收人', output:'有效商机与报价待办', note:'区域内采购和设计分配后直接生成待接受商机及报价待办；跨区域或转介绍先审批。' },
   { name:'报价与订单', short:'提交即生成订单', output:'正式报价、订单与确认记录', note:'报价提交后，ERP 传输与客户查看分别推进。客户确认完成产品备货的一项前置条件。' },
   { name:'收款与履行', short:'CRM 收款单 · FSSC 绑定流水', output:'收款单、实收与履行回执', note:'产品由 PM、设计由设计师创建收款单，均由财务在 FSSC 绑定流水。产品当前报价已获客户确认且本单累计实收达到 20% 时，通知 PM 在 ERP 办理备货；设计确认实收后通知 GDS 开始设计。' },
   { name:'设计图纸协作', short:'回图、审核与归档', output:'确认图纸与项目档案', note:'GDS 开始办理设计中待办后，可分批回传图纸。图纸进入 CRM 设计定稿待办，由 PM 或指定协调员审核并同步项目。' },
@@ -172,12 +174,84 @@ for(const node of nodes){
  if(node.id===26)Object.assign(node,{action:'普通暂存保留上次有效发布和原待办已处理，不发重新激活提醒。空间改名、新增空空间或调序只更新当前展示；删除含已提交产品的空间才撤回受影响整张可编辑报价并重新激活，通知负责人及有效助理，其他报价不变。',outputs:[['报价新版本或受影响原待办','普通暂存后仍可从已处理待办重提；空间删除影响时从重新激活待办核对重提。']],reverse:'历史提交、确认、订单及ERP内容不覆盖；已备货原单保留，新增需求另行加单。'});
 }
 
+
+const releaseFlowRules = {
+  "9": {
+    "action": "直接编辑产品报价，或绑定有权使用的草稿。草稿暂存及提交用于保存和共享草稿。直接提交报价或绑定草稿时，核对实际使用的空间并替换为项目空间名称，再填订单表单。多个报价空间可合并到同一个项目空间，产品行及公式引用随行调整。"
+  },
+  "10": {
+    "input": "报价包含有效产品。已核对本次使用的空间，填写提交表单，订单金额大于零。",
+    "entry": "产品报价编辑 → 提交，或绑定草稿 → 提交",
+    "reverse": "失败可保留工作内容继续修正。备货前重提沿用原订单，保留历史、实收与执行记录。已备货的订单不能绑定草稿。"
+  },
+  "22": {
+    "action": "PM 或指定协调员在 CRM 核对本设计单图纸。逐张确认或按原因退回；确认后同步到对应项目的图纸分类。",
+    "outputs": [
+      [
+        "项目图纸",
+        "归档至对应项目，保留来源设计单、图纸及审核记录。"
+      ]
+    ]
+  }
+};
+for(const [id, rule] of Object.entries(releaseFlowRules))Object.assign(nodes.find(node=>node.id===Number(id)),rule);
+nodes.push(...[
+  {
+    "id": 30,
+    "phase": 5,
+    "x": 1,
+    "y": 2,
+    "title": "编辑商机 · 负责人交接",
+    "owner": "PM",
+    "system": "CRM",
+    "entry": "报价待办 / 项目详情 → 编辑商机；商机管理 → 批量修改负责人",
+    "input": "PM 有商机维护权限，当前商机符合交接条件。",
+    "action": "产品选择符合原品类及项目区域的人选。跨区域人选须有本项目本品类的有效审批。设计单创建前可改派给符合资格的设计师主管。",
+    "outputs": [
+      [
+        "原商机和未办结报价待办",
+        "同步交给新负责人。产品原商机和同品类加单统一交接，设计只交接当前商机。原编号、状态、版本及历史保留。"
+      ]
+    ],
+    "gate": "原待办继续处理，待接受的商机由新负责人决定是否承接。",
+    "routes": [
+      [
+        7,
+        "继续产品报价"
+      ],
+      [
+        8,
+        "继续设计报价"
+      ]
+    ]
+  },
+  {
+    "id": 31,
+    "phase": 5,
+    "x": 2,
+    "y": 2,
+    "title": "项目或商机输单",
+    "owner": "有输单权限的负责人",
+    "system": "CRM",
+    "entry": "项目管理或商机详情 → 输单",
+    "input": "符合当前项目或商机的输单条件，填写原因。",
+    "action": "项目输单只取消该项目本级关联的未办结待办；商机输单只取消本商机的未办结报价及设计交付待办。",
+    "outputs": [
+      [
+        "取消记录及通知",
+        "待办转为已取消，通知原待办人。保留订单和既有办理历史。"
+      ]
+    ],
+    "gate": "输单不可逆；原待办及原因可在历史中查看。",
+    "routes": []
+  }
+]);
 const sourceNodes = new Map(nodes.map(node => [node.id,node]));
 const flowDefinitions = {
   product:{
     name:'产品流程',
     context:'产品报价首次成功提交即生成销售订单并发起 ERP 传输。PM 在 CRM 创建收款单，财务在 FSSC 绑定流水，满足备货条件后通知 PM。',
-    groups:{0:[1,2],1:[3,5,7],2:[9,10,13,14],3:[28,29,17,19],5:[25,26,27]},
+    groups:{0:[1,2],1:[3,5,7],2:[9,10,13,14],3:[28,29,17,19],5:[25,26,27,30,31]},
     stages:{
       1:{note:'区域内分配直接建立待接受商机及产品报价待办；跨区域或转介绍先由总经办审批。'},
       2:{output:'销售订单与客户确认记录',note:'报价提交后，发起 ERP 传输，生成 PM 收款待办。客户查阅和确认可与收款并行。'},
@@ -195,10 +269,10 @@ const flowDefinitions = {
   design:{
     name:'设计流程',
     context:'设计单创建成功后，负责该单的设计师在 CRM 创建收款单，财务在 FSSC 绑定流水；确认实收后通知 GDS 开始设计。',
-    groups:{0:[1,2],1:[3,8],2:[11,12],3:[16,29,18],4:[22,20],5:[25,26,27]},
+    groups:{0:[1,2],1:[3,8],2:[11,12],3:[16,29,18],4:[22,20],5:[25,26,27,30,31]},
     stages:{
       1:{note:'PM分配即建立待接受设计商机及设计报价待办，主管直接创建设计单。'},
-      2:{short:'创建即形成设计单',output:'设计单与设计师收款待办',note:'创建设计单成功后、发起 ERP 传输，并生成设计师的收款待办。'},
+      2:{short:'创建即形成设计单',output:'设计单与设计师收款待办',note:'创建设计单成功后发起 ERP 传输，并由设计师办理收款。'},
       3:{name:'收款与设计启动',short:'设计师收款 · 财务绑定 · GDS 接办',output:'设计收款结果与设计中待办',note:'设计师创建收款单，财务在 FSSC 绑定流水。确认实收后通知 GDS 办理对应的设计中待办。'},
       4:{name:'设计交付',short:'设计定稿交接 · GDS 办结',output:'图纸交接与设计完成回执',note:'图纸通过 CRM 的设计定稿待办交接，设计中待办由 GDS 独立完成。'},
       5:{note:'可编辑的设计报价按原单重提；新增设计服务通过独立加单报价。'}
@@ -477,5 +551,6 @@ new ResizeObserver(()=>{
 syncFilters();render();
 if(link)requestAnimationFrame(()=>$('[data-node="'+state.selected+'"]')?.scrollIntoView({block:'center'}));
 </script>
+<script src="./release-notice-loader.js?v=a041daafd6d9be39c6d61b2c3d7bc03306737429d8a79fcae390c15566768e88" defer data-crm-document-release data-release-document="order-journey.html" data-release-version="a041daafd6d9be39c6d61b2c3d7bc03306737429d8a79fcae390c15566768e88" data-release-built-at="2026-11-09T11:23:43.504Z"></script>
 </body>
 </html>

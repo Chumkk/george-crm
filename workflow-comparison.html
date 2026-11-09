@@ -1,4 +1,1039 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>旧流程图 · 敬城 CRM</title><script>if(new URLSearchParams(location.search).get('embedded')==='1')document.documentElement.classList.add('embedded');</script><style>
-*{box-sizing:border-box}body{margin:0;background:#f3f7fa;color:#183b52;font:14px/1.7 'Microsoft YaHei',Arial,sans-serif}header{padding:20px 28px;background:white;border-bottom:1px solid #dce6ed}h1{font-size:25px;margin:0}header p{margin:5px 0 0;color:#657e90}nav{display:flex;gap:10px;align-items:center;padding:12px 28px;background:#fff;border-bottom:1px solid #dce6ed;position:sticky;top:0;z-index:4;min-width:max-content}nav strong{margin-right:auto}button,a.control{font:inherit;border:1px solid #bfd6e5;background:white;color:#1e658c;padding:8px 14px;border-radius:5px;cursor:pointer;text-decoration:none}.zoom-readout{min-width:45px;text-align:center}main{padding:18px 28px 24px}.caption{background:#fff;border:1px solid #dce6ed;padding:12px 16px;border-radius:7px}.caption p{margin:0 0 5px}.legend{display:flex;flex-wrap:wrap;gap:20px;color:#657e90;font-size:12px}.key{display:inline-block;width:22px;height:11px;background:#edf7fe;border:1px solid #69acda;margin-right:5px}.linekey{display:inline-block;width:25px;border-top:2px solid #6d8295;margin:0 6px 4px 0}.linekey.return{border-top-style:dashed;border-color:#ab7945}.role-notifications{border:1px solid #dce6ed;background:#fff;border-radius:7px;margin:12px 0}.role-notifications summary{padding:10px 16px;font-weight:600;cursor:pointer}.role-notifications table{width:100%;border-collapse:collapse;font-size:12px}.role-notifications th,.role-notifications td{padding:10px 14px;border-top:1px solid #e3ecf2;text-align:left;vertical-align:top}.diagram-scroll{overflow:visible;max-height:none;background:#fff;border:1px solid #cfdee8;border-radius:7px;width:max-content;min-width:100%}.role-header{position:sticky;top:var(--nav-height,64px);z-index:2;background:#183b52;width:max-content;min-width:100%;line-height:0}.role-header svg,.svg-holder svg{display:block}.svg-holder{width:max-content}.axis-title{font-size:16px;fill:white;text-anchor:middle;font-weight:bold}.system-label{font-size:13px;fill:#31566d;text-anchor:middle;font-weight:bold}.number{font-size:12px;fill:#2586b8;font-weight:bold}.port{fill:#637f89}.node-title{font-size:14px;fill:#183b52;font-weight:bold}.node-copy{font-size:12px;fill:#4b6578}.edge-label{font-size:12px;text-anchor:middle}.embedded header{display:none}@media(max-width:700px){header,main{padding:14px}nav{padding:10px 14px}nav strong{display:none}}@media print{@page{size:A3 landscape;margin:10mm}body{background:white}header{padding:0 0 12px}nav,.role-notifications{display:none}main{padding:0}.caption{border:0}.diagram-scroll,.role-header,.svg-holder{width:100%!important;min-width:0}.role-header{position:static}.diagram-scroll svg{width:100%!important;height:auto!important}}
-</style></head><body><header><h1>旧流程图</h1><p class="document-updated" data-updated-at="2026-10-19 11:48" style="font-size:12px;color:#71899a">更新时间：2026-10-19 11:48（北京时间）</p><p>产品采购与设计服务合并在一张图中，按系统和角色展示原有办理过程。</p></header><nav aria-label="旧流程图"><strong>旧业务流程</strong><button data-zoom="out" aria-label="缩小流程图">−</button><span class="zoom-readout">100%</span><button data-zoom="in" aria-label="放大流程图">＋</button><button data-zoom="fit">适应宽度</button><a class="control" href="new-workflow.html" target="_blank" rel="noopener">新流程图 ↗</a><button id="print">打印 / 保存 PDF</button></nav><main><div class="caption"><p>产品采购：先选 SM、分图清洗、线下 Excel 报价并发给客户，再建金额虚拟单传 ERP 收款，随后补录草稿、绑定商机及产品并备货。设计服务：项目签阅添加设计师，设计师录入设计单后传 ERP 收款。</p><div class="legend"><span><i class="key"></i>业务动作</span><span><i class="linekey"></i>业务流转</span></div></div><section id="unified"><div class="diagram-scroll"><div class="role-header"><svg viewBox="0 0 2232 82" width="2232" height="82" aria-label="系统与处理角色"><rect width="100%" height="82" fill="#183b52"/><text x="56" y="46" class="axis-title">系统</text><text x="218.0" y="46" class="axis-title">运营人员</text><text x="536.0" y="46" class="axis-title">项目经理 PM</text><text x="960.0" y="46" class="axis-title">方案经理 SM</text><text x="1278.0" y="46" class="axis-title">设计师</text><text x="1490.0" y="46" class="axis-title">客户</text><text x="1702.0" y="46" class="axis-title">总经办</text><text x="1914.0" y="46" class="axis-title">技术部</text><text x="2126.0" y="46" class="axis-title">财务</text></svg></div><div class="svg-holder"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 82 2232 2518" width="2232" height="2518" role="img" aria-label="旧业务流程"><defs><marker id="arrow-business" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0 L7 3.5 L0 7 Z" fill="#6d8295"/></marker><marker id="arrow-return" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0 L7 3.5 L0 7 Z" fill="#ab7945"/></marker><marker id="arrow-notice" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0 L7 3.5 L0 7 Z" fill="#8186aa"/></marker><marker id="arrow-optional" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0 L7 3.5 L0 7 Z" fill="#528e75"/></marker></defs><rect width="2232" y="82" height="438" fill="#f7fafc"/><rect width="112" y="82" height="438" fill="#e9f1f6"/><text x="56" y="112" class="system-label">CRM</text><line x1="112" x2="112" y1="82" y2="520" stroke="#dce6ed"/><line x1="324" x2="324" y1="82" y2="520" stroke="#dce6ed"/><line x1="748" x2="748" y1="82" y2="520" stroke="#dce6ed"/><line x1="1172" x2="1172" y1="82" y2="520" stroke="#dce6ed"/><line x1="1384" x2="1384" y1="82" y2="520" stroke="#dce6ed"/><line x1="1596" x2="1596" y1="82" y2="520" stroke="#dce6ed"/><line x1="1808" x2="1808" y1="82" y2="520" stroke="#dce6ed"/><line x1="2020" x2="2020" y1="82" y2="520" stroke="#dce6ed"/><line x1="2232" x2="2232" y1="82" y2="520" stroke="#dce6ed"/><rect width="2232" y="520" height="240" fill="#f3f8fa"/><rect width="112" y="520" height="240" fill="#e9f1f6"/><text x="56" y="550" class="system-label">企业微信</text><line x1="112" x2="112" y1="520" y2="760" stroke="#dce6ed"/><line x1="324" x2="324" y1="520" y2="760" stroke="#dce6ed"/><line x1="748" x2="748" y1="520" y2="760" stroke="#dce6ed"/><line x1="1172" x2="1172" y1="520" y2="760" stroke="#dce6ed"/><line x1="1384" x2="1384" y1="520" y2="760" stroke="#dce6ed"/><line x1="1596" x2="1596" y1="520" y2="760" stroke="#dce6ed"/><line x1="1808" x2="1808" y1="520" y2="760" stroke="#dce6ed"/><line x1="2020" x2="2020" y1="520" y2="760" stroke="#dce6ed"/><line x1="2232" x2="2232" y1="520" y2="760" stroke="#dce6ed"/><rect width="2232" y="760" height="180" fill="#f7fafc"/><rect width="112" y="760" height="180" fill="#e9f1f6"/><text x="56" y="790" class="system-label">CRM</text><line x1="112" x2="112" y1="760" y2="940" stroke="#dce6ed"/><line x1="324" x2="324" y1="760" y2="940" stroke="#dce6ed"/><line x1="748" x2="748" y1="760" y2="940" stroke="#dce6ed"/><line x1="1172" x2="1172" y1="760" y2="940" stroke="#dce6ed"/><line x1="1384" x2="1384" y1="760" y2="940" stroke="#dce6ed"/><line x1="1596" x2="1596" y1="760" y2="940" stroke="#dce6ed"/><line x1="1808" x2="1808" y1="760" y2="940" stroke="#dce6ed"/><line x1="2020" x2="2020" y1="760" y2="940" stroke="#dce6ed"/><line x1="2232" x2="2232" y1="760" y2="940" stroke="#dce6ed"/><rect width="2232" y="940" height="436" fill="#f3f8fa"/><rect width="112" y="940" height="436" fill="#e9f1f6"/><text x="56" y="970" class="system-label">线下图纸 / Excel</text><line x1="112" x2="112" y1="940" y2="1376" stroke="#dce6ed"/><line x1="324" x2="324" y1="940" y2="1376" stroke="#dce6ed"/><line x1="748" x2="748" y1="940" y2="1376" stroke="#dce6ed"/><line x1="1172" x2="1172" y1="940" y2="1376" stroke="#dce6ed"/><line x1="1384" x2="1384" y1="940" y2="1376" stroke="#dce6ed"/><line x1="1596" x2="1596" y1="940" y2="1376" stroke="#dce6ed"/><line x1="1808" x2="1808" y1="940" y2="1376" stroke="#dce6ed"/><line x1="2020" x2="2020" y1="940" y2="1376" stroke="#dce6ed"/><line x1="2232" x2="2232" y1="940" y2="1376" stroke="#dce6ed"/><rect width="2232" y="1376" height="204" fill="#f7fafc"/><rect width="112" y="1376" height="204" fill="#e9f1f6"/><text x="56" y="1406" class="system-label">CRM</text><line x1="112" x2="112" y1="1376" y2="1580" stroke="#dce6ed"/><line x1="324" x2="324" y1="1376" y2="1580" stroke="#dce6ed"/><line x1="748" x2="748" y1="1376" y2="1580" stroke="#dce6ed"/><line x1="1172" x2="1172" y1="1376" y2="1580" stroke="#dce6ed"/><line x1="1384" x2="1384" y1="1376" y2="1580" stroke="#dce6ed"/><line x1="1596" x2="1596" y1="1376" y2="1580" stroke="#dce6ed"/><line x1="1808" x2="1808" y1="1376" y2="1580" stroke="#dce6ed"/><line x1="2020" x2="2020" y1="1376" y2="1580" stroke="#dce6ed"/><line x1="2232" x2="2232" y1="1376" y2="1580" stroke="#dce6ed"/><rect width="2232" y="1580" height="205" fill="#f3f8fa"/><rect width="112" y="1580" height="205" fill="#e9f1f6"/><text x="56" y="1610" class="system-label">ERP</text><line x1="112" x2="112" y1="1580" y2="1785" stroke="#dce6ed"/><line x1="324" x2="324" y1="1580" y2="1785" stroke="#dce6ed"/><line x1="748" x2="748" y1="1580" y2="1785" stroke="#dce6ed"/><line x1="1172" x2="1172" y1="1580" y2="1785" stroke="#dce6ed"/><line x1="1384" x2="1384" y1="1580" y2="1785" stroke="#dce6ed"/><line x1="1596" x2="1596" y1="1580" y2="1785" stroke="#dce6ed"/><line x1="1808" x2="1808" y1="1580" y2="1785" stroke="#dce6ed"/><line x1="2020" x2="2020" y1="1580" y2="1785" stroke="#dce6ed"/><line x1="2232" x2="2232" y1="1580" y2="1785" stroke="#dce6ed"/><rect width="2232" y="1785" height="395" fill="#f7fafc"/><rect width="112" y="1785" height="395" fill="#e9f1f6"/><text x="56" y="1815" class="system-label">CRM</text><line x1="112" x2="112" y1="1785" y2="2180" stroke="#dce6ed"/><line x1="324" x2="324" y1="1785" y2="2180" stroke="#dce6ed"/><line x1="748" x2="748" y1="1785" y2="2180" stroke="#dce6ed"/><line x1="1172" x2="1172" y1="1785" y2="2180" stroke="#dce6ed"/><line x1="1384" x2="1384" y1="1785" y2="2180" stroke="#dce6ed"/><line x1="1596" x2="1596" y1="1785" y2="2180" stroke="#dce6ed"/><line x1="1808" x2="1808" y1="1785" y2="2180" stroke="#dce6ed"/><line x1="2020" x2="2020" y1="1785" y2="2180" stroke="#dce6ed"/><line x1="2232" x2="2232" y1="1785" y2="2180" stroke="#dce6ed"/><rect width="2232" y="2180" height="420" fill="#f3f8fa"/><rect width="112" y="2180" height="420" fill="#e9f1f6"/><text x="56" y="2210" class="system-label">ERP</text><line x1="112" x2="112" y1="2180" y2="2600" stroke="#dce6ed"/><line x1="324" x2="324" y1="2180" y2="2600" stroke="#dce6ed"/><line x1="748" x2="748" y1="2180" y2="2600" stroke="#dce6ed"/><line x1="1172" x2="1172" y1="2180" y2="2600" stroke="#dce6ed"/><line x1="1384" x2="1384" y1="2180" y2="2600" stroke="#dce6ed"/><line x1="1596" x2="1596" y1="2180" y2="2600" stroke="#dce6ed"/><line x1="1808" x2="1808" y1="2180" y2="2600" stroke="#dce6ed"/><line x1="2020" x2="2020" y1="2180" y2="2600" stroke="#dce6ed"/><line x1="2232" x2="2232" y1="2180" y2="2600" stroke="#dce6ed"/><path data-edge="customer-project" d="M310,192.0 L338,192.0" fill="none" stroke="#6d8295" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-business)"/><path data-edge="project-allocate" d="M430.0,258 L430.0,314" fill="none" stroke="#6d8295" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-business)"/><path data-edge="allocate-regional" d="M522,380.0 L536,380.0 L536,300 L748,300 L748,380.0 L762,380.0" fill="none" stroke="#6d8295" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-business)"/><rect x="618.0" y="279" width="48.0" height="19" rx="3" fill="white"/><text x="642.0" y="292" class="edge-label" fill="#6d8295">区域内</text><path data-edge="allocate-approval" d="M430.0,446 L430.0,544 L1702.0,544 L1702.0,558" fill="none" stroke="#6d8295" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-business)"/><rect x="1017.5" y="553" width="97.0" height="19" rx="3" fill="white"/><text x="1066.0" y="566" class="edge-label" fill="#6d8295">跨区域 / 转介绍</text><path data-edge="approval-technical" d="M1702.0,690 L1702.0,784 L1914.0,784 L1914.0,798" fill="none" stroke="#6d8295" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-business)"/><rect x="1754.0" y="763" width="108.0" height="19" rx="3" fill="white"/><text x="1808.0" y="776" class="edge-label" fill="#6d8295">批准后联系技术部</text><path data-edge="regional-distribute" d="M854.0,446 L854.0,972 L430.0,972 L430.0,986" fill="none" stroke="#6d8295" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-business)"/><path data-edge="technical-distribute" d="M1914.0,930 L1914.0,972 L430.0,972 L430.0,986" fill="none" stroke="#6d8295" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-business)"/><path data-edge="distribute-clean" d="M522,1052.0 L762,1052.0" fill="none" stroke="#6d8295" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-business)"/><path data-edge="clean-excel" d="M946,1052.0 L974,1052.0" fill="none" stroke="#6d8295" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-business)"/><path data-edge="excel-send" d="M1066.0,1118 L1066.0,1160 L854.0,1160 L854.0,1174" fill="none" stroke="#6d8295" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-business)"/><path data-edge="excel-bundle" d="M1066.0,1118 L1066.0,1160 L642.0,1160 L642.0,1174" fill="none" stroke="#6d8295" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-business)"/><rect x="816.5" y="1139" width="75.0" height="19" rx="3" fill="white"/><text x="854.0" y="1152" class="edge-label" fill="#6d8295">交 PM 汇总</text><path data-edge="send-client" d="M946,1240.0 L1398,1240.0" fill="none" stroke="#6d8295" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-business)"/><rect x="1142.0" y="1249.0" width="60.0" height="19" rx="3" fill="white"/><text x="1172.0" y="1262.0" class="edge-label" fill="#6d8295">分别发送</text><path data-edge="bundle-client" d="M734,1240.0 L748,1240.0 L748,1160 L1384,1160 L1384,1240.0 L1398,1240.0" fill="none" stroke="#6d8295" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-business)"/><rect x="1036.0" y="1169" width="60.0" height="19" rx="3" fill="white"/><text x="1066.0" y="1182" class="edge-label" fill="#6d8295">汇总发送</text><path data-edge="client-virtual" d="M1490.0,1306 L1490.0,1396 L430.0,1396 L430.0,1410" fill="none" stroke="#6d8295" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-business)"/><rect x="912.0" y="1405" width="96.0" height="19" rx="3" fill="white"/><text x="960.0" y="1418" class="edge-label" fill="#6d8295">线下报价确认后</text><path data-edge="virtual-collect" d="M430.0,1542 L430.0,1596 L2126.0,1596 L2126.0,1610" fill="none" stroke="#6d8295" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-business)"/><rect x="1242.0" y="1605" width="72.0" height="19" rx="3" fill="white"/><text x="1278.0" y="1618" class="edge-label" fill="#6d8295">产品虚拟单</text><path data-edge="collect-draft" d="M2126.0,1742 L2126.0,1801 L854.0,1801 L854.0,1815" fill="none" stroke="#6d8295" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-business)"/><rect x="1436.0" y="1810" width="108.0" height="19" rx="3" fill="white"/><text x="1490.0" y="1823" class="edge-label" fill="#6d8295">产品后补系统明细</text><path data-edge="draft-bind" d="M946,1881.0 L974,1881.0" fill="none" stroke="#6d8295" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-business)"/><path data-edge="bind-threshold" d="M1066.0,1947 L1066.0,2206 L2126.0,2206 L2126.0,2220" fill="none" stroke="#6d8295" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-business)"/><rect x="1554.0" y="2215" width="84.0" height="19" rx="3" fill="white"/><text x="1596.0" y="2228" class="edge-label" fill="#6d8295">完整产品信息</text><path data-edge="collect-threshold" d="M2126.0,1742 L2126.0,2220" fill="none" stroke="#6d8295" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-business)"/><path data-edge="threshold-stock" d="M2126.0,2352 L2126.0,2394 L430.0,2394 L430.0,2408" fill="none" stroke="#6d8295" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-business)"/><rect x="1248.0" y="2403" width="60.0" height="19" rx="3" fill="white"/><text x="1278.0" y="2416" class="edge-label" fill="#6d8295">条件满足</text><path data-edge="project-designassign" d="M430.0,258 L430.0,300 L642.0,300 L642.0,314" fill="none" stroke="#6d8295" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-business)"/><rect x="506.0" y="279" width="60.0" height="19" rx="3" fill="white"/><text x="536.0" y="292" class="edge-label" fill="#6d8295">设计服务</text><path data-edge="designassign-designorder" d="M642.0,446 L642.0,784 L1278.0,784 L1278.0,798" fill="none" stroke="#6d8295" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-business)"/><path data-edge="designorder-collect" d="M1278.0,930 L1278.0,1596 L2126.0,1596 L2126.0,1610" fill="none" stroke="#6d8295" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-business)"/><rect x="1678.0" y="1605" width="48.0" height="19" rx="3" fill="white"/><text x="1702.0" y="1618" class="edge-label" fill="#6d8295">设计单</text><g data-node="customer"><rect x="126" y="126" width="184" height="132" rx="7" fill="#fff" stroke="#99b5c8" stroke-width="1.4"/><text x="138" y="148" class="number">01</text><text x="138" y="169" class="node-title">创建客户</text><text x="138" y="192" class="node-copy">运营保存客户资料</text><text x="138" y="209" class="node-copy">PM 创建关联项目</text></g><g data-node="project"><rect x="338" y="126" width="184" height="132" rx="7" fill="#fff" stroke="#99b5c8" stroke-width="1.4"/><text x="350" y="148" class="number">02</text><text x="350" y="169" class="node-title">创建项目</text><text x="350" y="192" class="node-copy">客户资料关联项目</text><text x="350" y="209" class="node-copy">按业务需要办理产品或设计服</text><text x="350" y="226" class="node-copy">务</text></g><g data-node="allocate"><rect x="338" y="314" width="184" height="132" rx="7" fill="#fff" stroke="#99b5c8" stroke-width="1.4"/><text x="350" y="336" class="number">03P</text><text x="350" y="357" class="node-title">分配各品类 SM</text><text x="350" y="380" class="node-copy">区域内在系统选择 SM</text><text x="350" y="397" class="node-copy">跨区域 / 转介绍经企微申请</text></g><g data-node="regional"><rect x="762" y="314" width="184" height="132" rx="7" fill="#fff" stroke="#99b5c8" stroke-width="1.4"/><text x="774" y="336" class="number">04A</text><text x="774" y="357" class="node-title">区域内选择 SM</text><text x="774" y="380" class="node-copy">PM 在系统选择区域内 SM</text><text x="774" y="397" class="node-copy">明确各品类方案负责人</text></g><g data-node="designassign"><rect x="550" y="314" width="184" height="132" rx="7" fill="#fff" stroke="#99b5c8" stroke-width="1.4"/><text x="562" y="336" class="number">03D</text><text x="562" y="357" class="node-title">项目签阅：添加设计师</text><text x="562" y="380" class="node-copy">PM 通过项目签阅交给设计师</text><text x="562" y="397" class="node-copy">后续由设计师录入设计单</text></g><g data-node="approval"><rect x="1610" y="558" width="184" height="132" rx="7" fill="#fcf5e9" stroke="#d4ad68" stroke-width="1.4"/><text x="1622" y="580" class="number">04B</text><text x="1622" y="601" class="node-title">总经办审批</text><text x="1622" y="624" class="node-copy">接收跨区域 / 转介绍申请</text><text x="1622" y="641" class="node-copy">审批通过后由 PM 联系技术部</text></g><g data-node="technical"><rect x="1822" y="798" width="184" height="132" rx="7" fill="#fff" stroke="#99b5c8" stroke-width="1.4"/><text x="1834" y="820" class="number">05B</text><text x="1834" y="841" class="node-title">技术部拉商机</text><text x="1834" y="864" class="node-copy">按已批准申请完成系统动作</text><text x="1834" y="881" class="node-copy">关联项目与方案经理</text></g><g data-node="designorder"><rect x="1186" y="798" width="184" height="132" rx="7" fill="#fff" stroke="#99b5c8" stroke-width="1.4"/><text x="1198" y="820" class="number">04D</text><text x="1198" y="841" class="node-title">设计师录入设计单</text><text x="1198" y="864" class="node-copy">填写设计服务内容及费用</text><text x="1198" y="881" class="node-copy">传输 ERP 收款</text></g><g data-node="distribute"><rect x="338" y="986" width="184" height="132" rx="7" fill="#fff" stroke="#99b5c8" stroke-width="1.4"/><text x="350" y="1008" class="number">06P</text><text x="350" y="1029" class="node-title">PM 分发客户图纸</text><text x="350" y="1052" class="node-copy">在选择 SM 之后分发图纸</text><text x="350" y="1069" class="node-copy">分别发给各品类 SM</text></g><g data-node="clean"><rect x="762" y="986" width="184" height="132" rx="7" fill="#fff" stroke="#99b5c8" stroke-width="1.4"/><text x="774" y="1008" class="number">07P</text><text x="774" y="1029" class="node-title">各品类 SM 自行清洗</text><text x="774" y="1052" class="node-copy">分别整理客户 CAD / 图纸</text><text x="774" y="1069" class="node-copy">形成各自可以报价的图纸</text></g><g data-node="excel"><rect x="974" y="986" width="184" height="132" rx="7" fill="#fff" stroke="#99b5c8" stroke-width="1.4"/><text x="986" y="1008" class="number">08P</text><text x="986" y="1029" class="node-title">线下 Excel 报价</text><text x="986" y="1052" class="node-copy">各品类分别编制 Excel 报价单</text><text x="986" y="1069" class="node-copy">部分报价未标明空间</text></g><g data-node="send"><rect x="762" y="1174" width="184" height="132" rx="7" fill="#fff" stroke="#99b5c8" stroke-width="1.4"/><text x="774" y="1196" class="number">09A</text><text x="774" y="1217" class="node-title">SM 分别发送报价</text><text x="774" y="1240" class="node-copy">各品类 SM 单独发给客户</text><text x="774" y="1257" class="node-copy">客户逐份核对不同品类文件</text></g><g data-node="bundle"><rect x="550" y="1174" width="184" height="132" rx="7" fill="#fff" stroke="#99b5c8" stroke-width="1.4"/><text x="562" y="1196" class="number">09B</text><text x="562" y="1217" class="node-title">PM 汇总发送报价</text><text x="562" y="1240" class="node-copy">收集各品类的 Excel 报价单</text><text x="562" y="1257" class="node-copy">汇总发送，仍为多份文件</text></g><g data-node="client"><rect x="1398" y="1174" width="184" height="132" rx="7" fill="#eff9f2" stroke="#8fb89b" stroke-width="1.4"/><text x="1410" y="1196" class="number">10P</text><text x="1410" y="1217" class="node-title">客户核对报价</text><text x="1410" y="1240" class="node-copy">收到多份品类报价单</text><text x="1410" y="1257" class="node-copy">逐份核对并反馈确认</text></g><g data-node="virtual"><rect x="338" y="1410" width="184" height="132" rx="7" fill="#fff" stroke="#99b5c8" stroke-width="1.4"/><text x="350" y="1432" class="number">11P</text><text x="350" y="1453" class="node-title">创建金额虚拟单</text><text x="350" y="1476" class="node-copy">线下报价后创建金额订单</text><text x="350" y="1493" class="node-copy">此时系统产品明细尚未补齐</text><text x="350" y="1510" class="node-copy">传输 ERP 收款</text></g><g data-node="collect"><rect x="2034" y="1610" width="184" height="132" rx="7" fill="#f2f6f8" stroke="#99afbe" stroke-width="1.4"/><text x="2046" y="1632" class="number">12 / 05D</text><text x="2046" y="1653" class="node-title">ERP 收款</text><text x="2046" y="1676" class="node-copy">产品以金额虚拟单办理</text><text x="2046" y="1693" class="node-copy">设计服务以设计单办理</text><text x="2046" y="1710" class="node-copy">记录对应订单的实际收款</text></g><g data-node="draft"><rect x="762" y="1815" width="184" height="132" rx="7" fill="#fff" stroke="#99b5c8" stroke-width="1.4"/><text x="774" y="1837" class="number">13P</text><text x="774" y="1858" class="node-title">Excel 报价录入草稿</text><text x="774" y="1881" class="node-copy">SM 将线下报价录入系统</text><text x="774" y="1898" class="node-copy">建立系统产品草稿单</text></g><g data-node="bind"><rect x="974" y="1815" width="184" height="132" rx="7" fill="#fff" stroke="#99b5c8" stroke-width="1.4"/><text x="986" y="1837" class="number">14P</text><text x="986" y="1858" class="node-title">绑定商机并补产品</text><text x="986" y="1881" class="node-copy">草稿单与商机关联</text><text x="986" y="1898" class="node-copy">补充金额订单的产品明细</text><text x="986" y="1915" class="node-copy">再传 ERP</text></g><g data-node="threshold"><rect x="2034" y="2220" width="184" height="132" rx="7" fill="#f2f6f8" stroke="#99afbe" stroke-width="1.4"/><text x="2046" y="2242" class="number">15P</text><text x="2046" y="2263" class="node-title">判断产品备货条件</text><text x="2046" y="2286" class="node-copy">实收 ≥ 订单金额 20%</text><text x="2046" y="2303" class="node-copy">并已有产品信息</text></g><g data-node="stock"><rect x="338" y="2408" width="184" height="132" rx="7" fill="#f2f6f8" stroke="#99afbe" stroke-width="1.4"/><text x="350" y="2430" class="number">16P</text><text x="350" y="2451" class="node-title">PM / SM 点击备货</text><text x="350" y="2474" class="node-copy">在 ERP 手动操作产品备货</text><text x="350" y="2491" class="node-copy">未达条件继续收款或补产品</text></g></svg></div></div></section></main><script>(()=>{let zoom=1,fit=false;const svg=document.querySelector('.svg-holder svg'),axis=document.querySelector('.role-header svg');function apply(){if(fit)zoom=Math.max(.4,(document.documentElement.clientWidth-58)/svg.viewBox.baseVal.width);svg.style.width=svg.viewBox.baseVal.width*zoom+'px';svg.style.height=svg.viewBox.baseVal.height*zoom+'px';axis.style.width=svg.viewBox.baseVal.width*zoom+'px';axis.style.height=82*zoom+'px';document.documentElement.style.setProperty('--nav-height',document.querySelector('nav').offsetHeight+'px');document.querySelector('.zoom-readout').textContent=Math.round(zoom*100)+'%';}document.querySelectorAll('[data-zoom]').forEach(b=>b.onclick=()=>{fit=b.dataset.zoom==='fit';if(!fit)zoom=Math.max(.4,Math.min(2,zoom+(b.dataset.zoom==='in'?.1:-.1)));apply();});window.addEventListener('resize',apply);document.getElementById('print').onclick=()=>window.print();apply();requestAnimationFrame(apply);})();</script><script src="./release-notice-loader.js?v=855a4b0554151ddeea6a9e92221862e50aa097355ea07a3465ecd10209145f46" defer data-crm-document-release data-release-document="workflow-comparison.html" data-release-version="855a4b0554151ddeea6a9e92221862e50aa097355ea07a3465ecd10209145f46" data-release-built-at="2026-11-03T13:24:31.763Z"></script>
-</body></html>
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>旧流程图 · 敬城 CRM</title>
+<script>if(new URLSearchParams(location.search).get("embedded")==="1")document.documentElement.classList.add("embedded");</script>
+<style>
+  .embedded .topbar,.embedded .hero h1{display:none}
+  :root{color-scheme:light;--blue:#1673ff;--deep:#1555ab;--soft:#eaf4ff;--line:#e2e8f0;--ink:#111f32;--text:#405168;--muted:#617087;--paper:#fff;--bg:#f7f9fc;--amber:#9b5800;--amber-bg:#fff6e5;--green:#147448;--green-bg:#e7f7ef}
+  *{box-sizing:border-box}html{scroll-padding-top:80px}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.6 "Microsoft YaHei","PingFang SC",system-ui,sans-serif}h1,h2,h3,h4,p{margin:0}h1,h2,h3,h4{color:var(--ink);line-height:1.4}h1{font-size:clamp(27px,3.15vw,42px);letter-spacing:-.035em}h2{font-size:22px}h3{font-size:17px}a{color:var(--deep);text-underline-offset:3px}button,input,select{font:inherit;color:inherit}button{cursor:pointer}button:disabled{cursor:default;opacity:.45}:focus-visible{outline:2px solid var(--blue);outline-offset:3px}[hidden]{display:none!important}
+  .frame{max-width:1580px;margin:auto;padding-inline:clamp(16px,3vw,44px)}.topbar,.nav,.brand,.top-meta{display:flex;align-items:center}.topbar{min-height:69px;justify-content:space-between;gap:14px}.brand{gap:14px;color:var(--ink)}.wordmark{font-size:27px;font-weight:750;white-space:nowrap}.brand-en{border-left:1px solid var(--line);padding-left:14px;font-size:11px;font-weight:700;letter-spacing:.15em}.top-meta{gap:12px;font-size:12px}.badge{display:inline-block;padding:3px 9px;background:var(--soft);color:var(--deep);border:1px solid #d5e7ff;border-radius:5px;font-size:12px;line-height:1.5}.nav-wrap{position:sticky;top:0;z-index:10;background:var(--paper);border-block:1px solid var(--line)}.nav{gap:24px;min-height:58px}.tab{align-self:stretch;min-height:58px;background:none;border:0;border-bottom:3px solid transparent;font-weight:600;padding:0 4px;white-space:nowrap}.tab[aria-selected=true]{color:var(--deep);border-color:var(--blue)}.tab span{margin-right:6px;font:12px system-ui;color:var(--muted)}.nav-end{margin-left:auto}.button{display:inline-flex;align-items:center;gap:5px;min-height:36px;padding:5px 12px;border:1px solid #cedbed;border-radius:6px;background:white;color:var(--deep);text-decoration:none;font-weight:600}.button:hover{background:var(--soft)}.primary{background:var(--blue);border-color:var(--blue);color:#fff}.primary:hover{background:#1064e2}
+  .hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(220px,30%);gap:32px;align-items:center;padding:32px 0 23px}.eyebrow{display:block;color:var(--deep);font-size:11px;font-weight:750;letter-spacing:.15em;margin-bottom:8px}.hero p{margin-top:9px;font-size:15px}.hero-aside{border-left:1px solid var(--line);padding:8px 0 8px 24px}.milestones{display:flex;align-items:center;gap:8px;margin-bottom:8px}.milestones b{display:grid;place-items:center;background:var(--soft);color:var(--deep);height:34px;width:34px;border-radius:6px}.milestones i{width:16px;border-top:1px solid #90b5ed}.hero-aside strong{color:var(--ink)}.hero-aside p{font-size:12px;color:var(--muted);margin-top:3px}
+  .stage-rail{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;padding:9px;background:white;border:1px solid var(--line);border-radius:8px}.stage-item{text-align:left;padding:9px 10px;background:white;border:1px solid transparent;border-radius:6px;display:grid;gap:2px}.stage-item:hover,.stage-item[aria-pressed=true]{background:var(--soft);border-color:#d5e7ff}.stage-item span,.phase-no,.node-no{font:700 12px/1.4 system-ui;color:var(--deep);letter-spacing:.05em}.stage-item b{color:var(--ink)}.stage-item small{color:var(--muted)}.context{margin:13px 0 24px;padding:11px 14px;background:#eef5fd;border:1px solid #dce9fa;border-radius:7px}.context strong{color:var(--deep);margin-right:8px}.toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 11px}.legend{display:flex;flex-wrap:wrap;gap:15px;font-size:12px;color:var(--muted)}.legend i{display:inline-block;width:22px;vertical-align:middle;margin-right:6px;border-top:2px solid #6d98cd}.legend .conditional{border-top-style:dashed}.legend .return{border-color:#ae6b25;border-top-style:dashed}.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:0 0 15px}.filters label{display:flex;align-items:center;gap:7px;padding:0 9px;border:1px solid var(--line);border-radius:6px;background:white;min-height:38px}.filters input,.filters select{border:0;background:transparent;min-height:35px}.filters input{width:172px}.filter-info{color:var(--muted);font-size:12px}
+  .layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,390px);align-items:start;gap:18px}.flow-list{display:grid;gap:14px;min-width:0}.phase,.detail,.lane-panel,.source-panel{background:white;border:1px solid var(--line);border-radius:9px;min-width:0}.phase{scroll-margin-top:78px}.phase-head{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line)}.phase-no{display:grid;place-items:center;background:var(--soft);border-radius:7px;width:36px;height:36px;flex:none}.phase-head small{color:var(--muted)}.gate-mini{margin-left:auto;font-size:11px;background:var(--green-bg);color:var(--green);border-radius:5px;padding:4px 8px;max-width:44%}.phase-note{border-top:1px solid var(--line);margin:0;padding:11px 16px;color:var(--muted);font-size:12px}.phase-note strong{color:var(--deep);margin-right:7px}
+  .graph-scroll,.lane-scroll{overflow:auto;scrollbar-width:thin}.graph{position:relative;display:grid;grid-template-columns:repeat(var(--cols),minmax(0,1fr));grid-auto-rows:minmax(94px,auto);gap:22px 27px;padding:17px;min-width:calc(var(--cols) * 137px + (var(--cols) - 1) * 27px + 34px)}.node{position:relative;z-index:1;display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left;padding:8px 10px;background:white;border:1px solid #d5e0ed;border-radius:7px;min-width:0;min-height:92px;line-height:1.36;overflow-wrap:anywhere}.node:hover,.node[aria-pressed=true]{border-color:var(--blue);background:var(--soft)}.node[aria-pressed=true]{box-shadow:inset 3px 0 var(--blue)}.node-top{display:flex;align-items:center;justify-content:space-between;gap:6px;width:100%}.node-title{color:var(--ink);font-size:14px}.node-meta{color:var(--muted);font-size:11px}.kind{background:var(--soft);color:var(--deep);padding:1px 5px;border-radius:4px;font-size:10px}.kind.external{background:var(--green-bg);color:var(--green)}.kind.support{background:var(--amber-bg);color:var(--amber)}.dim{opacity:.35}.dim[aria-pressed=true]{opacity:.72}.edges{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}.edges path.edge{fill:none;stroke:#6d98cd;stroke-width:1.5}.edges path.conditional,.edges path.return{stroke-dasharray:4 3}.edges path.return{stroke:#ad6b2a}
+  .node-condition{font-size:11px;color:var(--amber);background:var(--amber-bg);padding:2px 4px;border-radius:4px}
+  .detail .route-list{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:6px}
+  .route-list li{padding:7px 9px;border:1px solid var(--line);border-radius:6px;background:white}
+  .detail .route-list li+li{margin-top:0}
+  .route-condition{font-size:12px;font-weight:600;color:var(--text)}
+  .route-destination{display:flex;align-items:baseline;flex-wrap:wrap;gap:2px 8px}
+  .route-destination button{padding:0;border:0;background:none;color:var(--deep);text-align:left;font-weight:650}
+  .route-destination button:hover{text-decoration:underline}
+  .route-destination small{color:var(--muted);font-size:11px}
+  .detail{position:sticky;top:73px;max-height:calc(100dvh - 92px);overflow:auto;scrollbar-width:thin;scroll-margin-top:76px}.detail-head{background:#f3f8ff;padding:17px 17px 12px;border-bottom:1px solid var(--line)}.detail-head h2{margin:5px 0 3px}.detail-head p{font-size:13px}.detail-body{padding:15px 17px}.who{display:grid;grid-template-columns:1fr 1fr;gap:10px;background:var(--bg);padding:10px;border:1px solid var(--line);border-radius:6px;margin-bottom:14px}.who small,.who span{display:block}.who small{color:var(--muted)}.who b{color:var(--ink)}.who span{font-size:12px}.detail section{margin-top:13px}.detail h3{font-size:13px;display:flex;align-items:center;gap:7px;margin-bottom:5px}.detail h3 i{display:grid;place-items:center;width:20px;height:20px;background:var(--soft);border-radius:4px;font:700 11px system-ui;color:var(--deep);font-style:normal}.detail ul,.detail ol{padding-left:20px;margin:3px 0;font-size:13px}.detail li+li{margin-top:3px}.output{border-left:2px solid #9abff5;padding:4px 8px;margin:4px 0;background:#f5f9ff;font-size:13px}.output b{color:var(--ink)}.gate{background:var(--green-bg);border-radius:6px;padding:9px 10px;font-size:13px;color:#145538}.reverse{background:var(--amber-bg);padding:8px 10px;border-radius:6px;font-size:13px}.jumps{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.jumps button{background:white;border:1px solid #d6e4f5;border-radius:5px;color:var(--deep);padding:3px 6px;font-size:12px}.detail-foot{display:flex;justify-content:space-between;gap:8px;border-top:1px solid var(--line);padding:10px 15px}.mobile-back{display:none}
+  .lane-panel{overflow:hidden}.lane-intro,.source-panel{padding:15px 17px}.lane-grid{display:grid;grid-template-columns:116px repeat(var(--cols),minmax(148px,1fr));min-width:max-content}.lane-axis,.lane-name,.lane-cell{padding:8px;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}.lane-axis{background:var(--soft);color:var(--deep);font-size:12px}.lane-name{position:sticky;left:0;z-index:2;background:var(--bg);color:var(--ink);font-weight:600;display:flex;align-items:center}.lane-cell{min-height:84px}.lane-cell .node{width:100%;min-height:80px}.lane-handoffs{padding:13px 17px}.lane-handoffs h3{margin-bottom:5px}.lane-handoffs p{font-size:13px;margin-top:3px}.source-panel h2,.source-panel h3{margin:0 0 8px}.source-panel p,.source-panel ul{margin-bottom:12px}.source-panel table{width:100%;border-collapse:collapse;margin:8px 0 18px;text-align:left}.source-panel th,.source-panel td{padding:8px;border:1px solid var(--line);vertical-align:top}.source-panel th{background:var(--soft);color:var(--ink)}.footer{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:24px 0;color:var(--muted);font-size:12px}.print-only{display:none}
+  @media(max-width:1100px){.layout{grid-template-columns:minmax(0,1fr) minmax(280px,330px)}.stage-item small{display:none}}
+  @media(max-width:900px){.layout{grid-template-columns:minmax(0,1fr)}.detail{position:static;max-height:none}.hero-aside{display:none}.hero{grid-template-columns:1fr}.mobile-back{display:inline-flex}.stage-rail{grid-template-columns:repeat(3,1fr)}}
+  @media(max-width:550px){.nav{gap:12px}.tab span,.brand-en,.top-meta time,.gate-mini{display:none}.nav-end .button{padding-inline:7px;font-size:12px}.hero{padding-top:23px}.stage-item{padding:6px}.stage-item b{font-size:12px}.filters input{width:128px}.filters select{max-width:116px}.who{grid-template-columns:1fr}.legend{gap:9px}.source-panel{overflow:auto}}
+  @media print{.topbar,.nav-wrap,.hero,.stage-rail,.context,main,.footer{display:none}.print-only{display:block}.print-only article{break-inside:avoid;border-bottom:1px solid var(--line);padding:10px 0}.print-only h2{margin:12px 0 6px}.print-only p{margin:3px 0}.print-only{font-size:10pt}.frame{max-width:none;padding:0}@page{size:A4;margin:16mm}}
+  .toolbar{display:grid;grid-template-columns:auto minmax(0,1fr) auto}
+  #edgeLegend{grid-column:2}
+  .journey-mode{grid-column:3;grid-row:1;justify-self:end;display:inline-flex;gap:3px;padding:4px;border:1px solid var(--line);border-radius:10px;background:#edf1f6}
+  .journey-mode button{min-height:36px;padding:5px 14px;border:0;border-radius:7px;background:transparent;font-weight:600;white-space:nowrap}
+  .journey-mode button[aria-pressed=true]{background:white;color:var(--deep);box-shadow:0 1px 4px #243b5518}
+  .layout.walk{display:block;max-width:1080px;margin-inline:auto}
+  .walk .detail{position:static;max-height:none;overflow:visible}
+  .walk .detail-head{display:flex;align-items:start;justify-content:space-between;flex-wrap:wrap;gap:10px;border-radius:9px 9px 0 0;padding:18px 22px}
+  .walk .detail-body{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;padding:18px 22px}
+  .walk .who{grid-column:1/-1;margin:0}
+  .walk .detail-body section{margin:0;padding:12px;border:1px solid var(--line);border-radius:7px}
+  .walk .detail-body section:last-child{grid-column:1/-1}
+  .walk-stepper,.walk-index{display:flex;gap:6px;flex-wrap:wrap}
+  .walk-index{border-top:1px solid var(--line);padding:14px 22px}
+  .walk-index button{min-width:34px;min-height:32px;border:1px solid #d6e4f5;border-radius:5px;background:white;color:var(--deep)}
+  .walk-index button[aria-pressed=true]{background:var(--soft);border-color:var(--blue);font-weight:750}
+  .flow-choice{display:flex;gap:3px;padding:3px;margin-left:auto;background:#edf1f6;border:1px solid var(--line);border-radius:8px}
+  .flow-choice button{padding:5px 12px;border:0;border-radius:5px;background:transparent;font-weight:650;white-space:nowrap}
+  .flow-choice button[aria-pressed=true]{background:white;color:var(--deep);box-shadow:0 1px 4px #243b5518}
+  .flow-choice+.nav-end{margin-left:0}
+  .stage-rail{grid-template-columns:repeat(var(--stage-count,6),minmax(0,1fr))}
+  .phase,.detail{scroll-margin-top:0}
+  @media(max-width:900px){.stage-rail{grid-template-columns:repeat(3,minmax(0,1fr))}}
+  @media(max-width:680px){
+    .nav{flex-wrap:wrap;column-gap:10px;row-gap:0}
+    .nav .tab{min-height:45px}
+    .flow-choice{order:1;width:100%;margin:0 0 7px}
+    .flow-choice button{flex:1}
+    .flow-choice+.nav-end{margin-left:auto}
+  }
+  @media(max-width:640px){
+    .toolbar{grid-template-columns:minmax(0,1fr) auto}
+    #edgeLegend{grid-column:1/-1;grid-row:2}
+    .journey-mode{grid-column:2}
+    .journey-mode button{padding-inline:10px}
+    .walk .detail-body{grid-template-columns:1fr}
+    .walk .detail-head,.walk .detail-body,.walk-index{padding-inline:14px}
+  }
+</style>
+</head>
+<body>
+<header class="frame topbar"><div class="brand"><span class="wordmark">敬城</span><span class="brand-en">GEORGE GROUP</span></div><div class="top-meta"><time datetime="2026-11-09">2026.11.09</time><span class="badge">旧版业务旅程</span></div></header>
+<div class="nav-wrap"><nav class="frame nav" aria-label="流程视图">
+  <button class="tab" data-view="journey" aria-selected="true"><span>01</span>业务旅程</button>
+  <button class="tab" data-view="lanes" aria-selected="false"><span>02</span>角色泳道</button>
+  <button class="tab" data-view="basis" aria-selected="false"><span>03</span>依据与口径</button>
+  <div class="flow-choice" role="group" aria-label="选择业务流程">
+    <button type="button" data-flow="product" aria-pressed="true">产品流程</button>
+    <button type="button" data-flow="design" aria-pressed="false">设计流程</button>
+  </div>
+  <div class="nav-end"><button class="button" id="print" aria-label="打印当前流程与详情">打印</button></div>
+</nav></div>
+<div class="frame">
+  <section class="hero">
+    <div><span class="eyebrow">CRM JOURNEY · 从客户建档到订单履行</span><h1>旧流程图</h1><p>按节点查看谁来做、在哪做、交付什么，以及怎样交到下一位手上。</p></div>
+    <div class="hero-aside"><div class="milestones" aria-hidden="true"><b>客</b><i></i><b>商</b><i></i><b>价</b><i></i><b>单</b></div><strong id="count"></strong><p>按原业务顺序回顾</p></div>
+  </section>
+  <div id="stageRail" class="stage-rail" aria-label="阶段导航"></div>
+  <p class="context" id="flowContext"></p>
+  <main>
+    <div id="tools">
+      <div class="toolbar">
+        <h2 id="viewTitle">业务流向</h2>
+        <div class="legend" id="edgeLegend"><span><i></i>业务流转</span><span><i class="conditional"></i>分支或条件衔接</span><span><i class="return"></i>退回或重办</span></div>
+        <div class="journey-mode" id="journeyMode" role="group" aria-label="业务旅程显示方式">
+          <button type="button" data-mode="overview" aria-pressed="true">流程总览</button>
+          <button type="button" data-mode="walk" aria-pressed="false">逐站走读</button>
+        </div>
+      </div>
+      <div class="filters"><label>查找节点 <input id="search" type="search" placeholder="如：销售订单、收款"></label><label>角色 <select id="roles"><option value="">全部角色</option></select></label><label>系统 <select id="systems"><option value="">全部系统</option></select></label><button class="button" id="clear">重置</button><span id="filterInfo" class="filter-info" role="status">点击节点查看详情</span></div>
+    </div>
+    <div class="layout" id="layout"><div class="flow-list" id="maps"></div><aside class="detail" id="detail" aria-label="节点详情"></aside></div>
+    <section class="source-panel" id="basis" hidden>
+      <h2>系统分工与阅读口径</h2>
+      <table><thead><tr><th>系统或渠道</th><th>旧版业务职责</th></tr></thead><tbody>
+        <tr><td>CRM</td><td>客户与项目建档、区域内分配、技术部拉商机、虚拟单、产品草稿绑定和设计单录入。</td></tr>
+        <tr><td>企业微信</td><td>跨区域及转介绍申请交总经办审批，批准后由 PM 联系技术部。</td></tr>
+        <tr><td>线下图纸及 Excel</td><td>各品类 SM 清洗图纸、分别制作报价。各 SM 分别交付，或由 PM 汇总发送。</td></tr>
+        <tr><td>ERP</td><td>产品按金额虚拟单收款，补录正式产品资料后按条件备货；设计按设计单收款。</td></tr>
+      </tbody></table>
+      <h3>查看新版</h3>
+      <p>当前业务规则可在<a href="./new-workflow.html">新版流程图</a>查看。</p>
+    </section>
+  </main>
+  <footer class="footer"><span>敬城国际 · CRM 旧版业务流程</span><span>节点编号用于定位，分支可按业务条件并行。</span></footer>
+  <div class="print-only" id="printAll"></div>
+</div>
+<script>
+const stages = [
+  {
+    "name": "客户与项目",
+    "short": "建档与关联",
+    "output": "客户档案与项目",
+    "note": "运营创建客户，PM 关联客户创建项目。"
+  },
+  {
+    "name": "分配人员",
+    "short": "按区域或业务分配",
+    "output": "对应方案人员",
+    "note": "区域内由 PM 在系统选择 SM。跨区域与转介绍经企微审批，再由技术部拉商机。"
+  },
+  {
+    "name": "线下报价",
+    "short": "清洗图纸 · Excel 报价",
+    "output": "客户确认的线下报价",
+    "note": "各品类各自报价，可分别发送或由 PM 汇总发送。"
+  },
+  {
+    "name": "虚拟单与收款",
+    "short": "先用金额虚拟单收款",
+    "output": "ERP 实收记录",
+    "note": "线下报价确认后，PM 创建金额虚拟单并传 ERP 收款。"
+  },
+  {
+    "name": "补录与备货",
+    "short": "绑定商机 · 补明细",
+    "output": "ERP 产品备货",
+    "note": "补录正式产品明细，核验实收达到 20% 及产品资料齐全，再由 PM 或 SM 在 ERP 备货。"
+  }
+];
+const nodes = [
+  {
+    "id": 1,
+    "phase": 0,
+    "x": 1,
+    "y": 1,
+    "title": "创建客户",
+    "owner": "运营人员",
+    "system": "CRM",
+    "entry": "CRM · 创建客户",
+    "input": "按上一站的业务结果办理。",
+    "action": "录入并保存客户基础资料。",
+    "outputs": [
+      [
+        "创建客户结果",
+        "客户档案供 PM 创建关联项目。"
+      ]
+    ],
+    "gate": "客户档案供 PM 创建关联项目。",
+    "routes": [
+      [
+        2,
+        "客户资料保存成功"
+      ]
+    ]
+  },
+  {
+    "id": 2,
+    "phase": 0,
+    "x": 2,
+    "y": 1,
+    "title": "创建项目",
+    "owner": "PM",
+    "system": "CRM",
+    "entry": "CRM · 创建项目",
+    "input": "按上一站的业务结果办理。",
+    "action": "选择客户并建立项目。",
+    "outputs": [
+      [
+        "创建项目结果",
+        "采购与设计服务按需求分别办理。"
+      ]
+    ],
+    "gate": "采购与设计服务按需求分别办理。",
+    "routes": [
+      [
+        3,
+        "办理产品采购"
+      ],
+      [
+        21,
+        "办理设计服务"
+      ]
+    ]
+  },
+  {
+    "id": 3,
+    "phase": 1,
+    "x": 1,
+    "y": 1,
+    "title": "分配各品类 SM",
+    "owner": "PM",
+    "system": "CRM",
+    "entry": "CRM · 分配各品类 SM",
+    "input": "按上一站的业务结果办理。",
+    "action": "按项目区域和采购品类确定需要安排的方案经理。",
+    "outputs": [
+      [
+        "分配各品类 SM结果",
+        "区分区域内分配、跨区域与转介绍。"
+      ]
+    ],
+    "gate": "区分区域内分配、跨区域与转介绍。",
+    "routes": [
+      [
+        4,
+        "区域内分配"
+      ],
+      [
+        5,
+        "跨区域或转介绍"
+      ]
+    ],
+    "branch": true
+  },
+  {
+    "id": 4,
+    "phase": 1,
+    "x": 2,
+    "y": 1,
+    "title": "区域内选择 SM",
+    "owner": "PM",
+    "system": "CRM",
+    "entry": "CRM · 区域内选择 SM",
+    "input": "按上一站的业务结果办理。",
+    "action": "在系统内选择本区域的各品类 SM。",
+    "outputs": [
+      [
+        "区域内选择 SM结果",
+        "明确各品类方案负责人。"
+      ]
+    ],
+    "gate": "明确各品类方案负责人。",
+    "routes": [
+      [
+        7,
+        "区域内人选已确定"
+      ]
+    ]
+  },
+  {
+    "id": 5,
+    "phase": 1,
+    "x": 2,
+    "y": 2,
+    "title": "总经办审批",
+    "owner": "总经办",
+    "system": "企业微信",
+    "entry": "企业微信 · 总经办审批",
+    "input": "按上一站的业务结果办理。",
+    "action": "PM 通过企微提交跨区域或转介绍申请，由总经办审批。",
+    "outputs": [
+      [
+        "总经办审批结果",
+        "审批通过后，PM 联系技术部。"
+      ]
+    ],
+    "gate": "审批通过后，PM 联系技术部。",
+    "routes": [
+      [
+        6,
+        "总经办审批通过"
+      ]
+    ],
+    "reverse": "审批未通过时，该申请不进入拉商机。"
+  },
+  {
+    "id": 6,
+    "phase": 1,
+    "x": 3,
+    "y": 2,
+    "title": "技术部拉商机",
+    "owner": "技术部",
+    "system": "CRM",
+    "entry": "CRM · 技术部拉商机",
+    "input": "按上一站的业务结果办理。",
+    "action": "按已批准申请建立商机，关联项目和 SM。",
+    "outputs": [
+      [
+        "技术部拉商机结果",
+        "商机与对应品类及接收人关联。"
+      ]
+    ],
+    "gate": "商机与对应品类及接收人关联。",
+    "routes": [
+      [
+        7,
+        "技术部已拉商机"
+      ]
+    ]
+  },
+  {
+    "id": 7,
+    "phase": 1,
+    "x": 4,
+    "y": 1,
+    "title": "分发客户图纸",
+    "owner": "PM",
+    "system": "线下",
+    "entry": "线下 · 分发客户图纸",
+    "input": "按上一站的业务结果办理。",
+    "action": "将客户图纸分别发给各品类 SM。",
+    "outputs": [
+      [
+        "分发客户图纸结果",
+        "各 SM 取得本品类报价所需的原始图纸。"
+      ]
+    ],
+    "gate": "各 SM 取得本品类报价所需的原始图纸。",
+    "routes": [
+      [
+        8,
+        "SM 收到图纸"
+      ]
+    ]
+  },
+  {
+    "id": 8,
+    "phase": 2,
+    "x": 1,
+    "y": 1,
+    "title": "按品类清洗图纸",
+    "owner": "SM",
+    "system": "线下",
+    "entry": "线下 · 按品类清洗图纸",
+    "input": "按上一站的业务结果办理。",
+    "action": "每个品类的 SM 整理客户 CAD 或图纸。",
+    "outputs": [
+      [
+        "按品类清洗图纸结果",
+        "形成该品类可用于报价的图纸。"
+      ]
+    ],
+    "gate": "形成该品类可用于报价的图纸。",
+    "routes": [
+      [
+        9,
+        "图纸可用于报价"
+      ]
+    ]
+  },
+  {
+    "id": 9,
+    "phase": 2,
+    "x": 2,
+    "y": 1,
+    "title": "编制 Excel 报价",
+    "owner": "SM",
+    "system": "Excel",
+    "entry": "Excel · 编制 Excel 报价",
+    "input": "按上一站的业务结果办理。",
+    "action": "按品类线下编制 Excel 报价单。",
+    "outputs": [
+      [
+        "编制 Excel 报价结果",
+        "客户报价可能包含多份文件，部分报价未标明空间。"
+      ]
+    ],
+    "gate": "客户报价可能包含多份文件，部分报价未标明空间。",
+    "routes": [
+      [
+        10,
+        "各品类分别交付"
+      ],
+      [
+        11,
+        "由 PM 汇总交付"
+      ]
+    ],
+    "branch": true
+  },
+  {
+    "id": 10,
+    "phase": 2,
+    "x": 3,
+    "y": 1,
+    "title": "分别发送报价",
+    "owner": "SM",
+    "system": "线下",
+    "entry": "线下 · 分别发送报价",
+    "input": "按上一站的业务结果办理。",
+    "action": "各品类 SM 分别发送自己的报价文件。",
+    "outputs": [
+      [
+        "分别发送报价结果",
+        "客户逐份核对不同品类报价。"
+      ]
+    ],
+    "gate": "客户逐份核对不同品类报价。",
+    "routes": [
+      [
+        12,
+        "客户收到各品类文件"
+      ]
+    ]
+  },
+  {
+    "id": 11,
+    "phase": 2,
+    "x": 3,
+    "y": 2,
+    "title": "汇总发送报价",
+    "owner": "PM",
+    "system": "线下",
+    "entry": "线下 · 汇总发送报价",
+    "input": "按上一站的业务结果办理。",
+    "action": "收集各品类 Excel 报价单并一起发送。",
+    "outputs": [
+      [
+        "汇总发送报价结果",
+        "客户收到汇总发送的多份品类文件。"
+      ]
+    ],
+    "gate": "客户收到汇总发送的多份品类文件。",
+    "routes": [
+      [
+        12,
+        "客户收到汇总文件"
+      ]
+    ]
+  },
+  {
+    "id": 12,
+    "phase": 2,
+    "x": 4,
+    "y": 1,
+    "title": "核对线下报价",
+    "owner": "客户",
+    "system": "线下",
+    "entry": "线下 · 核对线下报价",
+    "input": "按上一站的业务结果办理。",
+    "action": "逐份核对不同品类报价并反馈确认。",
+    "outputs": [
+      [
+        "核对线下报价结果",
+        "线下报价确认后，可创建金额虚拟单。"
+      ]
+    ],
+    "gate": "线下报价确认后，可创建金额虚拟单。",
+    "routes": [
+      [
+        13,
+        "线下报价确认后"
+      ]
+    ]
+  },
+  {
+    "id": 13,
+    "phase": 3,
+    "x": 1,
+    "y": 1,
+    "title": "创建金额虚拟单",
+    "owner": "PM",
+    "system": "CRM",
+    "entry": "CRM · 创建金额虚拟单",
+    "input": "按上一站的业务结果办理。",
+    "action": "依据线下报价创建仅含金额的虚拟单，并传 ERP。",
+    "outputs": [
+      [
+        "创建金额虚拟单结果",
+        "ERP 可依据金额虚拟单收款，产品明细后续补录。"
+      ]
+    ],
+    "gate": "ERP 可依据金额虚拟单收款，产品明细后续补录。",
+    "routes": [
+      [
+        14,
+        "金额虚拟单传入 ERP"
+      ]
+    ]
+  },
+  {
+    "id": 14,
+    "phase": 3,
+    "x": 2,
+    "y": 1,
+    "title": "ERP 收款",
+    "owner": "财务",
+    "system": "ERP",
+    "entry": "ERP · ERP 收款",
+    "input": "按上一站的业务结果办理。",
+    "action": "按该金额虚拟单办理并登记实际收款。",
+    "outputs": [
+      [
+        "ERP 收款结果",
+        "留下对应订单的实际收款金额。"
+      ]
+    ],
+    "gate": "留下对应订单的实际收款金额。",
+    "routes": [
+      [
+        15,
+        "后续补录正式产品报价"
+      ],
+      [
+        17,
+        "实收与产品明细一并核验"
+      ]
+    ]
+  },
+  {
+    "id": 15,
+    "phase": 4,
+    "x": 1,
+    "y": 1,
+    "title": "录入系统产品草稿",
+    "owner": "SM",
+    "system": "CRM",
+    "entry": "CRM · 录入系统产品草稿",
+    "input": "按上一站的业务结果办理。",
+    "action": "将线下 Excel 报价录入系统草稿。",
+    "outputs": [
+      [
+        "录入系统产品草稿结果",
+        "形成待绑定的产品草稿单。"
+      ]
+    ],
+    "gate": "形成待绑定的产品草稿单。",
+    "routes": [
+      [
+        16,
+        "系统草稿准备完成"
+      ]
+    ]
+  },
+  {
+    "id": 16,
+    "phase": 4,
+    "x": 2,
+    "y": 1,
+    "title": "绑定商机并补产品",
+    "owner": "SM",
+    "system": "CRM",
+    "entry": "CRM · 绑定商机并补产品",
+    "input": "按上一站的业务结果办理。",
+    "action": "草稿绑定商机，补充原金额订单产品明细，再传 ERP。",
+    "outputs": [
+      [
+        "绑定商机并补产品结果",
+        "ERP 得到正式产品明细。"
+      ]
+    ],
+    "gate": "ERP 得到正式产品明细。",
+    "routes": [
+      [
+        17,
+        "产品明细已补齐"
+      ]
+    ]
+  },
+  {
+    "id": 17,
+    "phase": 4,
+    "x": 3,
+    "y": 1,
+    "title": "核对备货条件",
+    "owner": "PM / SM",
+    "system": "ERP",
+    "entry": "ERP · 核对备货条件",
+    "input": "按上一站的业务结果办理。",
+    "action": "核验本单实收达到订单金额的 20%，并已有完整产品资料。",
+    "outputs": [
+      [
+        "核对备货条件结果",
+        "实收和产品资料两项都满足后办理备货。"
+      ]
+    ],
+    "gate": "实收和产品资料两项都满足后办理备货。",
+    "routes": [
+      [
+        18,
+        "同时满足两项条件"
+      ]
+    ],
+    "condition": "本单实收 ≥20% · 产品资料完整",
+    "reverse": "实收不足时继续收款；产品资料缺少时继续补录。",
+    "returns": [
+      [
+        14,
+        "实收不足"
+      ],
+      [
+        16,
+        "产品资料缺少"
+      ]
+    ]
+  },
+  {
+    "id": 18,
+    "phase": 4,
+    "x": 4,
+    "y": 1,
+    "title": "ERP 办理备货",
+    "owner": "PM / SM",
+    "system": "ERP",
+    "entry": "ERP · ERP 办理备货",
+    "input": "按上一站的业务结果办理。",
+    "action": "在对应订单中手动办理产品备货。",
+    "outputs": [
+      [
+        "ERP 办理备货结果",
+        "产品订单进入后续履行。"
+      ]
+    ],
+    "gate": "产品订单进入后续履行。",
+    "routes": []
+  },
+  {
+    "id": 21,
+    "phase": 1,
+    "x": 1,
+    "y": 1,
+    "title": "项目签阅添加设计师",
+    "owner": "PM",
+    "system": "CRM",
+    "entry": "CRM · 项目签阅添加设计师",
+    "input": "按上一站的业务结果办理。",
+    "action": "在项目签阅里添加设计师。",
+    "outputs": [
+      [
+        "项目签阅添加设计师结果",
+        "由对应设计师接手设计服务。"
+      ]
+    ],
+    "gate": "由对应设计师接手设计服务。",
+    "routes": [
+      [
+        22,
+        "设计师已安排"
+      ]
+    ]
+  },
+  {
+    "id": 22,
+    "phase": 2,
+    "x": 1,
+    "y": 1,
+    "title": "录入设计单",
+    "owner": "设计师",
+    "system": "CRM",
+    "entry": "CRM · 录入设计单",
+    "input": "按上一站的业务结果办理。",
+    "action": "填写设计服务内容与费用，录入设计单。",
+    "outputs": [
+      [
+        "录入设计单结果",
+        "设计单传 ERP 办理收款。"
+      ]
+    ],
+    "gate": "设计单传 ERP 办理收款。",
+    "routes": [
+      [
+        23,
+        "设计单传 ERP"
+      ]
+    ]
+  },
+  {
+    "id": 23,
+    "phase": 3,
+    "x": 1,
+    "y": 1,
+    "title": "ERP 办理设计收款",
+    "owner": "财务",
+    "system": "ERP",
+    "entry": "ERP · ERP 办理设计收款",
+    "input": "按上一站的业务结果办理。",
+    "action": "按设计单登记实际收款。",
+    "outputs": [
+      [
+        "ERP 办理设计收款结果",
+        "收款归入对应设计单。"
+      ]
+    ],
+    "gate": "收款归入对应设计单。",
+    "routes": []
+  }
+];
+const sourceNodes = new Map(nodes.map(node=>[node.id,node]));
+const flowDefinitions = {
+  "product": {
+    "name": "产品流程",
+    "context": "先给客户线下 Excel 报价，再用金额虚拟单收款，随后补录系统产品和绑定商机。",
+    "groups": {
+      "0": [
+        1,
+        2
+      ],
+      "1": [
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "2": [
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "3": [
+        13,
+        14
+      ],
+      "4": [
+        15,
+        16,
+        17,
+        18
+      ]
+    },
+    "stages": {},
+    "nodes": {}
+  },
+  "design": {
+    "name": "设计流程",
+    "context": "PM 在项目签阅中添加设计师，设计师录入设计单，ERP 按设计单收款。",
+    "groups": {
+      "0": [
+        1,
+        2
+      ],
+      "1": [
+        21
+      ],
+      "2": [
+        22
+      ],
+      "3": [
+        23
+      ]
+    },
+    "nodes": {},
+    "stages": {
+      "1": {
+        "short": "项目签阅",
+        "output": "指定设计师",
+        "note": "PM 通过项目签阅添加设计师。"
+      },
+      "2": {
+        "name": "设计单",
+        "short": "录入设计服务和费用",
+        "output": "设计单",
+        "note": "设计师录入设计单后传 ERP。"
+      },
+      "3": {
+        "name": "设计收款",
+        "short": "ERP 按设计单收款",
+        "output": "设计单实收记录",
+        "note": "财务在 ERP 按设计单登记实际收款。"
+      }
+    }
+  }
+};
+function prepareFlow(definition){
+  const phases=Object.keys(definition.groups).map(Number);
+  const ids=phases.flatMap(phase=>definition.groups[phase]);
+  const included=new Set(ids);
+  const byId=new Map(ids.map((id,index)=>{
+    const source={...sourceNodes.get(id),...definition.nodes[id]};
+    const onlyCurrent=routes=>(routes||[]).filter(([target])=>included.has(target));
+    return [id,{...source,step:index+1,routes:onlyCurrent(source.routes),returns:onlyCurrent(source.returns)}];
+  }));
+  return {...definition,phases,byId,order:ids.map(id=>byId.get(id))};
+}
+const flows=Object.fromEntries(Object.entries(flowDefinitions).map(([key,definition])=>[key,prepareFlow(definition)]));
+const state = { flow:'product', view:'journey', mode:'overview', stage:0, selected:1 };
+const activeFlow=()=>flows[state.flow];
+const stageOf=phase=>({...stages[phase],...activeFlow().stages[phase]});
+const phaseNumber=phase=>activeFlow().phases.indexOf(phase)+1;
+const byId=id=>activeFlow().byId.get(id);
+const stepNumber=node=>number(node.step);
+const $ = selector => document.querySelector(selector);
+const escape = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+const number = value => String(value).padStart(2,'0');
+const label = node => stepNumber(node)+' '+node.title;
+const rows = phase => (activeFlow().groups[phase]||[]).map(byId);
+const rolesOf = node => [node.owner, node.with || ''].flatMap(value => value.split(/[/、]/).map(role => role.trim()).filter(Boolean));
+const selectedNode = () => byId(state.selected);
+const walking = () => state.view==='journey' && state.mode==='walk';
+const kind = node => node.phase === 5 ? ['support','按需'] : node.system === 'CRM' ? ['','CRM'] : ['external',node.system];
+function routeList(routes) {
+  if(!routes?.length)return '';
+  return '<ul class="route-list">'+routes.map(([id,condition,owner])=>{
+    const to=byId(id);
+    return '<li><p class="route-condition">'+escape(condition)+'</p><div class="route-destination"><button type="button" data-jump="'+id+'">'+escape(label(to))+' ↗</button><small>'+escape((owner||to.owner)+' · '+to.system)+'</small></div></li>';
+  }).join('')+'</ul>';
+}
+function routeSummary(routes) {
+  return (routes||[]).map(([id,condition,owner])=>{
+    const to=byId(id);
+    return escape(condition)+' → '+escape(label(to))+'（'+escape((owner||to.owner)+' · '+to.system)+'）';
+  }).join('<br>');
+}
+function card(node, positioned=false) {
+  const [tone, badge] = kind(node);
+  const position = positioned ? ' style="grid-column:'+node.x+';grid-row:'+node.y+'"' : '';
+  return '<button type="button" class="node" data-node="'+node.id+'" aria-pressed="'+(node.id===state.selected)+'"'+position+'><span class="node-top"><span class="node-no">'+stepNumber(node)+'</span><span class="kind '+tone+'">'+escape(badge)+'</span></span><b class="node-title">'+escape(node.title)+'</b><span class="node-meta">'+escape(node.owner)+'</span>'+(node.condition?'<span class="node-condition">'+escape(node.condition)+'</span>':'')+'</button>';
+}
+function graph(phase) {
+  const stage=stageOf(phase), group=rows(phase), columns=Math.max(...group.map(node=>node.x));
+  const handoffs=group.flatMap(node=>node.routes.filter(([id])=>byId(id).phase!==phase).map(([id,condition])=>'<button type="button" data-jump="'+id+'">'+stepNumber(node)+' · '+escape(condition)+' → '+escape(label(byId(id)))+'</button>'));
+  return '<section class="phase" id="phase-'+phase+'"><header class="phase-head"><span class="phase-no">'+number(phaseNumber(phase))+'</span><div><h3>'+escape(stage.name)+'</h3><small>'+escape(stage.short)+'</small></div><span class="gate-mini">'+escape(stage.output)+'</span></header><div class="graph-scroll" role="region" aria-label="'+escape(stage.name)+'流程" tabindex="0"><div class="graph" data-graph="'+phase+'" style="--cols:'+columns+'">'+group.map(node=>card(node,true)).join('')+'</div></div><div class="phase-note"><p><strong>流转说明</strong>'+escape(stage.note)+'</p>'+(handoffs.length?'<div class="jumps" aria-label="跨阶段衔接">'+handoffs.join('')+'</div>':'')+'</div></section>';
+}
+function drawEdges() {
+  for(const graphElement of document.querySelectorAll('.graph')){
+    const phase=Number(graphElement.dataset.graph), box=graphElement.getBoundingClientRect();
+    if(!box.width) continue;
+    graphElement.querySelector('svg')?.remove();
+    const marker='arrow-'+phase;
+    const paths=[];
+    for(const from of rows(phase)){
+      for(const [id] of from.routes){
+        const to=byId(id);
+        if(to.phase!==phase) continue;
+        const a=graphElement.querySelector('[data-node="'+from.id+'"]').getBoundingClientRect();
+        const b=graphElement.querySelector('[data-node="'+to.id+'"]').getBoundingClientRect();
+        const back=to.step<from.step;
+        let d;
+        if(from.x===to.x){
+          const direction=b.top>a.top?1:-1, shift=back?18:0;
+          const x=a.left+a.width/2-box.left+shift, y1=(direction===1?a.bottom:a.top)-box.top, y2=(direction===1?b.top:b.bottom)-box.top-direction*3;
+          d='M '+x+' '+y1+' V '+y2;
+        }else{
+          const x1=a.right-box.left, y1=a.top+a.height/2-box.top, x2=b.left-box.left-3, y2=b.top+b.height/2-box.top;
+          const bend=x1+(x2-x1)/2;
+          d='M '+x1+' '+y1+' H '+bend+' V '+y2+' H '+x2;
+        }
+        paths.push('<path class="edge '+(back?'return':from.branch?'conditional':'')+'" d="'+d+'" marker-end="url(#'+marker+(back?'-back':'')+')"/>');
+      }
+    }
+    if(paths.length){
+      const arrow=(suffix,color)=>'<marker id="'+marker+suffix+'" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 Z" fill="'+color+'"/></marker>';
+      graphElement.insertAdjacentHTML('afterbegin','<svg class="edges" aria-hidden="true" viewBox="0 0 '+box.width+' '+box.height+'"><defs>'+arrow('','#6d98cd')+arrow('-back','#ad6b2a')+'</defs>'+paths.join('')+'</svg>');
+    }
+  }
+}
+function lane(phase) {
+  const group=rows(phase), stage=stageOf(phase), owners=[...new Set(group.map(node=>node.owner))];
+  const cells=owners.map(owner=>'<div class="lane-name">'+escape(owner)+'</div>'+group.map(node=>'<div class="lane-cell">'+(node.owner===owner?card(node):'')+'</div>').join('')).join('');
+  const handoffs=group.filter(node=>node.routes.length).map(node=>'<p><b>'+escape(label(node))+'</b><br>'+routeSummary(node.routes)+'</p>').join('');
+  return '<section class="lane-panel" id="phase-'+phase+'"><div class="lane-intro"><span class="eyebrow">阶段 '+number(phaseNumber(phase))+'</span><h2>'+escape(stage.name)+'</h2><p>'+escape(stage.note)+'</p></div><div class="lane-scroll" role="region" aria-label="'+escape(stage.name)+'角色泳道" tabindex="0"><div class="lane-grid" style="--cols:'+group.length+'"><div class="lane-axis">主责角色</div>'+group.map(node=>'<div class="lane-axis">节点 '+stepNumber(node)+'</div>').join('')+cells+'</div></div><div class="lane-handoffs"><h3>角色交接与分支</h3>'+handoffs+'</div></section>';
+}
+function detail() {
+  const node=selectedNode();
+  const panel=$('#detail'), focused=panel.contains(document.activeElement);
+  const walk=walking();
+  const flow=activeFlow(), order=flow.order;
+  const stepButton=(target,text)=>'<button class="button" data-jump="'+(target?.id||'')+'" '+(target?'title="'+escape(target.title)+'"':'disabled')+'>'+text+'</button>';
+  const previous=stepButton(order[node.step-2],'← 上一站');
+  const next=stepButton(order[node.step],'下一站 →');
+  const index=walk?'<nav class="walk-index" aria-label="按编号选择节点">'+order.map(item=>'<button type="button" data-node="'+item.id+'" aria-label="'+escape(label(item))+'" title="'+escape(label(item))+'" aria-pressed="'+(item.id===node.id)+'">'+stepNumber(item)+'</button>').join('')+'</nav>':'';
+  const section=(i,title,html)=>'<section><h3><i>'+i+'</i>'+title+'</h3>'+html+'</section>';
+  const outputs=node.outputs.map(([title,use])=>'<p class="output"><b>'+escape(title)+'</b><br>'+escape(use)+'</p>').join('');
+  panel.innerHTML='<div class="detail-head"><div><span class="badge">'+escape(flow.name)+' · '+stepNumber(node)+' / '+order.length+(walk?' · '+escape(stageOf(node.phase).name):'')+'</span><h2 tabindex="-1">'+escape(node.title)+'</h2><p>'+escape(node.entry)+'</p></div>'+(walk?'<div class="walk-stepper" role="group" aria-label="按编号走读">'+previous+next+'</div>':'')+'</div><div class="detail-body"><div class="who"><div><small>主责与协同</small><b>'+escape(node.owner)+'</b>'+(node.with?'<span>协同：'+escape(node.with)+'</span>':'')+'</div><div><small>办理系统</small><b>'+escape(node.system)+'</b></div></div>'+
+    section(1,'进入条件','<p>'+escape(node.input)+'</p>')+
+    section(2,'操作内容','<p>'+escape(node.action)+'</p>')+
+    section(3,'产出与用途',outputs)+
+    section(4,'流转条件与去向','<p class="gate">'+escape(node.gate)+'</p>'+routeList(node.routes))+
+    (node.reverse?section(5,'异常、退回与重办','<p class="reverse">'+escape(node.reverse)+'</p>'+routeList(node.returns)):'')+
+    '</div>'+(walk?index:'<div class="detail-foot">'+previous+'<button class="button mobile-back" id="backMap">回到图中</button>'+next+'</div>');
+  panel.scrollTop=0;
+  if(focused)panel.querySelector('h2').focus({preventScroll:true});
+}
+function rail() {
+  const stageRail=$('#stageRail');
+  if(stageRail.dataset.flow!==state.flow){
+    const phases=activeFlow().phases;
+    stageRail.dataset.flow=state.flow;
+    stageRail.style.setProperty('--stage-count',phases.length);
+    stageRail.innerHTML=phases.map(phase=>{
+      const stage=stageOf(phase);
+      return '<button class="stage-item" data-stage="'+phase+'"><span>'+number(phaseNumber(phase))+'</span><b>'+escape(stage.name)+'</b><small>'+escape(stage.short)+'</small></button>';
+    }).join('');
+  }
+  for(const button of stageRail.children)button.setAttribute('aria-pressed',String(Number(button.dataset.stage)===state.stage));
+}
+function highlight() {
+  const query=$('#search').value.trim().toLowerCase(), role=$('#roles').value, system=$('#systems').value;
+  const matches=node=>(!query||JSON.stringify(node).toLowerCase().includes(query))&&(!role||rolesOf(node).includes(role))&&(!system||node.system===system);
+  for(const button of document.querySelectorAll('[data-node]')){
+    const node=byId(Number(button.dataset.node));
+    button.classList.toggle('dim',!matches(node));
+    button.setAttribute('aria-pressed',String(node.id===state.selected));
+  }
+  $('#filterInfo').textContent=query||role||system?'本视图匹配 '+activeFlow().order.filter(matches).length+' / '+activeFlow().order.length+' 个节点':walking()?'按编号走读，也可从详情跳到实际流转节点':'点击节点查看详情';
+}
+function render() {
+  for(const tab of document.querySelectorAll('[data-view]'))tab.setAttribute('aria-selected',String(tab.dataset.view===state.view));
+  const flow=activeFlow();
+  for(const button of document.querySelectorAll('[data-flow]'))button.setAttribute('aria-pressed',String(button.dataset.flow===state.flow));
+  $('#count').textContent=flow.name+' · '+flow.phases.length+' 个阶段 · '+flow.order.length+' 个节点';
+  $('#flowContext').innerHTML='<strong>'+escape(flow.name)+'</strong>'+escape(flow.context);
+  rail();
+  renderPrint();
+  const basis=state.view==='basis';
+  $('#tools').hidden=$('#layout').hidden=basis;
+  $('#basis').hidden=!basis;
+  $('#journeyMode').hidden=state.view!=='journey';
+  if(basis)return;
+  const walk=walking();
+  $('#edgeLegend').hidden=walk;
+  for(const button of $('#journeyMode').children)button.setAttribute('aria-pressed',String(button.dataset.mode===state.mode));
+  $('#viewTitle').textContent=state.view==='lanes'?'按角色查看交接':walk?'逐站走读':'业务流向';
+  $('#layout').classList.toggle('walk',walk);
+  $('#maps').hidden=walk;
+  const renderStage=state.view==='lanes'?lane:graph;
+  $('#maps').innerHTML=walk?'':flow.phases.map(renderStage).join('');
+  detail();highlight();
+  requestAnimationFrame(drawEdges);
+}
+function scrollToElement(element, block='start') {
+  element?.scrollIntoView({
+    block,
+    inline:'nearest',
+    behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',
+  });
+}
+function locateView() {
+  if(state.view==='basis')return scrollToElement($('#basis'));
+  if(walking())return scrollToElement($('#tools'));
+  scrollToElement($('#phase-'+state.stage));
+  const card=$('#maps [data-node="'+state.selected+'"]');
+  const viewport=card?.closest('.graph-scroll,.lane-scroll');
+  if(viewport && viewport.scrollWidth>viewport.clientWidth){
+    const left=viewport.scrollLeft+card.getBoundingClientRect().left-viewport.getBoundingClientRect().left;
+    viewport.scrollLeft=left-(viewport.clientWidth-card.offsetWidth)/2;
+  }
+}
+function select(id, source) {
+  const node=byId(id);
+  if(!node)return;
+  state.selected=id;state.stage=node.phase;
+  rail();detail();highlight();
+  writeLocation();
+  if(source==='stage'||walking())locateView();
+  else if(source==='card'&&matchMedia('(max-width:900px)').matches)scrollToElement($('#detail'));
+  else if(source==='jump'){
+    scrollToElement($('#maps [data-node="'+id+'"]'),'nearest');
+  }
+}
+const printSection = (title,body) => '<p><b>'+title+'：</b>'+body+'</p>';
+function renderPrint(){
+  const flow=activeFlow();
+  $('#printAll').innerHTML='<h1>敬城 CRM · '+escape(flow.name)+'</h1><p>'+escape(flow.context)+'</p>'+
+  flow.phases.map(phase=>{
+    const stage=stageOf(phase);
+    return '<h2>'+number(phaseNumber(phase))+' '+escape(stage.name)+'</h2><p>'+escape(stage.note)+'</p>'+rows(phase).map(node=>'<article><h3>'+escape(label(node))+'</h3>'+
+    printSection('主责与系统',escape(node.owner+' · '+node.system+(node.with?' · 协同 '+node.with:'')))+
+    printSection('入口与条件',escape(node.entry+'。'+node.input))+
+    printSection('操作',escape(node.action))+
+    printSection('产出',node.outputs.map(pair=>escape(pair.join(' — '))).join('<br>'))+
+    printSection('流转',escape(node.gate)+(node.routes.length?'<br>'+routeSummary(node.routes):''))+
+    (node.reverse?printSection('异常与退回',escape(node.reverse)+(node.returns?.length?'<br>'+routeSummary(node.returns):'')):'')+'</article>').join('');
+  }).join('');
+}
+function syncFilters(){
+  const order=activeFlow().order;
+  for(const [selector,label,values] of [['#roles','全部角色',order.flatMap(rolesOf)],['#systems','全部系统',order.map(node=>node.system)]]){
+    $(selector).replaceChildren(new Option(label,''),...[...new Set(values)].map(value=>new Option(value,value)));
+  }
+  $('#search').value='';
+}
+function writeLocation(){
+  history.replaceState(null,'','#'+state.flow+'/node-'+state.selected);
+}
+$('#search').addEventListener('input',highlight);
+$('#roles').addEventListener('change',highlight);
+$('#systems').addEventListener('change',highlight);
+$('#clear').addEventListener('click',()=>{$('#search').value=$('#roles').value=$('#systems').value='';highlight();});
+$('#print').addEventListener('click',()=>window.print());
+document.addEventListener('click',event=>{
+  const button=event.target.closest('button');
+  if(!button)return;
+  const { flow, view, mode, stage, node, jump }=button.dataset;
+  if(flow){
+    if(flow===state.flow)return;
+    state.flow=flow;state.selected=1;state.stage=0;
+    syncFilters();writeLocation();render();
+    if(state.view==='basis'||walking())locateView();
+    else scrollToElement($('#stageRail'));
+    return;
+  }
+  if(view){if(view===state.view)return;state.view=view;render();locateView();return;}
+  if(mode){
+    if(state.mode===mode)return;
+    state.mode=mode;
+    render();
+    locateView();
+    return;
+  }
+  if(stage!==undefined){
+    if(state.view==='basis'){state.view='journey';render();}
+    select(rows(Number(stage))[0].id,'stage');
+  }else if(node)select(Number(node),'card');
+  else if(jump)select(Number(jump),'jump');
+  else if(button.id==='backMap')scrollToElement($('#maps [data-node="'+state.selected+'"]'),'center');
+});
+window.addEventListener('resize',()=>requestAnimationFrame(drawEdges));
+const link=location.hash.match(/^#(?:(product|design)\/)?node-(\d+)$/);
+if(link){
+  const id=Number(link[2]);
+  state.flow=link[1]||(!flows.product.byId.has(id)&&flows.design.byId.has(id)?'design':'product');
+  const target=id;
+  const node=byId(target);
+  if(node){state.selected=node.id;state.stage=node.phase;}
+}
+new ResizeObserver(()=>{
+  document.documentElement.style.scrollPaddingTop=($('.nav-wrap').offsetHeight+12)+'px';
+}).observe($('.nav-wrap'));
+syncFilters();render();
+if(link)requestAnimationFrame(()=>$('[data-node="'+state.selected+'"]')?.scrollIntoView({block:'center'}));
+</script>
+<script src="./release-notice-loader.js?v=fa0e9518969c0dda1b24a97895aca207fabb9812c8de6c119aeb58ee191ff171" defer data-crm-document-release data-release-document="workflow-comparison.html" data-release-version="fa0e9518969c0dda1b24a97895aca207fabb9812c8de6c119aeb58ee191ff171" data-release-built-at="2026-11-09T11:23:43.504Z"></script>
+</body>
+</html>
