@@ -107,7 +107,7 @@
         <tr><td>CRM</td><td>维护客户与项目，分配和承接商机，编制及发布报价。产品报价首次提交生成销售订单，设计报价提交形成设计单；两者分别发起 ERP 传输。产品、设计报价待办完成后，分别生成 PM、设计师的收款待办，收款单统一传输至 FSSC。产品满足备货条件后通知 PM；设计确认实收后通知 GDS 启动设计。</td></tr>
         <tr><td>客户报价页</td><td>客户通过专用密码链接核对报价，按品类与原单或加单确认当前版本。确认结果供产品备货校验。</td></tr>
         <tr><td>FSSC</td><td>接收产品与设计收款单。财务在 FSSC 办理绑定流水待办；绑定成功回传结果，单据不合规时说明原因并退回原提交人。</td></tr>
-        <tr><td>ERP</td><td>接收订单，保留按单实收结果，办理产品备货与后续履行。每单单独计算实收比例，订单接收、实收和实际备货分别以对应回执为准。</td></tr>
+        <tr><td>ERP</td><td>接收订单，保留按单实收结果，办理产品备货与后续履行。每单单独计算实收比例，订单接收、实收和实际备货分别以对应回执为准。 备货后退货再建单回传原商机和项目订单列表。原单调整后金额与 SP 单金额一起计入商机及项目，两端报价总览仍显示原报价。</td></tr>
         <tr><td>GDS</td><td>设计单确认实收后，GDS 接收通知并执行关联的设计中待办。图纸通过 CRM 的设计定稿待办交接。</td></tr>
         <tr><td>企业微信</td><td>承接待办到达、报价提交结果、助理安排及重新激活等通知。卡片链接回原待办，办理结果由对应业务操作产生。</td></tr>
       </tbody></table>
@@ -171,7 +171,7 @@ for(const node of nodes){
  if(node.id===9)Object.assign(node,{input:'待接受或已接受采购商机，当前人员有报价权限。',action:'直接编辑产品报价，或从报价草稿绑定。草稿可重复使用，每次绑定独立保留来源与订单内容。提交或绑定先核对空间、统一替换为对应的项目空间名称，再填写报价单提交表单；当前待办或商机内绑定固定目标；草稿提交可共享给所选方案经理，绑定时从草稿工作区统一选择有权办理的商机并核对空间。核对时只能选择项目已有空间，不编辑项目空间或调整顺序。'});
  if(node.id===11)Object.assign(node,{title:'创建设计单',input:'待接受或已接受设计商机，当前设计负责人有权限。',action:'填写费用、附件和备注，确认创建。创建成功同时接受商机、记录ERP请求、完成设计报价待办。',outputs:[['设计单','创建即生效，无产品报价暂存或另行提交。']],gate:'成功创建后进入设计单结果及收款。',reverse:'失败保留填写及原待办；后续按权限编辑同一设计单。'});
  if(node.id===12)Object.assign(node,{title:'设计单创建成功 · 发布与ERP请求',action:'保存设计单及版本、发布结果并记录ERP请求，完成同一设计报价待办。',gate:'设计单保存成功后，设计师办理收款。'});
- if(node.id===26)Object.assign(node,{action:'普通暂存保留上次有效发布。项目空间改名直接更新两端总览，下次提交按空间标识自动匹配。新增时仅在需要报价时编辑提交。删除含已提交产品的空间后撤回受影响的整张可编辑报价，原报价待办恢复待处理。空间增删或改名保存成功后通知相关产品商机负责人及当前报价助理。',outputs:[['报价新版本或受影响原待办','普通暂存后仍可从已处理待办重提；空间删除影响时从重新激活待办核对重提。']],reverse:'历史提交、确认、订单及ERP内容不覆盖；已备货原单保留，新增需求另行加单。'});
+ if(node.id===26)Object.assign(node,{action:'普通暂存保留上次有效发布。项目空间改名直接更新两端总览，下次提交按空间标识自动匹配。新增时仅在需要报价时编辑提交。空间关联已备货订单时禁止删除。删除其他含已提交产品的空间后撤回受影响的整张可编辑报价，原报价待办恢复待处理。空间增删或改名保存成功后通知相关产品商机负责人及当前报价助理。',outputs:[['报价新版本或受影响原待办','普通暂存后仍可从已处理待办重提；空间删除影响时从重新激活待办核对重提。']],reverse:'历史提交、确认、订单及ERP内容不覆盖；已备货原单保留，新增需求另行加单。'});
 }
 
 
@@ -551,6 +551,6 @@ new ResizeObserver(()=>{
 syncFilters();render();
 if(link)requestAnimationFrame(()=>$('[data-node="'+state.selected+'"]')?.scrollIntoView({block:'center'}));
 </script>
-<script src="./release-notice-loader.js?v=e556198668619a6eb8a6d06bead331f45138e02cfff43916b0b46221dcc8d9f2" defer data-crm-document-release data-release-document="order-journey.html" data-release-version="e556198668619a6eb8a6d06bead331f45138e02cfff43916b0b46221dcc8d9f2" data-release-built-at="2026-11-10T01:22:17.607Z"></script>
+<script src="./release-notice-loader.js?v=340a45086571f56a9126426f0a1655fe245efcbfa183102c481daac9c0b8240c" defer data-crm-document-release data-release-document="order-journey.html" data-release-version="340a45086571f56a9126426f0a1655fe245efcbfa183102c481daac9c0b8240c" data-release-built-at="2026-11-10T03:18:55.150Z"></script>
 </body>
 </html>
