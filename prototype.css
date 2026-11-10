@@ -221,6 +221,8 @@ th.ops-col{z-index:3;background:var(--thead)}
 .drawer .fi{margin-bottom:14px}
 .col-item{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f5f5f5;font-size:13px}
 .toast{position:fixed;top:24px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.78);color:#fff;padding:10px 16px;border-radius:4px;display:none;z-index:1100}
+.toast[data-result="success"]{background:#176a52}
+.toast[data-result="error"]{background:#a53037}
 .toast.on{display:block}
 .timeline{display:flex;flex-direction:column;gap:14px}
 .timeline .item{display:flex;gap:10px;align-items:flex-start}
