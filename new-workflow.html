@@ -126,7 +126,7 @@
 <script>
 const stages = [
   { name:'客户与项目', short:'建立项目档案', output:'客户、项目与分配商机待办', note:'客户可对应多个独立项目。PM 创建项目后，系统生成该项目的分配商机待办。' },
-  { name:'分配与承接', short:'按业务选择接收人', output:'有效商机与报价待办', note:'区域内采购和设计分配后直接生成待接受商机及报价待办；跨区域或转介绍先审批。' },
+  { name:'分配与承接', short:'按业务选择接收人', output:'有效商机与报价待办', note:'首次区域内采购和设计分配后直接生成待接受商机及报价待办。首次跨区域或转介绍先审批。再次分配给同项目、同品类或部门已承接的当前 SM 时，生成关联原商机的加单和独立报价待办。' },
   { name:'报价与订单', short:'提交即生成订单', output:'正式报价、订单与确认记录', note:'报价提交后，ERP 传输与客户查看分别推进。客户确认完成产品备货的一项前置条件。' },
   { name:'收款与履行', short:'CRM 收款单 · FSSC 绑定流水', output:'收款单、实收与履行回执', note:'产品由 PM、设计由设计师创建收款单，均由财务在 FSSC 绑定流水。产品当前报价已获客户确认且本单累计实收达到 20% 时，通知 PM 在 ERP 办理备货；设计确认实收后通知 GDS 开始设计。' },
   { name:'设计图纸协作', short:'回图、审核与归档', output:'确认图纸与项目档案', note:'GDS 开始办理设计中待办后，可分批回传图纸。图纸进入 CRM 设计定稿待办，由 PM 或指定协调员审核并同步项目。' },
@@ -551,6 +551,6 @@ new ResizeObserver(()=>{
 syncFilters();render();
 if(link)requestAnimationFrame(()=>$('[data-node="'+state.selected+'"]')?.scrollIntoView({block:'center'}));
 </script>
-<script src="./release-notice-loader.js?v=340a45086571f56a9126426f0a1655fe245efcbfa183102c481daac9c0b8240c" defer data-crm-document-release data-release-document="new-workflow.html" data-release-version="340a45086571f56a9126426f0a1655fe245efcbfa183102c481daac9c0b8240c" data-release-built-at="2026-11-10T03:18:55.150Z"></script>
+<script src="./release-notice-loader.js?v=a31a0d5809ca70255243a62e1cb440a95d754d42a903034da9c265974f935fde" defer data-crm-document-release data-release-document="new-workflow.html" data-release-version="a31a0d5809ca70255243a62e1cb440a95d754d42a903034da9c265974f935fde" data-release-built-at="2026-11-10T03:44:04.770Z"></script>
 </body>
 </html>
