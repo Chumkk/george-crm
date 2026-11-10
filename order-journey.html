@@ -126,7 +126,7 @@
 <script>
 const stages = [
   { name:'客户与项目', short:'建立项目档案', output:'客户、项目与分配商机待办', note:'客户可对应多个独立项目。PM 创建项目后，系统生成该项目的分配商机待办。' },
-  { name:'分配与承接', short:'按业务选择接收人', output:'有效商机与报价待办', note:'首次区域内采购和设计分配后直接生成待接受商机及报价待办。首次跨区域或转介绍先审批。再次分配给同项目、同品类或部门已承接的当前 SM 时，生成关联原商机的加单和独立报价待办。' },
+  { name:'分配与承接', short:'按业务选择接收人', output:'有效商机与报价待办', note:'首次区域内采购和设计分配后直接生成待接受商机及报价待办。首次跨区域或转介绍先审批。再次分配给同项目、同品类或部门的当前 SM 时，生成带「加单」标识的独立报价待办。原商机待接受时，原单和加单可按任意顺序分别承接。' },
   { name:'报价与订单', short:'提交即生成订单', output:'正式报价、订单与确认记录', note:'报价提交后，ERP 传输与客户查看分别推进。客户确认完成产品备货的一项前置条件。' },
   { name:'收款与履行', short:'CRM 收款单 · FSSC 绑定流水', output:'收款单、实收与履行回执', note:'产品由 PM、设计由设计师创建收款单，均由财务在 FSSC 绑定流水。产品当前报价已获客户确认且本单累计实收达到 20% 时，通知 PM 在 ERP 办理备货；设计确认实收后通知 GDS 开始设计。' },
   { name:'设计图纸协作', short:'回图、审核与归档', output:'确认图纸与项目档案', note:'GDS 开始办理设计中待办后，可分批回传图纸。图纸进入 CRM 设计定稿待办，由 PM 或指定协调员审核并同步项目。' },
@@ -551,6 +551,6 @@ new ResizeObserver(()=>{
 syncFilters();render();
 if(link)requestAnimationFrame(()=>$('[data-node="'+state.selected+'"]')?.scrollIntoView({block:'center'}));
 </script>
-<script src="./release-notice-loader.js?v=bae04e35c5d9dcc683a91e55d5fa000f90be50010d597683f0266c2d6cb6d391" defer data-crm-document-release data-release-document="order-journey.html" data-release-version="bae04e35c5d9dcc683a91e55d5fa000f90be50010d597683f0266c2d6cb6d391" data-release-built-at="2026-11-10T04:03:24.964Z"></script>
+<script src="./release-notice-loader.js?v=d4ea60c633d683e85cb3f995c4c295d041bef4df50125dd94d2ed2639e795257" defer data-crm-document-release data-release-document="order-journey.html" data-release-version="d4ea60c633d683e85cb3f995c4c295d041bef4df50125dd94d2ed2639e795257" data-release-built-at="2026-11-10T06:12:14.088Z"></script>
 </body>
 </html>
