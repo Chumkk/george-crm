@@ -67,6 +67,10 @@
     .walk .detail-body{grid-template-columns:1fr}
     .walk .detail-head,.walk .detail-body,.walk-index{padding-inline:14px}
   }
+/* BEGIN FLOW LINE STYLES V363 */
+.edges path.main{stroke:#6d98cd;stroke-dasharray:none}.edges path.side{stroke:#6d98cd;stroke-dasharray:5 4}.edges path.return{stroke:#ad6b2a;stroke-dasharray:4 3}
+.legend .side{border-top-style:dashed}.route-kind{display:inline-flex;align-items:center;gap:5px;margin-right:7px;font-size:11px;color:#607d9e;white-space:nowrap}.route-kind:before{content:"";width:18px;border-top:2px solid #6d98cd}.route-kind-side:before{border-top-style:dashed}.route-kind-return{color:#9b6126}.route-kind-return:before{border-color:#ad6b2a;border-top-style:dashed}.route-summary{line-height:1.8}.jumps .flow-link-side{border-style:dashed}.jumps .flow-link-return{border-color:#cf9c66;color:#9b6126}.line-note{margin-top:8px;color:var(--muted);font-size:12px}
+/* END FLOW LINE STYLES V363 */
 </style>
 </head>
 <body>
@@ -92,7 +96,7 @@
     <div id="tools">
       <div class="toolbar">
         <h2 id="viewTitle">业务流向</h2>
-        <div class="legend" id="edgeLegend"><span><i></i>业务流转（含条件分支）</span><span><i class="return"></i>退回或重办</span></div>
+        <div class="legend" id="edgeLegend"><span><i></i>主线／并行必要步骤</span><span><i class="side"></i>条件支线</span><span><i class="return"></i>退回／重办</span></div>
         <div class="journey-mode" id="journeyMode" role="group" aria-label="业务旅程显示方式">
           <button type="button" data-mode="overview" aria-pressed="true">流程总览</button>
           <button type="button" data-mode="walk" aria-pressed="false">逐站走读</button>
@@ -287,7 +291,7 @@ const flowDefinitions = {
       18:{y:1},
       20:{phase:4,x:2,y:1},
       25:{input:'已有来源设计商机，新增设计服务需要独立报价。',gate:'新增设计服务通过独立设计报价办理。'},
-      26:{owner:'设计负责人',entry:'原设计单 → 保存修改',input:'已创建且仍可编辑的设计单需要修改。',action:'保存修改直接更新同一设计单及ERP请求，保留原办结时间和办理人，不暂存、不激活原待办。',outputs:[['设计单新版本','原单号及历史保留。']],reverse:'保存失败保留原单和待办结果。'},
+      26:{title:'修改已创建设计单',routes:[[11,'按原设计单保存修改']],owner:'设计负责人',entry:'原设计单 → 保存修改',input:'已创建且仍可编辑的设计单需要修改。',action:'保存修改直接更新同一设计单及ERP请求，保留原办结时间和办理人，不暂存、不激活原待办。',outputs:[['设计单新版本','原单号及历史保留。']],reverse:'保存失败保留原单和待办结果。'},
       29:{with:'设计师',input:'FSSC 已收到 CRM 提交的设计收款单。',outputs:[['收款结果','记录本笔收款单、绑定流水和实际金额，关联原设计单。']],gate:'本设计单确认实收后，通知 GDS 办理设计中待办。'}
     }
   }
@@ -319,44 +323,91 @@ const rolesOf = node => [node.owner, node.with || ''].flatMap(value => value.spl
 const selectedNode = () => byId(state.selected);
 const walking = () => state.view==='journey' && state.mode==='walk';
 const kind = node => node.phase === 5 ? ['support','按需'] : node.system === 'CRM' ? ['','CRM'] : ['external',node.system];
-function routeList(routes) {
+// BEGIN FLOW SEMANTICS V363
+// Explicit business meanings, independent of node order, layout and out-degree.
+const workflowLineRules = {
+  current: {
+    product: {
+      main: ['1-2','2-3','3-7','7-9','9-10','10-13','10-28','13-14','14-17','28-29','29-17','17-19'],
+      side: ['3-5','5-7','10-26','25-9','30-7'],
+      rework: ['26-9'],
+      returns: ['29-28','17-14','17-28'],
+    },
+    design: {
+      main: ['1-2','2-3','3-8','8-11','11-12','12-16','16-29','29-18','18-22','18-20'],
+      side: ['12-26','25-11','26-11','30-8'],
+      rework: [],
+      returns: ['29-16'],
+    },
+  },
+  old: {
+    product: {
+      main: ['1-2','2-3','3-4','4-7','7-8','8-9','12-13','13-14','14-15','14-17','15-16','16-17','17-18'],
+      side: ['3-5','5-6','6-7','9-10','9-11','10-12','11-12'],
+      rework: [],
+      returns: ['17-14','17-16'],
+    },
+    design: {
+      main: ['1-2','2-21','21-22','22-23'],
+      side: [], rework: [], returns: [],
+    },
+  },
+};
+function workflowEdgeKind(edition, flow, from, to, relation = 'route') {
+  const rules = workflowLineRules[edition]?.[flow], key = from+'-'+to;
+  if (!rules) throw Error('Unknown workflow: '+edition+'/'+flow);
+  if (relation === 'return' && rules.returns.includes(key)) return 'return';
+  if (relation === 'route') {
+    for (const kind of ['main','side']) if (rules[kind].includes(key)) return kind;
+    if (rules.rework.includes(key)) return 'return';
+  }
+  throw Error('Unclassified business route: '+edition+'/'+flow+'/'+relation+'/'+key);
+}
+
+const workflowEdition='current';
+const lineLabels={main:'主线',side:'支线',return:'退回／重办'};
+const lineKind=(from,to,relation='route')=>workflowEdgeKind(workflowEdition,state.flow,typeof from==='object'?from.id:from,to,relation);
+const lineBadge=kind=>'<span class="route-kind route-kind-'+kind+'">'+lineLabels[kind]+'</span>';
+// END FLOW SEMANTICS V363
+function routeList(routes,from=selectedNode(),relation='route') {
   if(!routes?.length)return '';
-  return '<ul class="route-list">'+routes.map(([id,condition,owner])=>{
-    const to=byId(id);
-    return '<li><p class="route-condition">'+escape(condition)+'</p><div class="route-destination"><button type="button" data-jump="'+id+'">'+escape(label(to))+' ↗</button><small>'+escape((owner||to.owner)+' · '+to.system)+'</small></div></li>';
+  return '<ul class="route-list">'+routes.map(([id,condition,owner])=>{const to=byId(id),kind=lineKind(from,id,relation);
+    return '<li data-route="'+from.id+'-'+id+'" data-line-kind="'+kind+'"><p class="route-condition">'+lineBadge(kind)+escape(condition)+'</p><div class="route-destination"><button type="button" data-jump="'+id+'">'+escape(label(to))+' ↗</button><small>'+escape((owner||to.owner)+' · '+to.system)+'</small></div></li>';
   }).join('')+'</ul>';
 }
-function routeSummary(routes) {
-  return (routes||[]).map(([id,condition,owner])=>{
-    const to=byId(id);
-    return escape(condition)+' → '+escape(label(to))+'（'+escape((owner||to.owner)+' · '+to.system)+'）';
+
+function routeSummary(routes,from=selectedNode(),relation='route') {
+  return (routes||[]).map(([id,condition,owner])=>{const to=byId(id),kind=lineKind(from,id,relation);
+    return '<span class="route-summary" data-route="'+from.id+'-'+id+'" data-line-kind="'+kind+'">'+lineBadge(kind)+escape(condition)+' → '+escape(label(to))+'（'+escape((owner||to.owner)+' · '+to.system)+'）</span>';
   }).join('<br>');
 }
+
 function card(node, positioned=false) {
   const [tone, badge] = kind(node);
   const position = positioned ? ' style="grid-column:'+node.x+';grid-row:'+node.y+'"' : '';
   return '<button type="button" class="node" data-node="'+node.id+'" aria-pressed="'+(node.id===state.selected)+'"'+position+'><span class="node-top"><span class="node-no">'+stepNumber(node)+'</span><span class="kind '+tone+'">'+escape(badge)+'</span></span><b class="node-title">'+escape(node.title)+'</b><span class="node-meta">'+escape(node.owner)+'</span>'+(node.condition?'<span class="node-condition">'+escape(node.condition)+'</span>':'')+'</button>';
 }
 function graph(phase) {
-  const stage=stageOf(phase), group=rows(phase), columns=Math.max(...group.map(node=>node.x));
-  const handoffs=group.flatMap(node=>node.routes.filter(([id])=>byId(id).phase!==phase).map(([id,condition])=>'<button type="button" data-jump="'+id+'">'+stepNumber(node)+' · '+escape(condition)+' → '+escape(label(byId(id)))+'</button>'));
+  const stage=stageOf(phase),group=rows(phase),columns=Math.max(...group.map(node=>node.x));
+  const handoffs=group.flatMap(node=>[['route',node.routes],['return',node.returns]].flatMap(([relation,list])=>(list||[]).filter(([id])=>byId(id).phase!==phase||lineKind(node,id,relation)!=='main').map(([id,condition])=>{const kind=lineKind(node,id,relation);return '<button type="button" class="flow-link flow-link-'+kind+'" data-route="'+node.id+'-'+id+'" data-line-kind="'+kind+'" data-jump="'+id+'">'+lineBadge(kind)+stepNumber(node)+' · '+escape(condition)+' → '+escape(label(byId(id)))+'</button>';})));
   return '<section class="phase" id="phase-'+phase+'"><header class="phase-head"><span class="phase-no">'+number(phaseNumber(phase))+'</span><div><h3>'+escape(stage.name)+'</h3><small>'+escape(stage.short)+'</small></div><span class="gate-mini">'+escape(stage.output)+'</span></header><div class="graph-scroll" role="region" aria-label="'+escape(stage.name)+'流程" tabindex="0"><div class="graph" data-graph="'+phase+'" style="--cols:'+columns+'">'+group.map(node=>card(node,true)).join('')+'</div></div><div class="phase-note"><p><strong>流转说明</strong>'+escape(stage.note)+'</p>'+(handoffs.length?'<div class="jumps" aria-label="跨阶段衔接">'+handoffs.join('')+'</div>':'')+'</div></section>';
 }
 // Orthogonal routes use open corridors around cards, including direct branches.
-function workflowRoute(a, b, cards, incoming = 0, incomingCount = 1) {
+function workflowRoute(a, b, cards, incoming = 0, incomingCount = 1, outgoing = 0, outgoingCount = 1) {
   const cx = r => r.x + r.w / 2, cy = r => r.y + r.h / 2;
   const fraction = (incoming + 1) / (incomingCount + 1);
+  const sourceFraction = (outgoing + 1) / (outgoingCount + 1);
   let start, finish, first, last;
   if (Math.abs(cx(a) - cx(b)) < 1) {
     const down = cy(b) > cy(a), sign = down ? 1 : -1;
-    start = [cx(a), down ? a.y + a.h : a.y];
+    start = [a.x + a.w * sourceFraction, down ? a.y + a.h : a.y];
     finish = [b.x + b.w * fraction, down ? b.y : b.y + b.h];
     first = [start[0], start[1] + sign * 10];
     last = [finish[0], finish[1] - sign * 10];
   } else {
     const right = cx(b) > cx(a), sign = right ? 1 : -1;
     const upward = b.y + b.h < a.y;
-    start = upward ? [cx(a), a.y] : [right ? a.x + a.w : a.x, cy(a)];
+    start = upward ? [a.x + a.w * sourceFraction, a.y] : [right ? a.x + a.w : a.x, a.y + a.h * sourceFraction];
     finish = [right ? b.x : b.x + b.w, b.y + b.h * fraction];
     first = upward ? [start[0], start[1] - 10] : [start[0] + sign * 10, start[1]];
     last = [finish[0] - sign * 10, finish[1]];
@@ -397,24 +448,22 @@ function workflowRoute(a, b, cards, incoming = 0, incomingCount = 1) {
 function drawEdges() {
   for(const graphElement of document.querySelectorAll('.graph')){
     graphElement.querySelector('svg')?.remove();
-    const phase=Number(graphElement.dataset.graph),box=graphElement.getBoundingClientRect();
-    if(!box.width)continue;
+    const phase=Number(graphElement.dataset.graph),box=graphElement.getBoundingClientRect();if(!box.width)continue;
     const group=rows(phase),cards=group.map(node=>{const r=graphElement.querySelector('[data-node="'+node.id+'"]').getBoundingClientRect();return {id:node.id,x:r.left-box.left,y:r.top-box.top,w:r.width,h:r.height};});
     const lookup=new Map(cards.map(r=>[r.id,r])),links=[];
-    for(const from of group)for(const [id,condition] of from.routes)if(byId(id)?.phase===phase&&!links.some(e=>e.from.id===from.id&&e.to.id===id))links.push({from,to:byId(id),condition});
-    const marker='arrow-'+phase,paths=[],labels=[];
+    for(const from of group)for(const [relation,list]of [['route',from.routes],['return',from.returns]])for(const [id,condition]of list||[])if(byId(id)?.phase===phase&&!links.some(e=>e.from.id===from.id&&e.to.id===id&&e.relation===relation))links.push({from,to:byId(id),condition,relation,kind:lineKind(from,id,relation)});
+    const marker='arrow-'+phase,paths=[],labels=[],labelBoxes=[];
     for(const edge of links){
-      const {from,to,condition}=edge,incoming=links.filter(e=>e.to.id===to.id),index=incoming.indexOf(edge);
-      const points=workflowRoute(lookup.get(from.id),lookup.get(to.id),cards,index,incoming.length);
-      if(!points.length)continue;
-      const back=to.step<from.step,conditional=from.branch&&from.routes.length>1;
-      const d=points.map((p,i)=>(i?'L ':'M ')+p[0]+' '+p[1]).join(' ');
-      paths.push('<path data-edge="'+from.id+'-'+to.id+'" class="edge '+(back?'return':'')+'" d="'+d+'" marker-end="url(#'+marker+(back?'-back':'')+')"><title>'+escape(condition)+'</title></path>');
+      const {from,to,condition,relation,kind}=edge,incoming=links.filter(e=>e.to.id===to.id),outgoing=links.filter(e=>e.from.id===from.id);
+      const points=workflowRoute(lookup.get(from.id),lookup.get(to.id),cards,incoming.indexOf(edge),incoming.length,outgoing.indexOf(edge),outgoing.length);
+      if(!points.length)throw Error('Cannot route '+from.id+'-'+to.id);
+      const d=points.map((p,i)=>(i?'L ':'M ')+p[0]+' '+p[1]).join(' '),color=kind==='return'?'#ad6b2a':'#6d98cd';
+      paths.push('<path data-edge="'+from.id+'-'+to.id+'" data-line-kind="'+kind+'" data-relation="'+relation+'" class="edge '+kind+'" d="'+d+'" marker-end="url(#'+marker+(kind==='return'?'-back':'')+')"><title>'+lineLabels[kind]+'：'+escape(condition)+'</title></path>');
       const width=condition.length*11+14;
-      if(conditional)for(let i=1;i<points.length;i++){const a=points[i-1],b=points[i];if(a[1]!==b[1]||Math.abs(a[0]-b[0])<width+16)continue;
-        const x=(a[0]+b[0])/2,y=a[1]-8;
-        if(cards.some(r=>x+width/2>r.x&&x-width/2<r.x+r.w&&y+3>r.y&&y-14<r.y+r.h))continue;
-        labels.push('<g class="edge-label"><rect x="'+(x-width/2)+'" y="'+(y-13)+'" width="'+width+'" height="18" rx="3" fill="white"/><text x="'+x+'" y="'+y+'" text-anchor="middle" fill="#466e9e" font-size="11">'+escape(condition)+'</text></g>');break;
+      if(kind!=='main'||from.routes.length>1)for(let i=1;i<points.length;i++){const a=points[i-1],b=points[i];if(a[1]!==b[1]||Math.abs(a[0]-b[0])<width+16)continue;
+        const x=(a[0]+b[0])/2,y=a[1]-8,rect={x:x-width/2,y:y-13,w:width,h:18};
+        if([...cards,...labelBoxes].some(r=>rect.x+rect.w>r.x&&rect.x<r.x+r.w&&rect.y+rect.h>r.y&&rect.y<r.y+r.h))continue;
+        labelBoxes.push(rect);labels.push('<g class="edge-label"><rect x="'+rect.x+'" y="'+rect.y+'" width="'+width+'" height="18" rx="3" fill="white"/><text x="'+x+'" y="'+y+'" text-anchor="middle" fill="'+color+'" font-size="11">'+escape(condition)+'</text></g>');break;
       }
     }
     if(paths.length){const arrow=(suffix,color)=>'<marker id="'+marker+suffix+'" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 Z" fill="'+color+'"/></marker>';
@@ -426,7 +475,7 @@ function drawEdges() {
 function lane(phase) {
   const group=rows(phase), stage=stageOf(phase), owners=[...new Set(group.map(node=>node.owner))];
   const cells=owners.map(owner=>'<div class="lane-name">'+escape(owner)+'</div>'+group.map(node=>'<div class="lane-cell">'+(node.owner===owner?card(node):'')+'</div>').join('')).join('');
-  const handoffs=group.filter(node=>node.routes.length).map(node=>'<p><b>'+escape(label(node))+'</b><br>'+routeSummary(node.routes)+'</p>').join('');
+  const handoffs=group.filter(node=>node.routes.length).map(node=>'<p><b>'+escape(label(node))+'</b><br>'+routeSummary(node.routes,node)+'</p>').join('');
   return '<section class="lane-panel" id="phase-'+phase+'"><div class="lane-intro"><span class="eyebrow">阶段 '+number(phaseNumber(phase))+'</span><h2>'+escape(stage.name)+'</h2><p>'+escape(stage.note)+'</p></div><div class="lane-scroll" role="region" aria-label="'+escape(stage.name)+'角色泳道" tabindex="0"><div class="lane-grid" style="--cols:'+group.length+'"><div class="lane-axis">主责角色</div>'+group.map(node=>'<div class="lane-axis">节点 '+stepNumber(node)+'</div>').join('')+cells+'</div></div><div class="lane-handoffs"><h3>角色交接与分支</h3>'+handoffs+'</div></section>';
 }
 function detail() {
@@ -444,8 +493,8 @@ function detail() {
     section(1,'进入条件','<p>'+escape(node.input)+'</p>')+
     section(2,'操作内容','<p>'+escape(node.action)+'</p>')+
     section(3,'产出与用途',outputs)+
-    section(4,'流转条件与去向','<p class="gate">'+escape(node.gate)+'</p>'+routeList(node.routes))+
-    (node.reverse?section(5,'异常、退回与重办','<p class="reverse">'+escape(node.reverse)+'</p>'+routeList(node.returns)):'')+
+    section(4,'流转条件与去向','<p class="gate">'+escape(node.gate)+'</p>'+routeList(node.routes,node))+
+    (node.reverse?section(5,'异常、退回与重办','<p class="reverse">'+escape(node.reverse)+'</p>'+routeList(node.returns,node,'return')):'')+
     '</div>'+(walk?index:'<div class="detail-foot">'+previous+'<button class="button mobile-back" id="backMap">回到图中</button>'+next+'</div>');
   panel.scrollTop=0;
   if(focused)panel.querySelector('h2').focus({preventScroll:true});
@@ -538,8 +587,8 @@ function renderPrint(){
     printSection('入口与条件',escape(node.entry+'。'+node.input))+
     printSection('操作',escape(node.action))+
     printSection('产出',node.outputs.map(pair=>escape(pair.join(' — '))).join('<br>'))+
-    printSection('流转',escape(node.gate)+(node.routes.length?'<br>'+routeSummary(node.routes):''))+
-    (node.reverse?printSection('异常与退回',escape(node.reverse)+(node.returns?.length?'<br>'+routeSummary(node.returns):'')):'')+'</article>').join('');
+    printSection('流转',escape(node.gate)+(node.routes.length?'<br>'+routeSummary(node.routes,node):''))+
+    (node.reverse?printSection('异常与退回',escape(node.reverse)+(node.returns?.length?'<br>'+routeSummary(node.returns,node,'return'):'')):'')+'</article>').join('');
   }).join('');
 }
 function syncFilters(){
@@ -599,6 +648,6 @@ new ResizeObserver(()=>{
 syncFilters();render();
 if(link)requestAnimationFrame(()=>$('[data-node="'+state.selected+'"]')?.scrollIntoView({block:'center'}));
 </script>
-<script src="./release-notice-loader.js?v=99f8830a243aacaa6d975a606529edb90b5840b8f9d6e7cdd7d1ae8994ef347b" defer data-crm-document-release data-release-document="new-workflow.html" data-release-version="99f8830a243aacaa6d975a606529edb90b5840b8f9d6e7cdd7d1ae8994ef347b" data-release-built-at="2026-11-17T06:44:40.605Z"></script>
+<script src="./release-notice-loader.js?v=f23f7d115f9d61c58b272171a47d906633d68bc0d3af63da070a63ebd4845293" defer data-crm-document-release data-release-document="new-workflow.html" data-release-version="f23f7d115f9d61c58b272171a47d906633d68bc0d3af63da070a63ebd4845293" data-release-built-at="2026-11-17T07:05:20.214Z"></script>
 </body>
 </html>
