@@ -811,10 +811,10 @@ const kind = node => node.phase === 5 ? ['support','按需'] : node.system === '
 const workflowLineRules = {
   current: {
     product: {
-      main: ['1-2','2-3','3-7','7-9','9-10','10-13','10-28','13-14','14-17','28-29','29-17','17-19'],
-      side: ['3-5','5-7','10-26','25-9','30-7'],
+      main: ['1-2','2-3','3-7','7-9','9-10','10-28','28-29','29-17','17-19'],
+      side: ['3-5','5-7','10-13','13-14','10-26','25-9','30-7'],
       rework: ['26-9'],
-      returns: ['29-28','17-14','17-28'],
+      returns: ['29-28','17-28'],
     },
     design: {
       main: ['1-2','2-3','3-8','8-11','11-12','12-16','16-29','29-18','18-22','18-20'],
@@ -1131,6 +1131,6 @@ new ResizeObserver(()=>{
 syncFilters();render();
 if(link)requestAnimationFrame(()=>$('[data-node="'+state.selected+'"]')?.scrollIntoView({block:'center'}));
 </script>
-<script src="./release-notice-loader.js?v=54486ac9e33d9549ff24455beb2d8597720bd74df2141a885263812263acfeea" defer data-crm-document-release data-release-document="workflow-comparison.html" data-release-version="54486ac9e33d9549ff24455beb2d8597720bd74df2141a885263812263acfeea" data-release-built-at="2026-11-17T07:05:20.214Z"></script>
+<script src="./release-notice-loader.js?v=39610d4357c51ba4adf89bb124f48cef74de93ba1ef6953a30f20af53b46ff1d" defer data-crm-document-release data-release-document="workflow-comparison.html" data-release-version="39610d4357c51ba4adf89bb124f48cef74de93ba1ef6953a30f20af53b46ff1d" data-release-built-at="2026-11-17T09:21:00.598Z"></script>
 </body>
 </html>
