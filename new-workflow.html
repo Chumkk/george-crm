@@ -13,7 +13,7 @@
   .hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(220px,30%);gap:32px;align-items:center;padding:32px 0 23px}.eyebrow{display:block;color:var(--deep);font-size:11px;font-weight:750;letter-spacing:.15em;margin-bottom:8px}.hero p{margin-top:9px;font-size:15px}.hero-aside{border-left:1px solid var(--line);padding:8px 0 8px 24px}.milestones{display:flex;align-items:center;gap:8px;margin-bottom:8px}.milestones b{display:grid;place-items:center;background:var(--soft);color:var(--deep);height:34px;width:34px;border-radius:6px}.milestones i{width:16px;border-top:1px solid #90b5ed}.hero-aside strong{color:var(--ink)}.hero-aside p{font-size:12px;color:var(--muted);margin-top:3px}
   .stage-rail{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;padding:9px;background:white;border:1px solid var(--line);border-radius:8px}.stage-item{text-align:left;padding:9px 10px;background:white;border:1px solid transparent;border-radius:6px;display:grid;gap:2px}.stage-item:hover,.stage-item[aria-pressed=true]{background:var(--soft);border-color:#d5e7ff}.stage-item span,.phase-no,.node-no{font:700 12px/1.4 system-ui;color:var(--deep);letter-spacing:.05em}.stage-item b{color:var(--ink)}.stage-item small{color:var(--muted)}.context{margin:13px 0 24px;padding:11px 14px;background:#eef5fd;border:1px solid #dce9fa;border-radius:7px}.context strong{color:var(--deep);margin-right:8px}.toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 11px}.legend{display:flex;flex-wrap:wrap;gap:15px;font-size:12px;color:var(--muted)}.legend i{display:inline-block;width:22px;vertical-align:middle;margin-right:6px;border-top:2px solid #6d98cd}.legend .conditional{border-top-style:dashed}.legend .return{border-color:#ae6b25;border-top-style:dashed}.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:0 0 15px}.filters label{display:flex;align-items:center;gap:7px;padding:0 9px;border:1px solid var(--line);border-radius:6px;background:white;min-height:38px}.filters input,.filters select{border:0;background:transparent;min-height:35px}.filters input{width:172px}.filter-info{color:var(--muted);font-size:12px}
   .layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,390px);align-items:start;gap:18px}.flow-list{display:grid;gap:14px;min-width:0}.phase,.detail,.lane-panel,.source-panel{background:white;border:1px solid var(--line);border-radius:9px;min-width:0}.phase{scroll-margin-top:78px}.phase-head{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line)}.phase-no{display:grid;place-items:center;background:var(--soft);border-radius:7px;width:36px;height:36px;flex:none}.phase-head small{color:var(--muted)}.gate-mini{margin-left:auto;font-size:11px;background:var(--green-bg);color:var(--green);border-radius:5px;padding:4px 8px;max-width:44%}.phase-note{border-top:1px solid var(--line);margin:0;padding:11px 16px;color:var(--muted);font-size:12px}.phase-note strong{color:var(--deep);margin-right:7px}
-  .graph-scroll,.lane-scroll{overflow:auto;scrollbar-width:thin}.graph{position:relative;display:grid;grid-template-columns:repeat(var(--cols),minmax(0,1fr));grid-auto-rows:minmax(94px,auto);gap:22px 27px;padding:17px;min-width:calc(var(--cols) * 137px + (var(--cols) - 1) * 27px + 34px)}.node{position:relative;z-index:1;display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left;padding:8px 10px;background:white;border:1px solid #d5e0ed;border-radius:7px;min-width:0;min-height:92px;line-height:1.36;overflow-wrap:anywhere}.node:hover,.node[aria-pressed=true]{border-color:var(--blue);background:var(--soft)}.node[aria-pressed=true]{box-shadow:inset 3px 0 var(--blue)}.node-top{display:flex;align-items:center;justify-content:space-between;gap:6px;width:100%}.node-title{color:var(--ink);font-size:14px}.node-meta{color:var(--muted);font-size:11px}.kind{background:var(--soft);color:var(--deep);padding:1px 5px;border-radius:4px;font-size:10px}.kind.external{background:var(--green-bg);color:var(--green)}.kind.support{background:var(--amber-bg);color:var(--amber)}.dim{opacity:.35}.dim[aria-pressed=true]{opacity:.72}.edges{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}.edges path.edge{fill:none;stroke:#6d98cd;stroke-width:1.5}.edges path.conditional,.edges path.return{stroke-dasharray:4 3}.edges path.return{stroke:#ad6b2a}
+  .graph-scroll,.lane-scroll{overflow:auto;scrollbar-width:thin}.graph{position:relative;display:grid;grid-template-columns:repeat(var(--cols),minmax(0,1fr));grid-auto-rows:minmax(94px,auto);gap:36px 32px;padding:17px;min-width:calc(var(--cols) * 137px + (var(--cols) - 1) * 27px + 34px)}.node{position:relative;z-index:1;display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left;padding:8px 10px;background:white;border:1px solid #d5e0ed;border-radius:7px;min-width:0;min-height:92px;line-height:1.36;overflow-wrap:anywhere}.node:hover,.node[aria-pressed=true]{border-color:var(--blue);background:var(--soft)}.node[aria-pressed=true]{box-shadow:inset 3px 0 var(--blue)}.node-top{display:flex;align-items:center;justify-content:space-between;gap:6px;width:100%}.node-title{color:var(--ink);font-size:14px}.node-meta{color:var(--muted);font-size:11px}.kind{background:var(--soft);color:var(--deep);padding:1px 5px;border-radius:4px;font-size:10px}.kind.external{background:var(--green-bg);color:var(--green)}.kind.support{background:var(--amber-bg);color:var(--amber)}.dim{opacity:.35}.dim[aria-pressed=true]{opacity:.72}.edges{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}.edges path.edge{fill:none;stroke:#6d98cd;stroke-width:1.5}.edges path.conditional,.edges path.return{stroke-dasharray:4 3}.edges path.return{stroke:#ad6b2a}
   .node-condition{font-size:11px;color:var(--amber);background:var(--amber-bg);padding:2px 4px;border-radius:4px}
   .detail .route-list{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:6px}
   .route-list li{padding:7px 9px;border:1px solid var(--line);border-radius:6px;background:white}
@@ -70,7 +70,7 @@
 </style>
 </head>
 <body>
-<header class="frame topbar"><div class="brand"><span class="wordmark">敬城</span><span class="brand-en">GEORGE GROUP</span></div><div class="top-meta"><time datetime="2026-11-09">2026.11.09</time><span class="badge">新版业务旅程</span></div></header>
+<header class="frame topbar"><div class="brand"><span class="wordmark">敬城</span><span class="brand-en">GEORGE GROUP</span></div><div class="top-meta"><time datetime="2026-11-17">2026.11.17</time><span class="badge">新版业务旅程</span></div></header>
 <div class="nav-wrap"><nav class="frame nav" aria-label="流程视图">
   <button class="tab" data-view="journey" aria-selected="true"><span>01</span>业务旅程</button>
   <button class="tab" data-view="lanes" aria-selected="false"><span>02</span>角色泳道</button>
@@ -136,7 +136,7 @@ const stages = [
 // Each record describes one operation. The arrows use explicit node relationships.
 const nodes = [
   { id:1, phase:0, x:1,y:1, title:'建立客户档案', owner:'运营人员', with:'PM', system:'CRM', entry:'客户管理 → 新建客户', input:'已取得客户基础信息。', action:'填写客户信息，核对重复客户并保存。', outputs:[['客户档案','供 PM 选择并关联项目。']], gate:'客户保存成功后，PM 可使用该客户创建项目。', reverse:'资料有误时回客户档案修正。', routes:[[2,'客户档案保存成功']] },
-  { id:2, phase:0, x:2,y:1, title:'创建项目', owner:'PM', with:'运营人员', system:'CRM', entry:'项目管理 → 创建项目', input:'已有可关联客户，项目必填信息齐全。', action:'关联客户，补充项目及物流资料。产品业务可由PM预先维护空间，或开启由SM随正式报价汇总、PM复核。', outputs:[['项目档案','保存客户、项目、附件及空间等关联。'],['分配商机待办','交给项目 PM 选择业务和接收人。']], gate:'项目保存成功，进入分配商机。', reverse:'校验或保存失败时在表单补齐后重试。', routes:[[3,'项目保存成功并生成分配待办']] },
+  { id:2, phase:0, x:2,y:1, title:'创建项目', owner:'PM', with:'运营人员', system:'CRM', entry:'项目管理 → 创建项目', input:'已有可关联客户，项目必填信息齐全。', action:'关联客户，补充项目及物流资料。产品空间可由 PM 预先维护，也可随 SM 正式报价汇总，由 PM 整理。', outputs:[['项目档案','保存客户、项目、附件及空间等关联。'],['分配商机待办','交给项目 PM 选择业务和接收人。']], gate:'项目保存成功，进入分配商机。', reverse:'校验或保存失败时在表单补齐后重试。', routes:[[3,'项目保存成功并生成分配待办']] },
   { id:3, phase:1, x:1,y:2, title:'分配商机', owner:'PM', system:'CRM', entry:'分配商机待办 / 项目详情 → 分配商机', input:'项目已建立。空间可由PM预填，也可在分配后随正式报价汇总。', action:'选择区域内采购、跨区域或转介绍、设计服务。选定对应 SM 或设计师主管；设计服务填写期望完成时间及协调方式。', outputs:[['接单或审批待办','按每位接收人生成，记录项目、业务和发起 PM。']], gate:'下游接单或审批待办保存成功，完成原分配待办。', reverse:'资料不足时先补齐项目或申请资料。可从项目详情继续分配其他业务。', routes:[[4,'区域内普通采购'],[5,'跨区域或转介绍'],[6,'分配设计服务']], branch:true },
   { id:4, phase:1, x:2,y:1, title:'采购商机接单', owner:'SM', with:'PM', system:'CRM', entry:'待办中心 → 采购商机接单', input:'收到区域内普通采购接单邀请。', action:'核对项目与对应品类，确认承接或填写拒绝原因。', outputs:[['接单结果','保留实际办理人和处理时间，反馈发起 PM。']], gate:'确认承接后进入采购商机与报价。', reverse:'拒绝后由 PM 编辑原接单邀请并重提。', routes:[[7,'SM 确认承接']] },
   { id:5, phase:1, x:2,y:2, title:'跨区 / 转介绍审批', owner:'总经办', with:'PM、SM', system:'CRM', entry:'待办中心 → 跨区域 / 转介绍商机审批', input:'已收到跨区域或转介绍申请及适用资料。', action:'核对人员、品类、申请原因和附件，作出审批决定。', outputs:[['审批记录','反馈 PM。审批通过直接通知接收 SM。']], gate:'审批通过后直接生成采购商机和报价待办。', reverse:'驳回填写原因，PM 编辑原审批申请后重提。', routes:[[7,'总经办审批通过']] },
@@ -177,7 +177,7 @@ for(const node of nodes){
 
 const releaseFlowRules = {
   "9": {
-    "action": "直接编辑产品报价，或绑定有权使用的草稿。草稿可暂存未填完的内容。提交须有命名空间及完整产品，成功后共享给所选方案经理。直接提交报价或绑定草稿时，核对实际使用的空间并替换为项目空间名称，再填订单表单。多个报价空间可合并到同一个项目空间，产品行及公式引用随行调整。"
+    "action": "直接编辑产品报价，或绑定有权使用的草稿。草稿可暂存未填完的内容。提交须有命名空间及完整产品，成功后共享给所选方案经理。直接提交报价或绑定草稿时，核对实际使用的空间并替换为项目空间名称，再填订单表单。多个报价空间可合并到同一个项目空间，产品行及公式引用随行调整。绑定候选仅限本人创建、本人为方案经理或报价助理的草稿，部门权限不扩大草稿选择范围。暂存草稿可以选择，资料不完整时提示具体问题，并可进入编辑后返回绑定。"
   },
   "10": {
     "input": "报价包含有效产品。已核对本次使用的空间，填写提交表单，订单金额大于零。",
@@ -342,39 +342,87 @@ function graph(phase) {
   const handoffs=group.flatMap(node=>node.routes.filter(([id])=>byId(id).phase!==phase).map(([id,condition])=>'<button type="button" data-jump="'+id+'">'+stepNumber(node)+' · '+escape(condition)+' → '+escape(label(byId(id)))+'</button>'));
   return '<section class="phase" id="phase-'+phase+'"><header class="phase-head"><span class="phase-no">'+number(phaseNumber(phase))+'</span><div><h3>'+escape(stage.name)+'</h3><small>'+escape(stage.short)+'</small></div><span class="gate-mini">'+escape(stage.output)+'</span></header><div class="graph-scroll" role="region" aria-label="'+escape(stage.name)+'流程" tabindex="0"><div class="graph" data-graph="'+phase+'" style="--cols:'+columns+'">'+group.map(node=>card(node,true)).join('')+'</div></div><div class="phase-note"><p><strong>流转说明</strong>'+escape(stage.note)+'</p>'+(handoffs.length?'<div class="jumps" aria-label="跨阶段衔接">'+handoffs.join('')+'</div>':'')+'</div></section>';
 }
+// Orthogonal routes use open corridors around cards, including direct branches.
+function workflowRoute(a, b, cards, incoming = 0, incomingCount = 1) {
+  const cx = r => r.x + r.w / 2, cy = r => r.y + r.h / 2;
+  const fraction = (incoming + 1) / (incomingCount + 1);
+  let start, finish, first, last;
+  if (Math.abs(cx(a) - cx(b)) < 1) {
+    const down = cy(b) > cy(a), sign = down ? 1 : -1;
+    start = [cx(a), down ? a.y + a.h : a.y];
+    finish = [b.x + b.w * fraction, down ? b.y : b.y + b.h];
+    first = [start[0], start[1] + sign * 10];
+    last = [finish[0], finish[1] - sign * 10];
+  } else {
+    const right = cx(b) > cx(a), sign = right ? 1 : -1;
+    const upward = b.y + b.h < a.y;
+    start = upward ? [cx(a), a.y] : [right ? a.x + a.w : a.x, cy(a)];
+    finish = [right ? b.x : b.x + b.w, b.y + b.h * fraction];
+    first = upward ? [start[0], start[1] - 10] : [start[0] + sign * 10, start[1]];
+    last = [finish[0] - sign * 10, finish[1]];
+  }
+  const xs = [...new Set([first[0],last[0],...cards.flatMap(r => [r.x-10,r.x+r.w+10])])].sort((x,y)=>x-y);
+  const ys = [...new Set([first[1],last[1],...cards.flatMap(r => [r.y-10,r.y+r.h+10])])].sort((x,y)=>x-y);
+  const blocked = (p,q) => cards.some(r => p[0]===q[0]
+    ? p[0]>r.x-3 && p[0]<r.x+r.w+3 && Math.max(p[1],q[1])>r.y-3 && Math.min(p[1],q[1])<r.y+r.h+3
+    : p[1]>r.y-3 && p[1]<r.y+r.h+3 && Math.max(p[0],q[0])>r.x-3 && Math.min(p[0],q[0])<r.x+r.w+3);
+  const key = (x,y,axis) => x+','+y+','+axis;
+  const source = {x:xs.indexOf(first[0]),y:ys.indexOf(first[1]),axis:start[0]===first[0]?'v':'h',cost:0,prev:null};
+  const queue=[source],best=new Map([[key(source.x,source.y,source.axis),0]]);
+  let found;
+  while(queue.length) {
+    queue.sort((x,y)=>y.cost-x.cost);const current=queue.pop();
+    if(current.cost!==best.get(key(current.x,current.y,current.axis)))continue;
+    if(xs[current.x]===last[0]&&ys[current.y]===last[1]){found=current;break;}
+    for(const [dx,dy,axis] of [[1,0,'h'],[-1,0,'h'],[0,1,'v'],[0,-1,'v']]) {
+      const x=current.x+dx,y=current.y+dy;
+      if(x<0||x>=xs.length||y<0||y>=ys.length)continue;
+      const p=[xs[current.x],ys[current.y]],q=[xs[x],ys[y]];
+      if(blocked(p,q))continue;
+      const cost=current.cost+Math.abs(q[0]-p[0])+Math.abs(q[1]-p[1])+(current.axis&&current.axis!==axis?24:0),k=key(x,y,axis);
+      if(cost>=(best.get(k)??Infinity))continue;
+      best.set(k,cost);queue.push({x,y,axis,cost,prev:current});
+    }
+  }
+  if(!found)return [];
+  const middle=[];for(let n=found;n;n=n.prev)middle.unshift([xs[n.x],ys[n.y]]);
+  const points=[start,...middle,finish],simple=[];
+  for(const p of points){const l=simple.length;if(l&&simple[l-1][0]===p[0]&&simple[l-1][1]===p[1])continue;
+    if(l>1&&((simple[l-2][0]===simple[l-1][0]&&simple[l-1][0]===p[0])||(simple[l-2][1]===simple[l-1][1]&&simple[l-1][1]===p[1])))simple.pop();
+    simple.push(p);
+  }
+  return simple;
+}
+
 function drawEdges() {
   for(const graphElement of document.querySelectorAll('.graph')){
-    const phase=Number(graphElement.dataset.graph), box=graphElement.getBoundingClientRect();
-    if(!box.width) continue;
     graphElement.querySelector('svg')?.remove();
-    const marker='arrow-'+phase;
-    const paths=[];
-    for(const from of rows(phase)){
-      for(const [id] of from.routes){
-        const to=byId(id);
-        if(to.phase!==phase) continue;
-        const a=graphElement.querySelector('[data-node="'+from.id+'"]').getBoundingClientRect();
-        const b=graphElement.querySelector('[data-node="'+to.id+'"]').getBoundingClientRect();
-        const back=to.step<from.step;
-        let d;
-        if(from.x===to.x){
-          const direction=b.top>a.top?1:-1, shift=back?18:0;
-          const x=a.left+a.width/2-box.left+shift, y1=(direction===1?a.bottom:a.top)-box.top, y2=(direction===1?b.top:b.bottom)-box.top-direction*3;
-          d='M '+x+' '+y1+' V '+y2;
-        }else{
-          const x1=a.right-box.left, y1=a.top+a.height/2-box.top, x2=b.left-box.left-3, y2=b.top+b.height/2-box.top;
-          const bend=x1+(x2-x1)/2;
-          d='M '+x1+' '+y1+' H '+bend+' V '+y2+' H '+x2;
-        }
-        paths.push('<path class="edge '+(back?'return':from.branch?'conditional':'')+'" d="'+d+'" marker-end="url(#'+marker+(back?'-back':'')+')"/>');
+    const phase=Number(graphElement.dataset.graph),box=graphElement.getBoundingClientRect();
+    if(!box.width)continue;
+    const group=rows(phase),cards=group.map(node=>{const r=graphElement.querySelector('[data-node="'+node.id+'"]').getBoundingClientRect();return {id:node.id,x:r.left-box.left,y:r.top-box.top,w:r.width,h:r.height};});
+    const lookup=new Map(cards.map(r=>[r.id,r])),links=[];
+    for(const from of group)for(const [id,condition] of from.routes)if(byId(id)?.phase===phase&&!links.some(e=>e.from.id===from.id&&e.to.id===id))links.push({from,to:byId(id),condition});
+    const marker='arrow-'+phase,paths=[],labels=[];
+    for(const edge of links){
+      const {from,to,condition}=edge,incoming=links.filter(e=>e.to.id===to.id),index=incoming.indexOf(edge);
+      const points=workflowRoute(lookup.get(from.id),lookup.get(to.id),cards,index,incoming.length);
+      if(!points.length)continue;
+      const back=to.step<from.step,conditional=from.branch&&from.routes.length>1;
+      const d=points.map((p,i)=>(i?'L ':'M ')+p[0]+' '+p[1]).join(' ');
+      paths.push('<path data-edge="'+from.id+'-'+to.id+'" class="edge '+(back?'return':conditional?'conditional':'')+'" d="'+d+'" marker-end="url(#'+marker+(back?'-back':'')+')"><title>'+escape(condition)+'</title></path>');
+      const width=condition.length*11+14;
+      if(conditional)for(let i=1;i<points.length;i++){const a=points[i-1],b=points[i];if(a[1]!==b[1]||Math.abs(a[0]-b[0])<width+16)continue;
+        const x=(a[0]+b[0])/2,y=a[1]-8;
+        if(cards.some(r=>x+width/2>r.x&&x-width/2<r.x+r.w&&y+3>r.y&&y-14<r.y+r.h))continue;
+        labels.push('<g class="edge-label"><rect x="'+(x-width/2)+'" y="'+(y-13)+'" width="'+width+'" height="18" rx="3" fill="white"/><text x="'+x+'" y="'+y+'" text-anchor="middle" fill="#466e9e" font-size="11">'+escape(condition)+'</text></g>');break;
       }
     }
-    if(paths.length){
-      const arrow=(suffix,color)=>'<marker id="'+marker+suffix+'" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 Z" fill="'+color+'"/></marker>';
-      graphElement.insertAdjacentHTML('afterbegin','<svg class="edges" aria-hidden="true" viewBox="0 0 '+box.width+' '+box.height+'"><defs>'+arrow('','#6d98cd')+arrow('-back','#ad6b2a')+'</defs>'+paths.join('')+'</svg>');
+    if(paths.length){const arrow=(suffix,color)=>'<marker id="'+marker+suffix+'" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 Z" fill="'+color+'"/></marker>';
+      graphElement.insertAdjacentHTML('afterbegin','<svg class="edges" aria-hidden="true" viewBox="0 0 '+box.width+' '+box.height+'"><defs>'+arrow('','#6d98cd')+arrow('-back','#ad6b2a')+'</defs>'+paths.join('')+labels.join('')+'</svg>');
     }
   }
 }
+
 function lane(phase) {
   const group=rows(phase), stage=stageOf(phase), owners=[...new Set(group.map(node=>node.owner))];
   const cells=owners.map(owner=>'<div class="lane-name">'+escape(owner)+'</div>'+group.map(node=>'<div class="lane-cell">'+(node.owner===owner?card(node):'')+'</div>').join('')).join('');
@@ -551,6 +599,6 @@ new ResizeObserver(()=>{
 syncFilters();render();
 if(link)requestAnimationFrame(()=>$('[data-node="'+state.selected+'"]')?.scrollIntoView({block:'center'}));
 </script>
-<script src="./release-notice-loader.js?v=ce1aefa49f80cc99076756dcb79a7c3ddb2455b0855ea5d0b29989ef9ea28bfd" defer data-crm-document-release data-release-document="new-workflow.html" data-release-version="ce1aefa49f80cc99076756dcb79a7c3ddb2455b0855ea5d0b29989ef9ea28bfd" data-release-built-at="2026-11-12T09:57:15.133Z"></script>
+<script src="./release-notice-loader.js?v=ab309666a34ca541812cfee42408667f4ea2924dc9b95788c97da246b860e32b" defer data-crm-document-release data-release-document="new-workflow.html" data-release-version="ab309666a34ca541812cfee42408667f4ea2924dc9b95788c97da246b860e32b" data-release-built-at="2026-11-17T06:10:37.681Z"></script>
 </body>
 </html>
