@@ -28,14 +28,18 @@
     check();
     return { check, stop() { stopped = true; controller?.abort(); timers.clearInterval(interval); doc.removeEventListener('visibilitychange', visible); win.removeEventListener('focus', visible); win.removeEventListener('online', visible); } };
   }
-  function quotationNeedsSave(doc) {
-    const frame = doc.getElementById('pimsFrame');
-    if (!frame) return false;
-    try {
-      const editor = frame.contentDocument;
-      return !!editor && (/有未保存的更改|正在保存/.test(editor.getElementById('edSaveStatus')?.textContent || '') || !!editor.querySelector('td.edit'));
-    } catch { return false; }
+  function pendingQuotationFrame(doc) {
+    const frames = [...(doc.querySelectorAll?.('iframe#pimsFrame') || [])];
+    const first = doc.getElementById('pimsFrame');
+    if (first && !frames.includes(first)) frames.push(first);
+    return frames.find(frame => {
+      try {
+        const editor = frame.contentDocument;
+        return !!editor && (/有未保存的更改|正在保存/.test(editor.getElementById('edSaveStatus')?.textContent || '') || !!editor.querySelector('td.edit'));
+      } catch { return false; }
+    });
   }
+  function quotationNeedsSave(doc) { return !!pendingQuotationFrame(doc); }
   function rememberReading(doc, win, key) {
     if (!key) return;
     try { win.sessionStorage.setItem('crm-document-reading:' + key, JSON.stringify({ top: win.scrollY || 0, left: win.scrollX || 0, hash: win.location.hash || '', at: Date.now() })); } catch { /* Reading storage is optional. */ }
@@ -51,7 +55,7 @@
     box.setAttribute('aria-describedby', 'crm-release-description');
     const title = options.documentKey ? '文档有新版本' : '页面有新版本';
     const description = options.documentKey ? '点击「立即刷新」查看最新文档。' : '点击「立即刷新」加载最新版。正在编辑的内容请先保存。';
-    box.innerHTML = '<h2 id="crm-release-title">' + title + '</h2><p id="crm-release-description">' + description + '</p><p data-release-warning hidden role="alert"></p><div><button type="button" data-release-later autofocus>稍后</button><button type="button" data-release-refresh>立即刷新</button></div>';
+    box.innerHTML = '<h2 id="crm-release-title">' + title + '</h2><p id="crm-release-description">' + description + '</p><p data-release-warning hidden role="alert"></p><div><button type="button" data-release-later autofocus>稍后</button><button type="button" data-release-save hidden>返回报价暂存</button><button type="button" data-release-refresh>立即刷新</button></div>';
     const style = doc.createElement('style');
     style.textContent = `
       #crm-release-notice{position:fixed;inset:0;margin:auto;box-sizing:border-box;width:min(480px,calc(100vw - 32px));max-height:calc(100vh - 32px);padding:clamp(20px,5vw,32px);border:0;border-top:5px solid #1677ff;border-radius:14px;background:white;color:#233b53;box-shadow:0 18px 70px #10233755;font:15px/1.65 system-ui,sans-serif}
@@ -69,10 +73,31 @@
     box.addEventListener('keydown', event => event.stopPropagation());
     box.addEventListener('close', () => box.remove(), { once: true });
     box.querySelector('[data-release-later]').onclick = () => box.close();
+    box.querySelector('[data-release-save]').onclick = () => {
+      const frame = pendingQuotationFrame(doc);
+      box.close();
+      if (frame) {
+        const tab = frame.closest?.('[data-tab]')?.dataset?.tab;
+        if (tab) win.GeorgeRuntime?.navigate(tab, true);
+        frame.contentWindow?.focus();
+      }
+      // Keep the update reachable after returning to the editor. Reload still
+      // requires another explicit click and rechecks the durable-save guard.
+      if (!doc.getElementById('crm-release-resume')) {
+        const resume = doc.createElement('button'); resume.id = 'crm-release-resume'; resume.type = 'button';
+        resume.textContent = '新版本待刷新';
+        resume.style.cssText = 'position:fixed;right:24px;bottom:24px;z-index:2147483000;padding:10px 18px;border:1px solid #0969da;border-radius:8px;background:white;color:#0969da;cursor:pointer;font:600 14px system-ui';
+        resume.onclick = () => { resume.remove(); showNotice(doc, win, options); };
+        doc.body.appendChild(resume);
+      }
+    };
     box.querySelector('[data-release-refresh]').onclick = () => {
-      if (quotationNeedsSave(doc)) {
+      const frame = pendingQuotationFrame(doc);
+      if (frame) {
         const warning = box.querySelector('[data-release-warning]'); warning.hidden = false;
-        warning.textContent = '报价有未暂存的修改或正在保存，请完成暂存后再刷新。'; return;
+        const name = frame.contentDocument?.getElementById('draftName')?.value;
+        warning.textContent = (name ? '报价「' + name + '」' : '报价') + '有未暂存的修改或正在保存。请点击「返回报价暂存」，完成暂存后点击「新版本待刷新」。';
+        box.querySelector('[data-release-save]').hidden = false; return;
       }
       rememberReading(doc, win, options.documentKey);
       for (const frame of doc.querySelectorAll?.('iframe') || []) try { const reader = frame.contentWindow.CRMReleaseNotice; if (reader?.documentKey) reader.rememberReading(frame.contentDocument, frame.contentWindow, reader.documentKey); } catch { /* Only same-origin readers share reading position. */ }
@@ -94,6 +119,6 @@
     restoreReading(root, documentKey);
     try { if (documentKey && root.parent !== root && root.parent.CRMReleaseNotice?.watcher) return; } catch { /* Independent readers run their own observer. */ }
     const url = new URL('./app-release.json', script.src).href;
-    root.CRMReleaseNotice.watcher = createReleaseWatcher({ version: script.dataset.releaseVersion || "7bf36f22dbfe4f3168b09b042d6c8f219c282ec815d7a1f35948acf7648c8852", builtAt: script.dataset.releaseBuiltAt || "2026-11-19T06:22:23.306Z", documentKey, url, onUpdate: release => { try { if (documentKey && root.parent !== root && root.parent.CRMReleaseNotice?.watcher) return; } catch {} showNotice(root.document, root, { documentKey, version: release.version }); }, fetch: root.fetch.bind(root), document: root.document, window: root });
+    root.CRMReleaseNotice.watcher = createReleaseWatcher({ version: script.dataset.releaseVersion || "9961bd4466028df3203c203fa9c3756a4d11961da9fffe71ad6713e02fe0d9e7", builtAt: script.dataset.releaseBuiltAt || "2026-11-19T07:34:54.294Z", documentKey, url, onUpdate: release => { try { if (documentKey && root.parent !== root && root.parent.CRMReleaseNotice?.watcher) return; } catch {} showNotice(root.document, root, { documentKey, version: release.version }); }, fetch: root.fetch.bind(root), document: root.document, window: root });
   }
 })(typeof window === 'undefined' ? globalThis : window);
