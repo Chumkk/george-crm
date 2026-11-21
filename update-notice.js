@@ -1,4 +1,4 @@
-/* Deployment notification is independent of quotation/workflow data. It never saves or reloads automatically. */
+/* Deployment checks never save or reload; an explicit save-and-refresh click may save working quotations. */
 (function(root){
   function createReleaseWatcher(options) {
     const { version, builtAt, url, onUpdate, fetch: request, document: doc, window: win } = options;
@@ -28,18 +28,52 @@
     check();
     return { check, stop() { stopped = true; controller?.abort(); timers.clearInterval(interval); doc.removeEventListener('visibilitychange', visible); win.removeEventListener('focus', visible); win.removeEventListener('online', visible); } };
   }
-  function pendingQuotationFrame(doc) {
+  const failedSaves = new WeakSet();
+  function quotationFrames(doc) {
     const frames = [...(doc.querySelectorAll?.('iframe#pimsFrame') || [])];
     const first = doc.getElementById('pimsFrame');
     if (first && !frames.includes(first)) frames.push(first);
-    return frames.find(frame => {
+    return frames;
+  }
+  function frameNeedsSave(frame) {
       try {
         const editor = frame.contentDocument;
-        return !!editor && (/有未保存的更改|正在保存/.test(editor.getElementById('edSaveStatus')?.textContent || '') || !!editor.querySelector('td.edit'));
+        const state = frame.contentWindow?.CRMQuotationSave391?.state?.();
+        return failedSaves.has(frame) || !!state?.dirty || !!state?.saving || !!editor && (/有未保存的更改|正在保存|尚未保存|暂存失败|保存失败/.test(editor.getElementById('edSaveStatus')?.textContent || '') || !!editor.querySelector('td.edit'));
       } catch { return false; }
-    });
+  }
+  function pendingQuotationFrame(doc) {
+    return quotationFrames(doc).find(frameNeedsSave);
   }
   function quotationNeedsSave(doc) { return !!pendingQuotationFrame(doc); }
+  function saveQuotationFrame(frame, win, options = {}) {
+    const child = frame.contentWindow, editor = frame.contentDocument;
+    if (!child?.addEventListener || typeof child.quickSave !== 'function') return Promise.reject(Error('当前报价页不支持直接暂存，请返回报价完成暂存后再刷新。'));
+    const timers = options.timers || win, timeout = options.timeout || 15000;
+    return new Promise((resolve, reject) => {
+      let done = false, timer;
+      const finish = error => { if (done) return; done = true; child.removeEventListener('message', message); options.signal?.removeEventListener('abort', abort); timers.clearTimeout(timer); if (error) { failedSaves.add(frame); reject(error); } else { failedSaves.delete(frame); resolve(); } };
+      const abort = () => finish(Error('已取消刷新，报价内容保留。'));
+      const message = event => {
+        if (event.source !== win) return;
+        if (event.data?.type === 'v3SaveError') return finish(Error(event.data.message || '暂存失败，未刷新，报价内容保留。'));
+        if (event.data?.type !== 'pimsSaveAck') return;
+        if (event.data.durable !== true) return finish(Error('报价未能持久暂存，未刷新。请返回报价检查后重试。'));
+        failedSaves.delete(frame);
+        if (frameNeedsSave(frame)) return finish(Error('暂存后仍有新的修改，未刷新，请再次点击暂存并刷新。'));
+        finish();
+      };
+      child.addEventListener('message', message); options.signal?.addEventListener('abort', abort, { once: true });
+      if (options.signal?.aborted) return abort();
+      timer = timers.setTimeout(() => finish(Error('暂存尚未确认，未刷新。请返回报价检查暂存结果后重试。')), timeout);
+      try { if (!/正在保存/.test(editor?.getElementById('edSaveStatus')?.textContent || '')) child.quickSave(); }
+      catch (error) { finish(Error(error.message || '暂存失败，未刷新，报价内容保留。')); }
+    });
+  }
+  async function saveQuotationsBeforeRefresh(doc, win, options = {}) {
+    for (const frame of quotationFrames(doc)) if (frameNeedsSave(frame)) await saveQuotationFrame(frame, win, options);
+    if (quotationNeedsSave(doc)) throw Error('仍有未暂存的报价，未刷新。');
+  }
   function rememberReading(doc, win, key) {
     if (!key) return;
     try { win.sessionStorage.setItem('crm-document-reading:' + key, JSON.stringify({ top: win.scrollY || 0, left: win.scrollX || 0, hash: win.location.hash || '', at: Date.now() })); } catch { /* Reading storage is optional. */ }
@@ -71,7 +105,8 @@
     `;
     box.appendChild(style);
     box.addEventListener('keydown', event => event.stopPropagation());
-    box.addEventListener('close', () => box.remove(), { once: true });
+    box.addEventListener('close', () => { cancelled = true; controller?.abort(); box.remove(); }, { once: true });
+    let busy = false, cancelled = false, controller = null;
     box.querySelector('[data-release-later]').onclick = () => box.close();
     box.querySelector('[data-release-save]').onclick = () => {
       const frame = pendingQuotationFrame(doc);
@@ -91,14 +126,7 @@
         doc.body.appendChild(resume);
       }
     };
-    box.querySelector('[data-release-refresh]').onclick = () => {
-      const frame = pendingQuotationFrame(doc);
-      if (frame) {
-        const warning = box.querySelector('[data-release-warning]'); warning.hidden = false;
-        const name = frame.contentDocument?.getElementById('draftName')?.value;
-        warning.textContent = (name ? '报价「' + name + '」' : '报价') + '有未暂存的修改或正在保存。请点击「返回报价暂存」，完成暂存后点击「新版本待刷新」。';
-        box.querySelector('[data-release-save]').hidden = false; return;
-      }
+    function refreshNow() {
       rememberReading(doc, win, options.documentKey);
       for (const frame of doc.querySelectorAll?.('iframe') || []) try { const reader = frame.contentWindow.CRMReleaseNotice; if (reader?.documentKey) reader.rememberReading(frame.contentDocument, frame.contentWindow, reader.documentKey); } catch { /* Only same-origin readers share reading position. */ }
       if (options.version && win.location.href && win.location.replace) {
@@ -107,11 +135,39 @@
         target.searchParams.set('crmRefresh', String(Date.now()));
         win.location.replace(target.href);
       } else win.location.reload();
+    }
+    const refresh = box.querySelector('[data-release-refresh]');
+    function explainPending(message) {
+      const frame = pendingQuotationFrame(doc), name = frame?.contentDocument?.getElementById('draftName')?.value;
+      const warning = box.querySelector('[data-release-warning]'); warning.hidden = false;
+      warning.textContent = message || (name ? '报价「' + name + '」' : '报价') + '有未暂存内容。点击「暂存并刷新」先暂存工作稿，确认成功后加载新版；不会提交报价。';
+      box.querySelector('[data-release-save]').hidden = false;
+      const description = box.querySelector('#crm-release-description');
+      if (description) description.textContent = '先暂存所有未保存的报价工作稿，确认成功后加载新版。不会提交报价或发送ERP请求。';
+      refresh.textContent = '暂存并刷新';
+    }
+    refresh.onclick = async () => {
+      if (busy) return;
+      const frame = pendingQuotationFrame(doc);
+      if (frame) {
+        explainPending();
+        if (!frame.contentWindow?.addEventListener || typeof frame.contentWindow?.quickSave !== 'function') { explainPending('请点击「返回报价暂存」完成暂存后再刷新。'); return; }
+        busy = true; refresh.disabled = true; refresh.textContent = '正在暂存…';
+        controller = new AbortController();
+        try {
+          await saveQuotationsBeforeRefresh(doc, win, { ...options, signal: controller.signal });
+          if (!cancelled) refreshNow();
+        } catch (error) { if (!cancelled) explainPending(error.message); }
+        finally { busy = false; refresh.disabled = false; if (!cancelled) refresh.textContent = quotationNeedsSave(doc) ? '暂存并刷新' : '立即刷新'; }
+        return;
+      }
+      refreshNow();
     };
     doc.body.appendChild(box);
+    if (pendingQuotationFrame(doc)) explainPending();
     box.showModal();
   }
-  root.CRMReleaseNotice = { createReleaseWatcher, quotationNeedsSave, showNotice, rememberReading, restoreReading };
+  root.CRMReleaseNotice = { createReleaseWatcher, quotationNeedsSave, showNotice, rememberReading, restoreReading, saveQuotationsBeforeRefresh };
   if (root.document?.body && root.document.documentElement?.dataset?.entry !== 'client') {
     const script = root.document.currentScript;
     const documentKey = script.dataset.releaseDocument || '';
@@ -119,6 +175,6 @@
     restoreReading(root, documentKey);
     try { if (documentKey && root.parent !== root && root.parent.CRMReleaseNotice?.watcher) return; } catch { /* Independent readers run their own observer. */ }
     const url = new URL('./app-release.json', script.src).href;
-    root.CRMReleaseNotice.watcher = createReleaseWatcher({ version: script.dataset.releaseVersion || "2a0d2ee45ae0e200af03e3c528dcf1a1d2b0e04e9588654bb2e016cb7db08912", builtAt: script.dataset.releaseBuiltAt || "2026-11-21T10:44:53.692Z", documentKey, url, onUpdate: release => { try { if (documentKey && root.parent !== root && root.parent.CRMReleaseNotice?.watcher) return; } catch {} showNotice(root.document, root, { documentKey, version: release.version }); }, fetch: root.fetch.bind(root), document: root.document, window: root });
+    root.CRMReleaseNotice.watcher = createReleaseWatcher({ version: script.dataset.releaseVersion || "bb132767b532adf9e786d495bd8d412fba4ee2607031de50380818021cf714a2", builtAt: script.dataset.releaseBuiltAt || "2026-11-21T11:06:19.054Z", documentKey, url, onUpdate: release => { try { if (documentKey && root.parent !== root && root.parent.CRMReleaseNotice?.watcher) return; } catch {} showNotice(root.document, root, { documentKey, version: release.version }); }, fetch: root.fetch.bind(root), document: root.document, window: root });
   }
 })(typeof window === 'undefined' ? globalThis : window);
