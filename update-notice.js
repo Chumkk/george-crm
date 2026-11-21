@@ -119,6 +119,6 @@
     restoreReading(root, documentKey);
     try { if (documentKey && root.parent !== root && root.parent.CRMReleaseNotice?.watcher) return; } catch { /* Independent readers run their own observer. */ }
     const url = new URL('./app-release.json', script.src).href;
-    root.CRMReleaseNotice.watcher = createReleaseWatcher({ version: script.dataset.releaseVersion || "362f923c5c5ac609b8e114e705c73d155b47c4c05f4edb6e8e51cc3696e1694b", builtAt: script.dataset.releaseBuiltAt || "2026-11-20T10:58:47.030Z", documentKey, url, onUpdate: release => { try { if (documentKey && root.parent !== root && root.parent.CRMReleaseNotice?.watcher) return; } catch {} showNotice(root.document, root, { documentKey, version: release.version }); }, fetch: root.fetch.bind(root), document: root.document, window: root });
+    root.CRMReleaseNotice.watcher = createReleaseWatcher({ version: script.dataset.releaseVersion || "c1fc5cd24058371c7084f3d37fe0efcfd40b34e94efd1520b613b09dcbe420c3", builtAt: script.dataset.releaseBuiltAt || "2026-11-21T01:53:23.181Z", documentKey, url, onUpdate: release => { try { if (documentKey && root.parent !== root && root.parent.CRMReleaseNotice?.watcher) return; } catch {} showNotice(root.document, root, { documentKey, version: release.version }); }, fetch: root.fetch.bind(root), document: root.document, window: root });
   }
 })(typeof window === 'undefined' ? globalThis : window);
