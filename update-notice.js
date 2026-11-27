@@ -175,6 +175,6 @@
     restoreReading(root, documentKey);
     try { if (documentKey && root.parent !== root && root.parent.CRMReleaseNotice?.watcher) return; } catch { /* Independent readers run their own observer. */ }
     const url = new URL('./app-release.json', script.src).href;
-    root.CRMReleaseNotice.watcher = createReleaseWatcher({ version: script.dataset.releaseVersion || "cb1101c9da8b73f25aef9116df3e1183564093d22d5af3c09bd75f4647da6306", builtAt: script.dataset.releaseBuiltAt || "2026-11-27T03:57:30.788Z", documentKey, url, onUpdate: release => { try { if (documentKey && root.parent !== root && root.parent.CRMReleaseNotice?.watcher) return; } catch {} showNotice(root.document, root, { documentKey, version: release.version }); }, fetch: root.fetch.bind(root), document: root.document, window: root });
+    root.CRMReleaseNotice.watcher = createReleaseWatcher({ version: script.dataset.releaseVersion || "56aa9f9859aee91e770e20b939f0666a0de44576081ae0f4aff0d499ec04c944", builtAt: script.dataset.releaseBuiltAt || "2026-11-27T05:48:03.381Z", documentKey, url, onUpdate: release => { try { if (documentKey && root.parent !== root && root.parent.CRMReleaseNotice?.watcher) return; } catch {} showNotice(root.document, root, { documentKey, version: release.version }); }, fetch: root.fetch.bind(root), document: root.document, window: root });
   }
 })(typeof window === 'undefined' ? globalThis : window);
